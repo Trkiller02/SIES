@@ -52,10 +52,8 @@ export class RepresentService {
         personRelation: {
           create: {
             ciNumber: createRepresentDto.ciNumber,
-            firstName: createRepresentDto.firstName,
-            secondName: createRepresentDto.secondName,
-            firstLastName: createRepresentDto.firstLastName,
-            secondLastName: createRepresentDto.secondLastName,
+            name: createRepresentDto.name,
+            lastName: createRepresentDto.lastName,
             homeDir: createRepresentDto.homeDir,
             homeParroquia: createRepresentDto.homeParroquia,
             homeMunicipio: createRepresentDto.homeMunicipio,

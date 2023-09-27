@@ -7,19 +7,11 @@ export class CreatePersonDto {
 
   @IsString()
   @IsNotEmpty()
-  firstName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  secondName: string;
+  name: string;
 
   @IsNotEmpty()
   @IsString()
-  firstLastName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  secondLastName: string;
+  lastName: string;
 
   @IsEmail()
   @IsOptional()
