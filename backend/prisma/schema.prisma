@@ -59,7 +59,6 @@ model Student {
 model Represent {
   personRelation    Person          @relation(fields: [representCiNumber], references: [ciNumber])
   representCiNumber String          @unique
-  afinidad          String
   civilStatus       String
   Instrution        String
   profession        String?

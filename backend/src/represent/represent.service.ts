@@ -7,14 +7,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class RepresentService {
   constructor(private prisma: PrismaService) {}
   async create(createRepresentDto: CreateRepresentDto) {
-    const res = await fetch(`/person/${createRepresentDto.ciNumber}`);
-    const { id } = await res.json();
+    const represent = await fetch(`/person/${createRepresentDto.ciNumber}`);
+
+    const { ciNumber } = await represent.json();
 
     return this.prisma.represent.create({
       data: {
         personRelation: {
           connectOrCreate: {
-            where: { ciNumber: id },
+            where: ciNumber,
             create: {
               ciNumber: createRepresentDto.ciNumber,
               firstName: createRepresentDto.firstName,
@@ -42,35 +43,53 @@ export class RepresentService {
   }
 
   async findAll() {
-    const res = await this.prisma.represent.findMany({
+    const represent = await this.prisma.represent.findMany({
       include: {
         personRelation: true,
       },
     });
-    if (res.length === 0) {
-      throw new NotFoundException(`No results found`);
-    } else {
-      return res;
-    }
+
+    if (represent.length === 0)
+      throw new NotFoundException(`No se encontraron registros`);
+
+    return represent;
   }
 
   async findOne(id: string) {
-    return await this.prisma.represent.findUnique({
+    const represent = await this.prisma.represent.findUnique({
       where: { representCiNumber: id },
       include: {
         personRelation: true,
       },
     });
+
+    if (!represent) throw new NotFoundException('Representante no encontrado');
+
+    return represent;
   }
 
-  async update(id: string, updateRepresentDto: UpdateRepresentDto) {
+  async update(ciNumber: string, updateRepresentDto: UpdateRepresentDto) {
+    const represent = await this.prisma.represent.findUnique({
+      where: { representCiNumber: ciNumber },
+      select: { representCiNumber: true },
+    });
+
+    if (!represent) throw new NotFoundException('Representante no encontrado');
+
     return await this.prisma.represent.update({
-      where: { representCiNumber: id },
+      where: represent,
       data: updateRepresentDto,
     });
   }
 
-  async remove(id: string) {
-    return this.prisma.represent.delete({ where: { representCiNumber: id } });
+  async remove(ciNumber: string) {
+    const represent = await this.prisma.represent.findUnique({
+      where: { representCiNumber: ciNumber },
+      select: { representCiNumber: true },
+    });
+
+    if (!represent) throw new NotFoundException('Representante no encontrado');
+
+    return this.prisma.represent.delete({ where: represent });
   }
 }

@@ -35,9 +35,13 @@ export class CreatePersonDto {
 
   @IsString()
   @IsNotEmpty()
-  homeParroquia;
+  homeParroquia: string;
 
   @IsString()
   @IsNotEmpty()
-  homeMunicipio;
+  homeMunicipio: string;
+
+  @IsString()
+  @IsOptional()
+  relation: string;
 }

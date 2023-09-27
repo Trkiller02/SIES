@@ -26,12 +26,12 @@ export class UserController {
 
   @Auth([Role.ADMIN])
   @Get()
-  findAll(): Promise<UserModel[] | Error> {
+  findAll(): Promise<UserModel[]> {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<UserModel | Error> {
+  findOne(@Param('id') id: string): Promise<UserModel> {
     return this.userService.findOne(id);
   }
 
@@ -39,12 +39,12 @@ export class UserController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UserModel | Error> {
+  ): Promise<UserModel> {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<UserModel | Error> {
+  remove(@Param('id') id: string): Promise<UserModel> {
     return this.userService.remove(id);
   }
 }

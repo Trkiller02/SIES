@@ -24,9 +24,7 @@ export class UserService {
       },
     });
 
-    if (user) {
-      throw new ConflictException('El usuario ya existe');
-    }
+    if (user) throw new ConflictException('El usuario ya existe');
 
     const passHashed = await bcrypt.hash(userCreateData.password, 10);
     userCreateData.password = passHashed;

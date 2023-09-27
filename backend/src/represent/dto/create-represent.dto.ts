@@ -5,59 +5,12 @@ import {
   IsNotEmpty,
   IsOptional,
 } from 'class-validator';
+import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 
-export class CreateRepresentDto {
-  @IsString()
-  @IsNotEmpty()
-  afinidad: string;
-
-  @IsString()
-  @IsNotEmpty()
-  ciNumber: string;
-
-  @IsString()
-  @IsNotEmpty()
-  firstName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  secondName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  firstLastName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  secondLastName: string;
-
-  @IsEmail()
-  @IsOptional()
-  email?: string;
-
-  @IsString()
-  @IsOptional()
-  phoneNumber?: string;
-
+export class CreateRepresentDto extends CreatePersonDto {
   @IsString()
   @IsNotEmpty()
   civilStatus: string;
-
-  @IsString()
-  @IsNotEmpty()
-  homeDir: string;
-
-  @IsString()
-  @IsNotEmpty()
-  homeParroquia: string;
-
-  @IsString()
-  @IsNotEmpty()
-  homeMunicipio: string;
-
-  @IsString()
-  @IsNotEmpty()
-  home: string;
 
   @IsString()
   @IsNotEmpty()
