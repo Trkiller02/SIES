@@ -19,6 +19,8 @@ export class AuthService {
   async signIn({ email, ciNumber, password }: LoginAuthDto) {
     const user = await this.UserService.findToAuth(ciNumber, email);
 
+    console.log(user);
+
     if (!user) {
       throw new UnauthorizedException('Crendenciales invalidas');
     }
@@ -31,9 +33,6 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
-      name: user.name,
-      lastName: user.lastName,
-      email: user.email,
       role: user.roleId,
     };
 

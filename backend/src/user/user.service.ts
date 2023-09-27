@@ -13,105 +13,99 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
+
   async create(userCreateData: CreateUserDto) {
-    try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          OR: [
-            { ciNumber: { equals: userCreateData.ciNumber } },
-            { email: { equals: userCreateData.email } },
-          ],
-        },
-      });
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { ciNumber: { equals: userCreateData.ciNumber } },
+          { email: { equals: userCreateData.email } },
+        ],
+      },
+    });
 
-      if (user) {
-        throw new ConflictException('User already exists');
-      }
-
-      const passHashed = await bcrypt.hash(userCreateData.password, 10);
-      userCreateData.password = passHashed;
-
-      return await this.prisma.user.create({
-        data: userCreateData,
-      });
-    } catch (error) {
-      throw new BadRequestException(error);
+    if (user) {
+      throw new ConflictException('El usuario ya existe');
     }
+
+    const passHashed = await bcrypt.hash(userCreateData.password, 10);
+    userCreateData.password = passHashed;
+
+    return await this.prisma.user.create({
+      data: userCreateData,
+    });
   }
 
-  async findAll(): Promise<UserModel[] | Error> {
-    try {
-      const users = await this.prisma.user.findMany();
+  async findAll(): Promise<UserModel[]> {
+    const users = await this.prisma.user.findMany();
 
-      if (users.length === 0) {
-        throw new NotFoundException();
-      }
-
-      return users;
-    } catch (error) {
-      throw new BadRequestException(error);
+    if (users.length === 0) {
+      throw new NotFoundException('No existen usuarios');
     }
+
+    return users;
   }
+
   async findToAuth(ciNumber?: string, email?: string): Promise<UserModel> {
-    try {
-      const user = await this.prisma.user.findFirstOrThrow({
-        where: {
-          OR: [
-            { ciNumber: { equals: ciNumber } },
-            { email: { equals: email } },
-          ],
-        },
-      });
-      return user;
-    } catch (error) {
-      console.log(error);
-    }
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ ciNumber: { equals: ciNumber } }, { email: { equals: email } }],
+      },
+    });
+
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    return user;
   }
 
-  async findOne(id: string): Promise<UserModel | Error> {
-    try {
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: {
-          ciNumber: id,
-        },
-        include: {
-          role: true,
-        },
-      });
-      return user;
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+  async findOne(id: string): Promise<UserModel> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        ciNumber: id,
+      },
+      include: {
+        role: true,
+      },
+    });
+
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    return user;
   }
 
   async update(
-    id: string,
+    ciNumber: string,
     updateData: UpdateUserDto,
-  ): Promise<UserModel | Error> {
-    try {
-      const { password } = updateData;
-      if (password) {
-        const passHashed = await bcrypt.hash(password, 10);
-        updateData.password = passHashed;
-      }
+  ): Promise<UserModel> {
+    const id = await this.prisma.user.findFirst({
+      where: { ciNumber },
+      select: { id: true },
+    });
 
-      const userUpdated = await this.prisma.user.update({
-        where: { ciNumber: id },
-        data: updateData,
-      });
-      return userUpdated;
-    } catch (error) {
-      throw new BadRequestException(error);
+    if (!id) throw new NotFoundException('Usuario no encontrado');
+
+    const { password } = updateData;
+    if (password) {
+      const passHashed = await bcrypt.hash(password, 10);
+      updateData.password = passHashed;
     }
+
+    return await this.prisma.user.update({
+      where: id,
+      data: updateData,
+    });
   }
 
-  async remove(id: string) {
-    try {
-      return await this.prisma.user.delete({
-        where: { id },
-      });
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+  async remove(ciNumber: string) {
+    const id = await this.prisma.user.findFirst({
+      where: { ciNumber: ciNumber },
+      select: { id: true },
+    });
+
+    if (!id) throw new NotFoundException('Usuario no encontrado');
+
+    return await this.prisma.user.delete({
+      where: id,
+    });
   }
 }

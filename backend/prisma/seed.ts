@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -20,32 +21,42 @@ async function main() {
       ciNumber: 'V08999245',
       name: 'Jose',
       lastName: 'Monroe',
-      email: 'jose@gmail.com',
+      email: 'admin@user.com',
       role: {
         connect: {
           idRol: 1,
         },
       },
-      password: '1234',
+      password: await bcrypt.hash('1234', 10),
     },
   });
 
   const user2 = await prisma.user.create({
     data: {
-      ciNumber: 'V29886349',
+      ciNumber: 'V29886239',
       name: 'PEPE',
       lastName: 'JUVENCIO',
-      email: 'user@gmail.com',
+      email: 'editor@user.com',
       role: {
         connect: {
           idRol: 2,
         },
       },
-      password: '1234',
+      password: await bcrypt.hash('1234', 10),
     },
   });
 
-  console.log(user1, rol1, user2);
+  const user3 = await prisma.user.create({
+    data: {
+      ciNumber: 'V29886129',
+      name: 'JOSUE',
+      lastName: 'BRITO',
+      email: 'user@user.com',
+      password: await bcrypt.hash('1234', 10),
+    },
+  });
+
+  console.log(user1, rol1, user2, user3);
   console.log(`Seeding finished.`);
 }
 

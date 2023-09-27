@@ -11,21 +11,24 @@ datasource db {
 }
 
 model Person {
-  ciNumber       String       @id @unique
-  firstName      String
-  secondName     String
-  firstLastName  String
-  secondLastName String
-  email          String?
-  phoneNumber    String?
-  homeDir        String?      @db.Text()
-  homeParroquia  String
-  homeMunicipio  String
-  Student        Student?
-  ThirdPerson    ThirdPerson?
-  Represent      Represent?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  ciNumber                 String          @id @unique
+  firstName                String
+  secondName               String
+  firstLastName            String
+  secondLastName           String
+  email                    String?
+  phoneNumber              String?
+  homeDir                  String?         @db.Text()
+  homeParroquia            String
+  homeMunicipio            String
+  relation                 String?
+  Student                  Student?
+  Represent                Represent?
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  relationFatherTable      relationTable[] @relation("father")
+  relationMotherTable      relationTable[] @relation("mother")
+  relationThirdPersonTable relationTable[] @relation("thirdperson")
 
   @@map("persons")
 }
@@ -53,17 +56,6 @@ model Student {
   @@map("students")
 }
 
-model ThirdPerson {
-  personRelation      Person          @relation(fields: [thirdPersonCiNumber], references: [ciNumber])
-  thirdPersonCiNumber String          @unique
-  parentesco          String
-  relationTable       relationTable[]
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-
-  @@map("third_person")
-}
-
 model Represent {
   personRelation    Person          @relation(fields: [representCiNumber], references: [ciNumber])
   representCiNumber String          @unique
@@ -85,19 +77,23 @@ model Represent {
 }
 
 model relationTable {
-  idRelation           Int         @id
-  representRelation    Represent   @relation(fields: [representCiNumbers], references: [representCiNumber])
-  representCiNumbers   String
-  fichaRelation        Ficha       @relation(fields: [fichaId], references: [idFicha])
-  fichaId              String      @unique
-  thirdPersonRelation  ThirdPerson @relation(fields: [thirdPersonCiNumbers], references: [thirdPersonCiNumber])
-  thirdPersonCiNumbers String
-  statusRelation       Status      @relation(fields: [statusId], references: [idStatus])
-  statusId             Int         @unique
-  studentRelation      Student     @relation(fields: [studentId], references: [studentCiNumber])
-  studentId            String      @unique
-  createdAt            DateTime    @default(now())
-  updatedAt            DateTime    @updatedAt
+  idRelation            String    @id @default(uuid())
+  representRelation     Represent @relation(fields: [representCiNumbers], references: [representCiNumber])
+  representCiNumbers    String
+  fichaRelation         Ficha     @relation(fields: [fichaId], references: [idFicha])
+  fichaId               String    @unique
+  motherPersonRelation  Person?   @relation("mother", fields: [motherPersonCiNumbers], references: [ciNumber])
+  motherPersonCiNumbers String?
+  fatherPersonRelation  Person?   @relation("father", fields: [fatherPersonCiNumbers], references: [ciNumber])
+  fatherPersonCiNumbers String?
+  thirdPersonRelation   Person?   @relation("thirdperson", fields: [thirdPersonCiNumbers], references: [ciNumber])
+  thirdPersonCiNumbers  String?
+  statusRelation        Status    @relation(fields: [statusId], references: [idStatus])
+  statusId              Int       @unique
+  studentRelation       Student   @relation(fields: [studentId], references: [studentCiNumber])
+  studentId             String    @unique
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@map("relation_tables")
 }

@@ -10,7 +10,10 @@ import {
 import { RepresentService } from './represent.service';
 import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/auth/enum/roles.enum';
 
+@Auth([Role.EDITOR])
 @Controller('represent')
 export class RepresentController {
   constructor(private readonly representService: RepresentService) {}
