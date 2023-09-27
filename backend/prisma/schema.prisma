@@ -12,10 +12,8 @@ datasource db {
 
 model Person {
   ciNumber                 String          @id @unique
-  firstName                String
-  secondName               String
-  firstLastName            String
-  secondLastName           String
+  name                     String
+  lastName                 String
   email                    String?
   phoneNumber              String?
   homeDir                  String?         @db.Text()

@@ -39,14 +39,14 @@ export class PersonService {
     return persons;
   }
 
-  async findOne(id: string): Promise<PersonModel> {
+  async findOne(id: string, pass?: boolean): Promise<PersonModel> {
     const person = await this.prisma.person.findFirst({
       where: {
         ciNumber: id,
       },
     });
 
-    if (!person) throw new NotFoundException('Usuario no encontrado');
+    if (!person && !pass) throw new NotFoundException('Usuario no encontrado');
 
     return person;
   }

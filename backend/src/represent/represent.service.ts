@@ -1,34 +1,67 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
+import { PersonService } from 'src/person/person.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RepresentService {
-  constructor(private prisma: PrismaService) {}
-  async create(createRepresentDto: CreateRepresentDto) {
-    const represent = await fetch(`/person/${createRepresentDto.ciNumber}`);
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly personService: PersonService,
+  ) {}
 
-    const { ciNumber } = await represent.json();
+  async create(createRepresentDto: CreateRepresentDto) {
+    const represent = await this.findOne(createRepresentDto.ciNumber, true);
+
+    if (represent) throw new ConflictException('El representante ya existe');
+
+    const person = await this.personService.findOne(
+      createRepresentDto.ciNumber,
+      true,
+    );
+
+    if (person) {
+      return this.prisma.represent.create({
+        data: {
+          personRelation: {
+            connect: { ciNumber: person.ciNumber },
+          },
+          civilStatus: createRepresentDto.civilStatus,
+          Instrution: createRepresentDto.Instrution,
+          profession: createRepresentDto.profession,
+          business: createRepresentDto.business,
+          workPlace: createRepresentDto.workPlace,
+          workPhoneNumber: createRepresentDto.workPhoneNumber,
+          workEmail: createRepresentDto.workEmail,
+          incomeMonth: createRepresentDto.incomeMonth,
+          sourceIncome: createRepresentDto.sourceIncome,
+        },
+        include: {
+          personRelation: true,
+        },
+      });
+    }
 
     return this.prisma.represent.create({
       data: {
         personRelation: {
-          connectOrCreate: {
-            where: ciNumber,
-            create: {
-              ciNumber: createRepresentDto.ciNumber,
-              firstName: createRepresentDto.firstName,
-              secondName: createRepresentDto.secondName,
-              firstLastName: createRepresentDto.firstLastName,
-              secondLastName: createRepresentDto.secondLastName,
-              homeDir: createRepresentDto.homeDir,
-              homeParroquia: createRepresentDto.homeParroquia,
-              homeMunicipio: createRepresentDto.homeMunicipio,
-            },
+          create: {
+            ciNumber: createRepresentDto.ciNumber,
+            firstName: createRepresentDto.firstName,
+            secondName: createRepresentDto.secondName,
+            firstLastName: createRepresentDto.firstLastName,
+            secondLastName: createRepresentDto.secondLastName,
+            homeDir: createRepresentDto.homeDir,
+            homeParroquia: createRepresentDto.homeParroquia,
+            homeMunicipio: createRepresentDto.homeMunicipio,
+            relation: createRepresentDto.relation,
           },
         },
-        afinidad: createRepresentDto.afinidad,
         civilStatus: createRepresentDto.civilStatus,
         Instrution: createRepresentDto.Instrution,
         profession: createRepresentDto.profession,
@@ -38,6 +71,9 @@ export class RepresentService {
         workEmail: createRepresentDto.workEmail,
         incomeMonth: createRepresentDto.incomeMonth,
         sourceIncome: createRepresentDto.sourceIncome,
+      },
+      include: {
+        personRelation: true,
       },
     });
   }
@@ -55,7 +91,7 @@ export class RepresentService {
     return represent;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, pass?: boolean) {
     const represent = await this.prisma.represent.findUnique({
       where: { representCiNumber: id },
       include: {
@@ -63,7 +99,8 @@ export class RepresentService {
       },
     });
 
-    if (!represent) throw new NotFoundException('Representante no encontrado');
+    if (!represent && !pass)
+      throw new NotFoundException('Representante no encontrado');
 
     return represent;
   }
