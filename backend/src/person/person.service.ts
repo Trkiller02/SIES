@@ -43,6 +43,11 @@ export class PersonService {
     const person = await this.prisma.person.findFirst({
       where: {
         ciNumber: id,
+        Student: null,
+        Represent: null,
+        relationFatherTable: null,
+        relationMotherTable: null,
+        relationThirdPersonTable: null,
       },
     });
 

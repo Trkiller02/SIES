@@ -7,7 +7,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PersonService } from 'src/person/person.service';
-import PDFDocument from 'pdfkit';
+import { Student as StudentModel } from '@prisma/client';
 
 @Injectable()
 export class StudentService {
@@ -27,7 +27,7 @@ export class StudentService {
     );
 
     if (person) {
-      return this.prisma.student.create({
+      return await this.prisma.student.create({
         data: {
           studentRelation: {
             connect: { ciNumber: person.ciNumber },
@@ -37,7 +37,7 @@ export class StudentService {
           bornMunicipio: createStudentDto.bornMunicipio,
           bornParroquia: createStudentDto.bornParroquia,
           bornPais: createStudentDto.bornPais,
-          bornDate: createStudentDto.bornDate,
+          bornDate: new Date(createStudentDto.bornDate),
           age: createStudentDto.age,
           sex: createStudentDto.sex,
           weight: createStudentDto.weight,
@@ -51,7 +51,7 @@ export class StudentService {
       });
     }
 
-    return this.prisma.student.create({
+    return await this.prisma.student.create({
       data: {
         studentRelation: {
           create: {
@@ -69,7 +69,7 @@ export class StudentService {
         bornMunicipio: createStudentDto.bornMunicipio,
         bornParroquia: createStudentDto.bornParroquia,
         bornPais: createStudentDto.bornPais,
-        bornDate: createStudentDto.bornDate,
+        bornDate: new Date(createStudentDto.bornDate),
         age: createStudentDto.age,
         sex: createStudentDto.sex,
         weight: createStudentDto.weight,
@@ -92,26 +92,22 @@ export class StudentService {
     return students;
   }
 
-  async findOne(id: string, pass?: boolean) {
-    const user = this.prisma.student.findUnique({
+  async findOne(id: string, pass?: boolean): Promise<StudentModel> {
+    const student = await this.prisma.student.findUnique({
       where: { studentCiNumber: id },
       include: {
-        relationTable: true,
+        studentRelation: true,
       },
     });
 
-    if (!user && !pass) throw new NotFoundException('Estudiante no encontrado');
+    if (!student && !pass)
+      throw new NotFoundException('Estudiante no encontrado');
 
-    return user;
+    return student;
   }
 
   async update(id: string, updateStudentDto: UpdateStudentDto) {
-    const student = await this.prisma.student.findUnique({
-      where: { studentCiNumber: id },
-      select: { studentCiNumber: true },
-    });
-
-    if (!student) throw new NotFoundException('Estudiante no encontrado');
+    const student = await this.findOne(id);
 
     return await this.prisma.student.update({
       where: student,
@@ -120,12 +116,7 @@ export class StudentService {
   }
 
   async remove(id: string) {
-    const student = await this.prisma.student.findUnique({
-      where: { studentCiNumber: id },
-      select: { studentCiNumber: true },
-    });
-
-    if (!student) throw new NotFoundException('Estudiante no encontrado');
+    const student = await this.findOne(id);
 
     return this.prisma.student.delete({ where: student });
   }

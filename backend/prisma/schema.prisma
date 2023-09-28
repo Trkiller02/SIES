@@ -32,7 +32,7 @@ model Person {
 }
 
 model Student {
-  studentRelation Person         @relation(fields: [studentCiNumber], references: [ciNumber])
+  studentRelation Person         @relation(fields: [studentCiNumber], references: [ciNumber], onDelete: Restrict, onUpdate: Cascade)
   studentCiNumber String         @unique
   bornPlace       String         @db.Text
   bornState       String
@@ -55,7 +55,7 @@ model Student {
 }
 
 model Represent {
-  personRelation    Person          @relation(fields: [representCiNumber], references: [ciNumber])
+  personRelation    Person          @relation(fields: [representCiNumber], references: [ciNumber], onDelete: Restrict, onUpdate: Cascade)
   representCiNumber String          @unique
   civilStatus       String
   Instrution        String
@@ -75,19 +75,19 @@ model Represent {
 
 model relationTable {
   idRelation            String    @id @default(uuid())
-  representRelation     Represent @relation(fields: [representCiNumbers], references: [representCiNumber])
+  representRelation     Represent @relation(fields: [representCiNumbers], references: [representCiNumber], onDelete: Restrict, onUpdate: Restrict)
   representCiNumbers    String
-  fichaRelation         Ficha     @relation(fields: [fichaId], references: [idFicha])
+  fichaRelation         Ficha     @relation(fields: [fichaId], references: [idFicha], onDelete: Restrict, onUpdate: Restrict)
   fichaId               String    @unique
-  motherPersonRelation  Person?   @relation("mother", fields: [motherPersonCiNumbers], references: [ciNumber])
+  motherPersonRelation  Person?   @relation("mother", fields: [motherPersonCiNumbers], references: [ciNumber], onDelete: Restrict, onUpdate: Restrict)
   motherPersonCiNumbers String?
-  fatherPersonRelation  Person?   @relation("father", fields: [fatherPersonCiNumbers], references: [ciNumber])
+  fatherPersonRelation  Person?   @relation("father", fields: [fatherPersonCiNumbers], references: [ciNumber], onDelete: Restrict, onUpdate: Restrict)
   fatherPersonCiNumbers String?
-  thirdPersonRelation   Person?   @relation("thirdperson", fields: [thirdPersonCiNumbers], references: [ciNumber])
+  thirdPersonRelation   Person?   @relation("thirdperson", fields: [thirdPersonCiNumbers], references: [ciNumber], onDelete: Restrict, onUpdate: Restrict)
   thirdPersonCiNumbers  String?
-  statusRelation        Status    @relation(fields: [statusId], references: [idStatus])
+  statusRelation        Status    @relation(fields: [statusId], references: [idStatus], onDelete: Restrict, onUpdate: Restrict)
   statusId              Int       @unique
-  studentRelation       Student   @relation(fields: [studentId], references: [studentCiNumber])
+  studentRelation       Student   @relation(fields: [studentId], references: [studentCiNumber], onDelete: Restrict, onUpdate: Restrict)
   studentId             String    @unique
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt

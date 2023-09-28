@@ -20,11 +20,7 @@ export class StudentController {
 
   @Post()
   create(@Body() createStudentDto: CreateStudentDto) {
-    try {
-      this.studentService.create(createStudentDto);
-    } catch (err) {
-      throw new Error('Error: ' + err);
-    }
+    return this.studentService.create(createStudentDto);
   }
 
   @Get()
