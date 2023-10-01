@@ -121,13 +121,14 @@ model Status {
 }
 
 model Ficha {
-  idFicha       String         @id
+  idFicha       String         @id @default(uuid())
   level         String
   section       String         @db.Char(1)
   procePlant    String         @db.Text()
   escolarPeriod String
   InsDate       DateTime       @default(now())
-  personalRes   String         @db.Text()
+  userRelation  User           @relation(fields: [personalRes], references: [id])
+  personalRes   String
   relationTable relationTable?
 
   @@map("ins_info")
@@ -187,6 +188,7 @@ model User {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   Asignatura Asignatura[]
+  Ficha      Ficha[]
 
   @@map("users")
 }

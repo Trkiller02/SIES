@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FichaService {
-  create(createFichaDto: CreateFichaDto) {
-    return 'This action adds a new ficha';
+  constructor(private readonly prismaService: PrismaService) {}
+  async create(createFichaDto: CreateFichaDto) {
+    const ficha = await this.prismaService.ficha.create({
+      data: createFichaDto,
+    });
+
+    return ficha.idFicha;
   }
 
   findAll() {

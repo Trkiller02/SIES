@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -30,7 +29,10 @@ export class UserService {
     userCreateData.password = passHashed;
 
     return await this.prisma.user.create({
-      data: userCreateData,
+      data: {
+        ...userCreateData,
+        roleId: undefined,
+      },
     });
   }
 

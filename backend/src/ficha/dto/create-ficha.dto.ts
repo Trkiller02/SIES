@@ -1,6 +1,9 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDate } from 'class-validator';
 
 export class CreateFichaDto {
+  @IsOptional()
+  idFicha: string;
+
   @IsNotEmpty()
   @IsString()
   level: string;
@@ -11,11 +14,15 @@ export class CreateFichaDto {
 
   @IsNotEmpty()
   @IsString()
-  procePlat: string;
+  procePlant: string;
 
   @IsNotEmpty()
   @IsString()
   escolarPeriod: string;
+
+  @IsOptional()
+  @IsDate()
+  InsDate: Date;
 
   @IsOptional()
   @IsString()
