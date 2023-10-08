@@ -1,4 +1,7 @@
 import * as Yup from "yup";
+import { Messages } from "./messages";
+
+// VALORES INICIALES AUTH
 
 const LoginValues = {
   ciNumber: "",
@@ -6,15 +9,7 @@ const LoginValues = {
   password: "",
 };
 
-const LoginSchema = Yup.object({
-  ciNumber: Yup.string()
-    .matches(/^[VE|ve]\d+$/)
-    .optional(),
-  email: Yup.string().email("Invalid email").optional(),
-  password: Yup.string().required("Este campo es requerido"),
-});
-
-export const RegisterValues = {
+const RegisterValues = {
   name: "",
   lastName: "",
   ciNumber: "",
@@ -22,22 +17,42 @@ export const RegisterValues = {
   password: "",
 };
 
-export const RegisterSchema = Yup.object({
-  name: Yup.string()
-    .matches(/^[A-Za-z]+$/, "Esta suministrando caracteres no soportados")
-    .required("Este campo es requerido"),
-  lastName: Yup.string()
-    .matches(/^[A-Za-z]+$/, "Esta suministrando caracteres no soportados")
-    .required("Este campo es requerido"),
+// ESQUEMAS DE VALIDACION AUTH
+
+const UpdatePassSchema = Yup.object({
   ciNumber: Yup.string()
-    .matches(/^[VE]\d+$/, "V8938... (V) Venezolano (E) Extranjero)")
-    .required("Este campo es requerido"),
-  email: Yup.string()
-    .email("El correo que suministro no es valido")
-    .required("Este campo es requerido"),
-  password: Yup.string()
-    .required("Este campo es requerido")
-    .min(4, "Se requiere una contraseña mayor a 4 digitos"),
+    .matches(/^[VE|ve]\d+$/, Messages.dni_match)
+    .required(Messages.required),
+  email: Yup.string().email(Messages.email_err).required(Messages.required),
+  password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
 });
 
-export { LoginSchema, LoginValues };
+const LoginSchema = Yup.object({
+  ciNumber: Yup.string()
+    .matches(/^[VE|ve]\d+$/, Messages.dni_match)
+    .optional(),
+  email: Yup.string().email(Messages.email_err).optional(),
+  password: Yup.string().required(Messages.required),
+});
+
+const RegisterSchema = Yup.object({
+  name: Yup.string()
+    .matches(/^[A-Za-z]+$/, Messages.match_err)
+    .required(Messages.required),
+  lastName: Yup.string()
+    .matches(/^[A-Za-z]+$/, Messages.match_err)
+    .required(Messages.required),
+  ciNumber: Yup.string()
+    .matches(/^[VE]\d+$/, Messages.dni_match)
+    .required(Messages.required),
+  email: Yup.string().email(Messages.email_err).required(Messages.required),
+  password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
+});
+
+export {
+  LoginSchema,
+  LoginValues,
+  RegisterValues,
+  RegisterSchema,
+  UpdatePassSchema,
+};
