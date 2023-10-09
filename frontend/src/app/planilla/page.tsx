@@ -1,10 +1,19 @@
 "use client";
 
 import PlanillaMedia from "@/components/planilla/Planilla";
-import { Button } from "@nextui-org/react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/react";
 import jsPDF from "jspdf";
 
 export default function planillaPage() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   const downloadPDF = async () => {
     const doc = new jsPDF("p", "mm", "letter");
     const hDoc = doc.internal.pageSize.getHeight();
@@ -39,10 +48,10 @@ export default function planillaPage() {
             windowHeight: hDoc,
             height: hDoc,
             width: wDoc,
-            scale: 0.265,
+            scale: 0.295,
           },
           width: wDoc,
-          windowWidth: wDoc * 3.8,
+          windowWidth: wDoc * 3.35,
         });
         doc.output("dataurlnewwindow", { filename: "planilla" });
       } else {
@@ -54,10 +63,32 @@ export default function planillaPage() {
   };
   return (
     <div>
-      <PlanillaMedia />
-      <Button variant="bordered" onClick={downloadPDF}>
-        Descargar
-      </Button>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="4xl"
+        placement="center"
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <PlanillaMedia />
+              </ModalBody>
+              <ModalFooter className="justify-between">
+                <Button variant="ghost" onPress={onClose} color="danger">
+                  Cancelar
+                </Button>
+                <Button variant="ghost" onClick={downloadPDF}>
+                  Descargar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Button onPress={onOpen}>Open Modal</Button>
     </div>
   );
 }
