@@ -65,7 +65,7 @@ export default function PlanillaMedia() {
         }
 
         th {
-          background-color: #ffffff;
+          background-color: transparent;
         }
         .th_td2 {
           border: 1px solid black;

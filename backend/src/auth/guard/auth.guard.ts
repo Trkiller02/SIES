@@ -1,7 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { unauth_err } from 'src/utils/handlerErrors';
+import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,7 +14,10 @@ export class AuthGuard implements CanActivate {
     const token = this.extratcTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      unauth_err(
+        messagesEnum.unauth_err,
+        'No esta autorizado para realizar la peticion.',
+      );
     }
 
     try {
@@ -23,7 +27,10 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch {
-      throw new UnauthorizedException();
+      unauth_err(
+        messagesEnum.unauth_err,
+        'No esta autorizado para realizar la peticion.',
+      );
     }
 
     return true;

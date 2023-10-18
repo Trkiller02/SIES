@@ -1,19 +1,12 @@
 "use client";
 
 import PlanillaMedia from "@/components/planilla/Planilla";
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  useDisclosure,
-} from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { Button } from "@nextui-org/react";
 import jsPDF from "jspdf";
 
 export default function planillaPage() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
+  const router = useRouter();
   const downloadPDF = async () => {
     const doc = new jsPDF("p", "mm", "letter");
     const hDoc = doc.internal.pageSize.getHeight();
@@ -61,34 +54,24 @@ export default function planillaPage() {
       return;
     }
   };
+
   return (
-    <div>
-      <Modal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        size="4xl"
-        placement="center"
-        scrollBehavior="inside"
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalBody>
-                <PlanillaMedia />
-              </ModalBody>
-              <ModalFooter className="justify-between">
-                <Button variant="ghost" onPress={onClose} color="danger">
-                  Cancelar
-                </Button>
-                <Button variant="ghost" onClick={downloadPDF}>
-                  Descargar
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-      <Button onPress={onOpen}>Open Modal</Button>
-    </div>
+    <section className="px-9 pt-9 pb-6 m-4 shadow-md w-4/5 border border-gray-300 rounded-2xl">
+      <div className="rounded-md p-1 border border-gray-300 shadow-inner">
+        <PlanillaMedia />
+      </div>
+      <div className="flex flex-row justify-between mt-5 mx-5">
+        <Button
+          variant="ghost"
+          onPress={() => router.push("/dashboard")}
+          color="danger"
+        >
+          Cancelar
+        </Button>
+        <Button variant="ghost" onClick={downloadPDF} color="primary">
+          Descargar
+        </Button>
+      </div>
+    </section>
   );
 }

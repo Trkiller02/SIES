@@ -1,20 +1,14 @@
-import {
-  IsEmpty,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class LoginAuthDto {
   @IsOptional()
   @IsString()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()
-  ciNumber: string;
+  ciNumber?: string;
 
   @Transform(({ value }) => value.trim())
   @IsNotEmpty()

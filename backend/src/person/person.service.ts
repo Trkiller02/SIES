@@ -7,6 +7,8 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person as PersonModel } from '@prisma/client';
+import { not_found_err } from 'src/utils/handlerErrors';
+import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class PersonService {
@@ -39,19 +41,30 @@ export class PersonService {
     return persons;
   }
 
-  async findOne(id: string, pass?: boolean): Promise<PersonModel> {
+  async findOne(id: string): Promise<PersonModel> {
+    const person = await this.prisma.person.findFirst({
+      where: {
+        ciNumber: id,
+      },
+    });
+
+    if (!person)
+      not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
+
+    return person;
+  }
+
+  async findOneForRelation(id: string, pass?: boolean): Promise<PersonModel> {
     const person = await this.prisma.person.findFirst({
       where: {
         ciNumber: id,
         Student: null,
         Represent: null,
-        relationFatherTable: null,
-        relationMotherTable: null,
-        relationThirdPersonTable: null,
       },
     });
 
-    if (!person && !pass) throw new NotFoundException('Usuario no encontrado');
+    if (!person && !pass)
+      not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
 
     return person;
   }
@@ -60,12 +73,7 @@ export class PersonService {
     id: string,
     updatePersonDto: UpdatePersonDto,
   ): Promise<PersonModel> {
-    const ciNumber = await this.prisma.person.findFirst({
-      where: { ciNumber: id },
-      select: { ciNumber: true },
-    });
-
-    if (!ciNumber) throw new NotFoundException('Usuario no encontrado');
+    const ciNumber = await this.findOne(id);
 
     return await this.prisma.person.update({
       where: ciNumber,
@@ -74,15 +82,10 @@ export class PersonService {
   }
 
   async remove(id: string): Promise<PersonModel> {
-    const ciNumber = await this.prisma.person.findFirst({
-      where: { ciNumber: id },
-      select: { ciNumber: true },
-    });
-
-    if (!ciNumber) throw new NotFoundException('Usuario no encontrado');
+    const person = await this.findOne(id);
 
     return await this.prisma.person.delete({
-      where: ciNumber,
+      where: person,
     });
   }
 }

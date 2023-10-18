@@ -82,17 +82,18 @@ model relationTable {
   thirdPersonRelation   Person?   @relation("thirdperson", fields: [thirdPersonCiNumbers], references: [ciNumber], onDelete: Restrict, onUpdate: Restrict)
   thirdPersonCiNumbers  String?
   statusRelation        Status    @relation(fields: [statusId], references: [idStatus], onDelete: Restrict, onUpdate: Restrict)
-  statusId              Int       @unique
+  statusId              String    @unique
   studentRelation       Student   @relation(fields: [studentId], references: [studentCiNumber], onDelete: Restrict, onUpdate: Restrict)
   studentId             String    @unique
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  deleteAt              DateTime?
 
   @@map("relation_tables")
 }
 
 model Status {
-  idStatus      Int            @id
+  idStatus      String         @id @default(uuid())
   typeAler      String?        @db.Text()
   operation     String?        @db.Text()
   enfermedades  String         @db.Text()

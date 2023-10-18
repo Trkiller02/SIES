@@ -15,6 +15,7 @@ const RegisterValues = {
   ciNumber: "",
   email: "",
   password: "",
+  repeatPassword: "",
 };
 
 // ESQUEMAS DE VALIDACION AUTH
@@ -47,11 +48,14 @@ const RegisterSchema = Yup.object({
     .required(Messages.required),
   email: Yup.string().email(Messages.email_err).required(Messages.required),
   password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
+  repeatPassword: Yup.string()
+    .required(Messages.required)
+    .oneOf([Yup.ref("password")]),
 });
 
 export {
-  LoginSchema,
-  LoginValues,
+  LoginSchema, // <-- exportar esquema de validacion
+  LoginValues, // <-- exportar valores iniciales
   RegisterValues,
   RegisterSchema,
   UpdatePassSchema,

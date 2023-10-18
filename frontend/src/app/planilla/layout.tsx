@@ -13,7 +13,7 @@ import {
   Avatar,
   Button,
 } from "@nextui-org/react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
@@ -23,8 +23,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
-  console.log(session, status);
+  const { data: session } = useSession();
   return (
     <>
       <Navbar maxWidth="full" isBordered className="font-semibold">
@@ -52,7 +51,7 @@ export default function DashboardLayout({
               <DropdownItem
                 key="register_total"
                 description="Realizar un registro desde cero."
-                onPress={() => router.push("/register")}
+                onClick={() => router.push("/register")}
                 color="primary"
                 variant="light"
               >
@@ -61,7 +60,7 @@ export default function DashboardLayout({
               <DropdownItem
                 key="estudiante"
                 description="Registrar un estudiante."
-                onPress={() => router.push("/register/student")}
+                onClick={() => router.push("/register/student")}
                 color="primary"
                 variant="light"
               >
@@ -70,7 +69,7 @@ export default function DashboardLayout({
               <DropdownItem
                 key="persona"
                 description="Registrar una persona vinculada a un estudiante."
-                onPress={() => router.push("/register/person")}
+                onClick={() => router.push("/register/person")}
                 color="primary"
                 variant="light"
               >
@@ -97,7 +96,7 @@ export default function DashboardLayout({
               <DropdownItem
                 key="estudiante"
                 description="Buscar un estudiante."
-                onPress={() => router.push("/register/student")}
+                onClick={() => router.push("/register/student")}
                 color="primary"
                 variant="light"
               >
@@ -106,7 +105,7 @@ export default function DashboardLayout({
               <DropdownItem
                 key="persona"
                 description="Buscar una persona vinculada a un estudiante."
-                onPress={() => router.push("/register/person")}
+                onClick={() => router.push("/register/person")}
                 color="primary"
                 variant="light"
               >
@@ -129,49 +128,28 @@ export default function DashboardLayout({
                 isBordered
                 as="button"
                 className="transition-transform"
-                color="primary"
+                color="secondary"
                 name="Jason Hughes"
                 size="sm"
-                src="/public/img/image1.png"
+                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem
-                key="profile"
-                className="gap-2 py-2"
-                textValue="Ingreso como:"
-              >
-                <p className="font-semibold text-xl">
-                  {(session?.user.name ? session?.user.name : "User") +
-                    " " +
-                    (session?.user.lastName
-                      ? session?.user.lastName
-                      : "Profile")}
-                </p>
-                <p className=" font-light text-gray-400 text-sm">
-                  {session?.user.role ? session?.user.role : "Role"}
+              <DropdownItem key="profile" className="h-14 gap-2">
+                <p className="font-semibold">Ingreso como</p>
+                <p className="font-semibold">
+                  {session?.user.lastName + "" + session?.user.name}
                 </p>
               </DropdownItem>
-              <DropdownItem key="settings" textValue="My Settings">
-                My Settings
+              <DropdownItem key="settings">My Settings</DropdownItem>
+              <DropdownItem key="team_settings">Team Settings</DropdownItem>
+              <DropdownItem key="analytics">Analytics</DropdownItem>
+              <DropdownItem key="system">System</DropdownItem>
+              <DropdownItem key="configurations">Configurations</DropdownItem>
+              <DropdownItem key="help_and_feedback">
+                Help & Feedback
               </DropdownItem>
-              <DropdownItem key="analytics" textValue="Analytics">
-                Analytics
-              </DropdownItem>
-              <DropdownItem key="configurations" textValue="Configurations">
-                Configurations
-              </DropdownItem>
-              <DropdownItem
-                key="logout"
-                textValue="Log Out"
-                color="danger"
-                onPress={() => {
-                  signOut({
-                    redirect: false,
-                  });
-                  router.push("/auth/login");
-                }}
-              >
+              <DropdownItem key="logout" color="danger">
                 Log Out
               </DropdownItem>
             </DropdownMenu>

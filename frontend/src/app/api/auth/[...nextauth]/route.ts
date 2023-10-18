@@ -1,10 +1,63 @@
-import type { NextRequest, NextResponse } from "next/server"
-import NextAuth from "next-auth"
+import NextAuth, { User } from "next-auth";
+import { AuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-export default async function auth(req: NextRequest) {
-  return await NextAuth(req, {
-    ...
-  })
-}
+export const authOptions: AuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "email", type: "email", placeholder: "user@user.com" },
+        ciNumber: {
+          label: "ciNumber",
+          type: "text",
+          placeholder: "V2123",
+        },
+        password: { label: "password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        try {
+          const res = await fetch(backendUrl + "/auth/login", {
+            method: "POST",
+            body: JSON.stringify(credentials),
+            headers: { "Content-Type": "application/json" },
+          });
 
-export {auth as GET, auth as POST}
+          const user = await res.json();
+
+          if (user.error) throw user;
+
+          if (res.ok && user) return user;
+        } catch (error) {
+          throw error;
+        }
+      },
+    }),
+  ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.user = {
+          name: user.name,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+        };
+      }
+      return token;
+    },
+    session({ session, token }) {
+      session.user = token.user as User;
+      return session;
+    },
+  },
+  pages: {
+    signOut: "/auth/login",
+  },
+  session: { strategy: "jwt" },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };

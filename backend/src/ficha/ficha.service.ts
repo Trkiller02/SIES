@@ -2,31 +2,65 @@ import { Injectable } from '@nestjs/common';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { messagesEnum } from 'src/utils/handlerMsg';
+import { not_found_err } from 'src/utils/handlerErrors';
+import { Ficha as FichaModel } from '@prisma/client';
 
 @Injectable()
 export class FichaService {
   constructor(private readonly prismaService: PrismaService) {}
+
   async create(createFichaDto: CreateFichaDto) {
-    const ficha = await this.prismaService.ficha.create({
-      data: createFichaDto,
+    return await this.prismaService.ficha.create({
+      data: {
+        ...createFichaDto,
+        personalRes: '',
+      },
+      select: { idFicha: true },
+    });
+  }
+
+  //TODO: BUSCA TODAS LAS FICHAS
+  async findAll(): Promise<FichaModel[]> {
+    const fichas = await this.prismaService.ficha.findMany();
+
+    if (fichas.length === 0) {
+      not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
+    }
+
+    return fichas;
+  }
+
+  //TODO: BUSCA UNA FICHA
+  async findOne(id: string): Promise<FichaModel> {
+    const ficha = await this.prismaService.ficha.findFirst({
+      where: { idFicha: id },
     });
 
-    return ficha.idFicha;
+    if (!ficha) {
+      not_found_err(
+        messagesEnum.not_found,
+        'Puede que no exista el registro o se haya equivocado en la busqueda',
+      );
+    }
+
+    return ficha;
   }
 
-  findAll() {
-    return `This action returns all ficha`;
+  async update(id: string, updateFichaDto: UpdateFichaDto) {
+    const ficha = await this.findOne(id);
+
+    return await this.prismaService.ficha.update({
+      where: ficha,
+      data: updateFichaDto,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ficha`;
-  }
+  async remove(id: string) {
+    const ficha = await this.findOne(id);
 
-  update(id: number, updateFichaDto: UpdateFichaDto) {
-    return `This action updates a #${id} ficha`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} ficha`;
+    return await this.prismaService.ficha.delete({
+      where: ficha,
+    });
   }
 }

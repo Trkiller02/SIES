@@ -7,6 +7,8 @@ import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
 import { PersonService } from 'src/person/person.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
+import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class RepresentService {
@@ -16,11 +18,9 @@ export class RepresentService {
   ) {}
 
   async create(createRepresentDto: CreateRepresentDto) {
-    const represent = await this.findOne(createRepresentDto.ciNumber, true);
+    await this.findOne(createRepresentDto.ciNumber, true);
 
-    if (represent) throw new ConflictException('El representante ya existe');
-
-    const person = await this.personService.findOne(
+    const person = await this.personService.findOneForRelation(
       createRepresentDto.ciNumber,
       true,
     );
@@ -84,7 +84,7 @@ export class RepresentService {
     });
 
     if (represent.length === 0)
-      throw new NotFoundException(`No se encontraron registros`);
+      not_found_err(messagesEnum.not_found, 'No se encontraron registros.');
 
     return represent;
   }
@@ -97,19 +97,20 @@ export class RepresentService {
       },
     });
 
+    if (represent && pass)
+      conflict_err(
+        messagesEnum.conflict_err,
+        'Ya existe un registro con los datos suministrados.',
+      );
+
     if (!represent && !pass)
-      throw new NotFoundException('Representante no encontrado');
+      not_found_err(messagesEnum.not_found, 'Representante no encontrado.');
 
     return represent;
   }
 
-  async update(ciNumber: string, updateRepresentDto: UpdateRepresentDto) {
-    const represent = await this.prisma.represent.findUnique({
-      where: { representCiNumber: ciNumber },
-      select: { representCiNumber: true },
-    });
-
-    if (!represent) throw new NotFoundException('Representante no encontrado');
+  async update(id: string, updateRepresentDto: UpdateRepresentDto) {
+    const represent = await this.findOne(id);
 
     return await this.prisma.represent.update({
       where: represent,
@@ -117,13 +118,8 @@ export class RepresentService {
     });
   }
 
-  async remove(ciNumber: string) {
-    const represent = await this.prisma.represent.findUnique({
-      where: { representCiNumber: ciNumber },
-      select: { representCiNumber: true },
-    });
-
-    if (!represent) throw new NotFoundException('Representante no encontrado');
+  async remove(id: string) {
+    const represent = await this.findOne(id);
 
     return this.prisma.represent.delete({ where: represent });
   }

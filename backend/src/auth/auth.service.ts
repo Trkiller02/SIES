@@ -12,7 +12,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(registerData: RegisterAuthDto) {
+  async register(registerData: RegisterAuthDto) {
     return this.UserService.create(registerData);
   }
 
@@ -36,6 +36,12 @@ export class AuthService {
 
     const token = await this.jwtService.signAsync(payload);
 
-    return token;
+    return {
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.roleId,
+      token: token,
+    };
   }
 }

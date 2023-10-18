@@ -5,11 +5,15 @@ import { Button, Input, Link } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
+import { MdCancel, MdCheckCircle } from "react-icons/md";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function LoginComponent() {
   const [nameInput, setNameInput] = useState("email");
   const [Loading, setLoading] = useState(false);
-  const urlBackend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const router = useRouter();
 
   const formik = useFormik({
     initialValues: LoginValues,
@@ -17,18 +21,27 @@ export default function LoginComponent() {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        const res = await fetch(urlBackend + "/user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+        const sendAuth = await signIn("credentials", {
+          email: values.email,
+          ciNumber: values.ciNumber,
+          password: values.password,
+          redirect: false,
         });
-        console.log(res.ok);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error);
+        if (sendAuth?.ok) {
+          toast.success("¡Inicio de Sesion con exito!", {
+            description: "Redirigiendo al sistema 🚀",
+            duration: 6000,
+            icon: <MdCheckCircle />,
+            onAutoClose: () => router.push("/dashboard"),
+          });
         }
+        if (sendAuth?.error) throw sendAuth;
+      } catch (error) {
+        toast.error("¡Algo salió mal!", {
+          description: `${error.error}`,
+          duration: 6000,
+          icon: <MdCancel />,
+        });
       } finally {
         setLoading(false);
       }
@@ -36,8 +49,6 @@ export default function LoginComponent() {
   });
 
   useEffect(() => {
-    console.log(formik.values);
-
     if (formik.values.email.match(/^[VE|ve]\d+$/)) {
       setNameInput("ciNumber");
       formik.values.ciNumber = formik.values.email;
