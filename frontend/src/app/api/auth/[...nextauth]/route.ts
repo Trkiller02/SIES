@@ -43,6 +43,7 @@ export const authOptions: AuthOptions = {
           lastName: user.lastName,
           email: user.email,
           role: user.role,
+          token: user.token,
         };
       }
       return token;
@@ -54,6 +55,8 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     signOut: "/auth/login",
+    signIn: "/auth/login",
+    error: "/auth/login",
   },
   session: { strategy: "jwt" },
 };

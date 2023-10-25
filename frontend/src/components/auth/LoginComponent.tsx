@@ -1,11 +1,16 @@
 "use client";
 
-import { LoginSchema, LoginValues } from "@/utils/AuthSchema";
+import { LoginSchema, LoginValues } from "@/utils/schemas/AuthSchema";
 import { Button, Input, Link } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
-import { MdCancel, MdCheckCircle } from "react-icons/md";
+import {
+  MdCancel,
+  MdCheckCircle,
+  MdOutlineRemoveRedEye,
+  MdRemoveRedEye,
+} from "react-icons/md";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -13,6 +18,8 @@ import { signIn } from "next-auth/react";
 export default function LoginComponent() {
   const [nameInput, setNameInput] = useState("email");
   const [Loading, setLoading] = useState(false);
+  const [isVisible, setVisible] = useState(false);
+  const toggleVisibility = () => setVisible(!isVisible);
   const router = useRouter();
 
   const formik = useFormik({
@@ -30,8 +37,9 @@ export default function LoginComponent() {
         if (sendAuth?.ok) {
           toast.success("¡Inicio de Sesion con exito!", {
             description: "Redirigiendo al sistema 🚀",
-            duration: 6000,
+            duration: 3000,
             icon: <MdCheckCircle />,
+            onDismiss: () => router.push("/dashboard"),
             onAutoClose: () => router.push("/dashboard"),
           });
         }
@@ -87,7 +95,7 @@ export default function LoginComponent() {
         />
         <Input
           label="Contraseña:"
-          type="password"
+          type={isVisible ? "text" : "password"}
           name="password"
           description="Ingrese su contraseña"
           variant="bordered"
@@ -103,6 +111,19 @@ export default function LoginComponent() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          endContent={
+            <button
+              onClick={() => toggleVisibility()}
+              className="focus:outline-none"
+              type="button"
+            >
+              {isVisible ? (
+                <MdOutlineRemoveRedEye className="text-2xl" />
+              ) : (
+                <MdRemoveRedEye className="text-2xl" />
+              )}
+            </button>
+          }
         />
         <div className="flex flex-row justify-between ">
           <Link

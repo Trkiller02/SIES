@@ -18,6 +18,7 @@ export class AuthService {
 
   async signIn({ email, ciNumber, password }: LoginAuthDto) {
     const user = await this.UserService.findToAuth(ciNumber, email);
+    let rolePatcher: string;
 
     if (!user) {
       throw new UnauthorizedException('Crendenciales invalidas');
@@ -34,13 +35,28 @@ export class AuthService {
       role: user.roleId,
     };
 
+    switch (user.roleId) {
+      case 1:
+        rolePatcher = 'ADMINISTRADOR';
+        break;
+      case 2:
+        rolePatcher = 'EDITOR';
+        break;
+      case 1:
+        rolePatcher = 'USUARIO';
+        break;
+      default:
+        rolePatcher = 'USUARIO';
+        break;
+    }
+
     const token = await this.jwtService.signAsync(payload);
 
     return {
       name: user.name,
       lastName: user.lastName,
       email: user.email,
-      role: user.roleId,
+      role: rolePatcher,
       token: token,
     };
   }

@@ -1,5 +1,6 @@
 import * as Yup from "yup";
-import { Messages } from "./messages";
+import { Messages } from "../messages";
+import { regexList } from "../regexPatterns";
 
 // VALORES INICIALES AUTH
 
@@ -22,7 +23,7 @@ const RegisterValues = {
 
 const UpdatePassSchema = Yup.object({
   ciNumber: Yup.string()
-    .matches(/^[VE|ve]\d+$/, Messages.dni_match)
+    .matches(regexList.forDNI, Messages.dni_match)
     .required(Messages.required),
   email: Yup.string().email(Messages.email_err).required(Messages.required),
   password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
@@ -30,7 +31,7 @@ const UpdatePassSchema = Yup.object({
 
 const LoginSchema = Yup.object({
   ciNumber: Yup.string()
-    .matches(/^[VE|ve]\d+$/, Messages.dni_match)
+    .matches(regexList.forDNI, Messages.dni_match)
     .optional(),
   email: Yup.string().email(Messages.email_err).optional(),
   password: Yup.string().required(Messages.required),
@@ -38,19 +39,19 @@ const LoginSchema = Yup.object({
 
 const RegisterSchema = Yup.object({
   name: Yup.string()
-    .matches(/^[A-Za-z]+$/, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   lastName: Yup.string()
-    .matches(/^[A-Za-z]+$/, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   ciNumber: Yup.string()
-    .matches(/^[VE]\d+$/, Messages.dni_match)
+    .matches(regexList.forDir, Messages.dni_match)
     .required(Messages.required),
   email: Yup.string().email(Messages.email_err).required(Messages.required),
   password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
   repeatPassword: Yup.string()
     .required(Messages.required)
-    .oneOf([Yup.ref("password")]),
+    .oneOf([Yup.ref("password"), "La contraseña no coincide."]),
 });
 
 export {

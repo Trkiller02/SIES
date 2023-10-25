@@ -23,8 +23,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
-  console.log(session, status);
+  const { data: session } = useSession();
   return (
     <>
       <Navbar maxWidth="full" isBordered className="font-semibold">
@@ -48,7 +47,7 @@ export default function DashboardLayout({
                 </Button>
               </DropdownTrigger>
             </NavbarItem>
-            <DropdownMenu>
+            <DropdownMenu aria-label="register actions">
               <DropdownItem
                 key="register_total"
                 description="Realizar un registro desde cero."
@@ -93,7 +92,7 @@ export default function DashboardLayout({
                 </Button>
               </DropdownTrigger>
             </NavbarItem>
-            <DropdownMenu>
+            <DropdownMenu aria-label="search actions">
               <DropdownItem
                 key="estudiante"
                 description="Buscar un estudiante."
@@ -132,7 +131,7 @@ export default function DashboardLayout({
                 color="primary"
                 name="Jason Hughes"
                 size="sm"
-                src="/public/img/image1.png"
+                src="/img/image1.png"
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="Profile Actions" variant="flat">

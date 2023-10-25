@@ -21,7 +21,7 @@ export default async function RootLayout({
       <body>
         <Providers session={session}>
           {children}
-          <Toaster />
+          <Toaster closeButton />
         </Providers>
       </body>
     </html>

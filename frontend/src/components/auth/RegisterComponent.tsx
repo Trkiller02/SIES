@@ -8,7 +8,7 @@ import NextLink from "next/link";
 import { toast } from "sonner";
 
 // utilidades
-import { RegisterSchema, RegisterValues } from "@/utils/AuthSchema";
+import { RegisterSchema, RegisterValues } from "@/utils/schemas/AuthSchema";
 
 // componentes
 import { Button, Input, Link } from "@nextui-org/react";
@@ -23,6 +23,7 @@ import {
   MdOutlineRemoveRedEye,
   MdRemoveRedEye,
 } from "react-icons/md";
+import { fetchData } from "@/utils/fetchHandler";
 
 export default function RegisterComponent() {
   const router = useRouter();
@@ -38,30 +39,30 @@ export default function RegisterComponent() {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+        await fetchData(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`,
+          "POST",
+          {
+            ciNumber: values.ciNumber,
+            email: values.email,
+            lastName: values.lastName,
+            name: values.name,
+            password: values.password,
+          }
+        );
+
+        toast.success("¡Tarea exitosa!", {
+          description: "Usuario registrado con exito.",
+          duration: 4000,
+          icon: <MdCheckCircle />,
+          onAutoClose: () => router.push("/auth/login"),
         });
-        if (res.ok) {
-          toast.success("¡Tarea exitosa!", {
-            description: "Usuario registrado con exito.",
-            duration: 4000,
-            icon: <MdCheckCircle />,
-            onAutoClose: () => router.push("/auth/login"),
-          });
-        }
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error("¡Algo salió mal!", {
-            description: `Algo salió mal, ${error.message}`,
-            duration: 4000,
-            icon: <MdCancel />,
-            onAutoClose: () => router.push("/auth/login"),
-          });
-        }
+        toast.error("¡Algo salió mal!", {
+          description: error.message,
+          duration: 4000,
+          icon: <MdCancel />,
+        });
       } finally {
         setLoading(false);
       }
@@ -165,6 +166,38 @@ export default function RegisterComponent() {
             formik.errors.password &&
             formik.touched.password &&
             formik.errors.password
+          }
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          endContent={
+            <button
+              onClick={() => toggleVisibility()}
+              className="focus:outline-none"
+              type="button"
+            >
+              {isVisible ? (
+                <MdOutlineRemoveRedEye className="text-2xl" />
+              ) : (
+                <MdRemoveRedEye className="text-2xl" />
+              )}
+            </button>
+          }
+        />
+        <Input
+          label="Repetir contraseña:"
+          type={isVisible ? "text" : "password"}
+          name="repeatPassword"
+          description="Ingrese su contraseña"
+          variant="bordered"
+          color={
+            formik.errors.repeatPassword && formik.touched.repeatPassword
+              ? "danger"
+              : "primary"
+          }
+          errorMessage={
+            formik.errors.repeatPassword &&
+            formik.touched.repeatPassword &&
+            formik.errors.repeatPassword.split(", ")[1]
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}

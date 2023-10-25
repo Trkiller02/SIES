@@ -14,10 +14,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extratcTokenFromHeader(request);
 
     if (!token) {
-      unauth_err(
-        messagesEnum.unauth_err,
-        'No esta autorizado para realizar la peticion.',
-      );
+      unauth_err(messagesEnum.unauth_err, 'No haytoken.');
     }
 
     try {
@@ -27,10 +24,7 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch {
-      unauth_err(
-        messagesEnum.unauth_err,
-        'No esta autorizado para realizar la peticion.',
-      );
+      unauth_err(messagesEnum.unauth_err, 'errpn.');
     }
 
     return true;

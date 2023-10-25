@@ -1,6 +1,6 @@
 "use client";
 
-import { UpdatePassSchema, LoginValues } from "@/utils/AuthSchema";
+import { UpdatePassSchema, LoginValues } from "@/utils/schemas/AuthSchema";
 import { Button, Input, Link } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useState } from "react";

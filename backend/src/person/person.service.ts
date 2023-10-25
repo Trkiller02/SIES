@@ -1,13 +1,9 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person as PersonModel } from '@prisma/client';
-import { not_found_err } from 'src/utils/handlerErrors';
+import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
@@ -24,7 +20,11 @@ export class PersonService {
       },
     });
 
-    if (person) throw new ConflictException('La persona ya existe ya existe');
+    if (person)
+      conflict_err(
+        messagesEnum.conflict_err,
+        'La persona ya existe o los datos estan ingresados en otra persona.',
+      );
 
     return await this.prisma.person.create({
       data: createPersonDto,
@@ -35,7 +35,7 @@ export class PersonService {
     const persons = await this.prisma.person.findMany();
 
     if (persons.length === 0) {
-      throw new NotFoundException('No existen personas registradas');
+      not_found_err(messagesEnum.not_found, 'No existen personas registradas');
     }
 
     return persons;
@@ -64,7 +64,7 @@ export class PersonService {
     });
 
     if (!person && !pass)
-      not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
+      not_found_err(messagesEnum.not_found, 'Persona no encontrado.');
 
     return person;
   }
