@@ -1,5 +1,5 @@
-export const RoleList = {
+export const RoleList = Object.freeze({
   ADMIN: "ADMINISTRADOR",
   EDITOR: "EDITOR",
-  USER: "USER",
-};
+  USER: "USUARIO",
+});

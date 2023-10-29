@@ -1,6 +1,5 @@
 "use client";
 
-import { ctxDataRelation } from "@/app/register/layout";
 import { initValPerson, personSchema } from "@/utils/schemas/PersonSchema";
 import { fetchData } from "@/utils/fetchHandler";
 import { Input, Button, Select, SelectItem } from "@nextui-org/react";
@@ -10,12 +9,14 @@ import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import { MdCancel, MdCheckCircle } from "react-icons/md";
 import { toast } from "sonner";
+import { ctxDataRelation } from "./ProviderCtx";
 
 export default function PersonForm({ person = true }: { person?: boolean }) {
   const iconSuccess = <MdCheckCircle className="text-xl text-success-500" />;
   const iconFail = <MdCancel className="text-xl text-danger-500" />;
   const { data: session } = useSession();
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
+  console.log(dataRelations);
 
   const router = useRouter();
 

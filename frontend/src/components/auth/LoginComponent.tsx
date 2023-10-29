@@ -80,7 +80,7 @@ export default function LoginComponent() {
       <div className="flex flex-col gap-5 w-full">
         <Input
           label="Correo electronico o cedula de identidad:"
-          type="text"
+          type={nameInput === "ciNumber" ? "text" : "email"}
           color="primary"
           name={nameInput}
           description="Ingrese su correo electronico o cedula de identidad"

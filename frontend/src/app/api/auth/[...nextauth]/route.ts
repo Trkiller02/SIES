@@ -36,7 +36,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.user = {
           name: user.name,
@@ -48,7 +48,7 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       session.user = token.user as User;
       return session;
     },
@@ -58,7 +58,8 @@ export const authOptions: AuthOptions = {
     signIn: "/auth/login",
     error: "/auth/login",
   },
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 12 * 60 * 60 },
+  jwt: { maxAge: 12 * 60 * 60 },
 };
 
 const handler = NextAuth(authOptions);

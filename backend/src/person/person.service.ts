@@ -23,7 +23,7 @@ export class PersonService {
     if (person)
       conflict_err(
         messagesEnum.conflict_err,
-        'La persona ya existe o los datos estan ingresados en otra persona.',
+        'La persona ya existe o los datos están ingresados en otra persona.',
       );
 
     return await this.prisma.person.create({
@@ -41,14 +41,14 @@ export class PersonService {
     return persons;
   }
 
-  async findOne(id: string): Promise<PersonModel> {
+  async findOne(id: string, pass?: boolean): Promise<PersonModel> {
     const person = await this.prisma.person.findFirst({
       where: {
         ciNumber: id,
       },
     });
 
-    if (!person)
+    if (!person && !pass)
       not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
 
     return person;
@@ -58,7 +58,6 @@ export class PersonService {
     const person = await this.prisma.person.findFirst({
       where: {
         ciNumber: id,
-        Student: null,
         Represent: null,
       },
     });

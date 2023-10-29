@@ -1,16 +1,16 @@
 "use client";
 
-import { ctxDataRelation } from "@/app/register/layout";
-import { fetchData } from "@/utils/fetchHandler";
-import { Input, Button, Select, SelectItem } from "@nextui-org/react";
+import { fetchData, fetchDataGET } from "@/utils/fetchHandler";
+import { Input, Button, Select, SelectItem, Tooltip } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useContext, useEffect } from "react";
-import { MdCancel, MdCheckCircle } from "react-icons/md";
+import { MdCancel, MdCheckCircle, MdSearch } from "react-icons/md";
 import { toast } from "sonner";
 import { initValStudent, studentSchema } from "@/utils/schemas/StudentSchema";
 import { dateHandler } from "@/utils/dateHandler";
+import { ctxDataRelation } from "./ProviderCtx";
 
 export default function StudentForm() {
   const iconSuccess = <MdCheckCircle className="text-xl text-success-500" />;
@@ -18,7 +18,9 @@ export default function StudentForm() {
   const { data: session } = useSession();
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
 
-  /* const router = useRouter(); */
+  console.log(dataRelations);
+
+  const router = useRouter();
 
   const [Loading, setLoading] = useState(false);
 
@@ -27,25 +29,42 @@ export default function StudentForm() {
     validationSchema: studentSchema,
     onSubmit: async (values) => {
       setLoading(true);
+      for (let key in values) {
+        if (
+          key === "weight" ||
+          key === "size" ||
+          key === "age" ||
+          key === "bornDate" ||
+          key === "email" ||
+          key === "phoneNumber"
+        ) {
+          continue;
+        }
+        values[key] = values[key].toUpperCase().trim();
+      }
       try {
         await fetchData(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/person`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/student`,
           "POST",
-          session?.user.token,
-          values
+          values,
+          session?.user.token
         );
 
-        setDataRelations({ ...dataRelations, thirdPerson: values.ciNumber });
+        setDataRelations({ ...dataRelations, studentId: values.ciNumber });
         toast.success("¡Tarea exitosa!", {
           description: "Usuario registrado con éxito.",
           important: true,
           duration: 2000,
           icon: iconSuccess,
         });
+        return 0;
       } catch (error) {
         toast.error("¡Algo salió mal!", {
           important: true,
-          description: error.message,
+          description:
+            error.message === "Failed to fetch"
+              ? "Error en conexión."
+              : error.message,
           duration: 4000,
           icon: iconFail,
         });
@@ -54,6 +73,21 @@ export default function StudentForm() {
       }
     },
   });
+
+  const searchStudent = async () => {
+    try {
+      const data = await fetchDataGET(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/${formik.values.ciNumber}`,
+        session?.user.token
+      );
+      if (data) {
+        setDataRelations({ ...dataRelations, studentId: data.studentCiNumber });
+        return "Registro existente. Redirigiendo...";
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const age = dateHandler(formik.values.bornDate);
@@ -72,6 +106,78 @@ export default function StudentForm() {
       </div>
       <div className="grid grid-cols-8 gap-3">
         <Input
+          label="Cédula de Identidad:"
+          name="ciNumber"
+          description="Ingrese su Cédula de Identidad"
+          variant="bordered"
+          color={
+            formik.errors.ciNumber && formik.touched.ciNumber
+              ? "danger"
+              : "primary"
+          }
+          errorMessage={
+            formik.errors.ciNumber &&
+            formik.touched.ciNumber &&
+            formik.errors.ciNumber
+          }
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="col-span-2"
+          value={formik.values.ciNumber.toUpperCase()}
+        />
+        <Tooltip
+          content="Buscar Estudiante"
+          className="border border-primary-500"
+        >
+          <Button
+            isDisabled={formik.values.ciNumber ? false : true}
+            isIconOnly
+            color="primary"
+            variant="ghost"
+            aria-label="Buscar entidad"
+            className="w-3/4 h-3/4"
+            onClick={() =>
+              toast.promise(searchStudent, {
+                loading: "Procesando...",
+                success: (data) => {
+                  return data;
+                },
+                error: (error: Error) => {
+                  if (error.message === "Failed to fetch") {
+                    return "Error en conexión.";
+                  }
+                  return error.message;
+                },
+              })
+            }
+          >
+            <MdSearch className="text-2xl" />
+          </Button>
+        </Tooltip>
+
+        <div className="col-span-2"></div>
+        <Select
+          label="Genero:"
+          variant="bordered"
+          name="sex"
+          className="col-span-3"
+          description={"Ingrese el genero del estudiante."}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          errorMessage={
+            formik.errors.sex && formik.touched.sex && formik.errors.sex
+          }
+          color={formik.errors.sex && formik.touched.sex ? "danger" : "primary"}
+        >
+          <SelectItem key={"M"} value={"MASCULINO"}>
+            Masculino
+          </SelectItem>
+          <SelectItem key={"F"} value={"FEMENINO"}>
+            Femenino
+          </SelectItem>
+        </Select>
+
+        <Input
           label="Nombres:"
           name="name"
           description="Ingrese sus Nombres"
@@ -85,7 +191,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.name.toUpperCase()}
+          value={formik.values.name}
         />
 
         <Input
@@ -106,29 +212,35 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.lastName.toUpperCase()}
+          value={formik.values.lastName}
         />
 
         <div className="col-span-1"></div>
 
         <Select
-          label="Genero:"
+          label="Lateralidad:"
           variant="bordered"
-          name="sex"
+          name="Lateralidad"
           className="col-span-3"
-          description={"Ingrese el genero del estudiante."}
+          description={"Ingrese la  del estudiante."}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           errorMessage={
-            formik.errors.sex && formik.touched.sex && formik.errors.sex
+            formik.errors.Lateralidad &&
+            formik.touched.Lateralidad &&
+            formik.errors.Lateralidad
           }
-          color={formik.errors.sex && formik.touched.sex ? "danger" : "primary"}
+          color={
+            formik.errors.Lateralidad && formik.touched.Lateralidad
+              ? "danger"
+              : "primary"
+          }
         >
-          <SelectItem key={"M"} value={"MASCULINO"}>
-            Masculino
+          <SelectItem key={"Z"} value={"ZURDO"}>
+            Zurdo
           </SelectItem>
-          <SelectItem key={"F"} value={"FEMENINO"}>
-            Femenino
+          <SelectItem key={"D"} value={"DIESTRO"}>
+            Diestro
           </SelectItem>
         </Select>
 
@@ -167,26 +279,8 @@ export default function StudentForm() {
           onBlur={formik.handleBlur}
           className="col-span-2"
         />
-        <Input
-          label="Cédula de Identidad:"
-          name="ciNumber"
-          description="Ingrese su Cédula de Identidad"
-          variant="bordered"
-          color={
-            formik.errors.ciNumber && formik.touched.ciNumber
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.ciNumber &&
-            formik.touched.ciNumber &&
-            formik.errors.ciNumber
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-3"
-          value={formik.values.ciNumber.toUpperCase()}
-        />
+        <div className="col-span-1"></div>
+
         <Input
           label="Peso:"
           type="number"
@@ -203,7 +297,7 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
+          className="col-span-1"
           value={`${formik.values.weight}`}
           endContent={<p className="text-gray-400 font-medium text-base">kg</p>}
         />
@@ -221,39 +315,31 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
+          className="col-span-1"
           value={`${formik.values.size}`}
           endContent={<p className="text-gray-400 font-medium text-base">m</p>}
         />
 
-        <div className="col-span-1"></div>
-
-        <Select
-          label="Lateralidad:"
+        <Input
+          label="Institución de procedencia:"
+          name="instPro"
+          description="Ingrese sus Nombres"
           variant="bordered"
-          name="Lateralidad"
-          className="col-span-3"
-          description={"Ingrese la  del estudiante."}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          errorMessage={
-            formik.errors.Lateralidad &&
-            formik.touched.Lateralidad &&
-            formik.errors.Lateralidad
-          }
           color={
-            formik.errors.Lateralidad && formik.touched.Lateralidad
+            formik.errors.instPro && formik.touched.instPro
               ? "danger"
               : "primary"
           }
-        >
-          <SelectItem key={"Z"} value={"ZURDO"}>
-            Zurdo
-          </SelectItem>
-          <SelectItem key={"D"} value={"DIESTRO"}>
-            Diestro
-          </SelectItem>
-        </Select>
+          errorMessage={
+            formik.errors.instPro &&
+            formik.touched.instPro &&
+            formik.errors.instPro
+          }
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="col-span-8"
+          value={formik.values.instPro}
+        />
 
         <h1 className="col-span-8 font-semibold text-lg">
           Datos de Nacimiento:
@@ -319,7 +405,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.bornPais.toUpperCase()}
+          value={formik.values.bornPais}
         />
         <Input
           label="Estado:"
@@ -339,7 +425,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.bornState.toUpperCase()}
+          value={formik.values.bornState}
         />
         <Input
           label="Municipio:"
@@ -359,7 +445,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.bornMunicipio.toUpperCase()}
+          value={formik.values.bornMunicipio}
         />
         <Input
           label="Parroquia:"
@@ -379,7 +465,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.bornParroquia.toUpperCase()}
+          value={formik.values.bornParroquia}
         />
         <Input
           label="Lugar de nacimiento:"
@@ -399,7 +485,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-8"
-          value={formik.values.bornPlace.toUpperCase()}
+          value={formik.values.bornPlace}
         />
         <h1 className="col-span-8 font-semibold text-lg">
           Datos donde reside:
@@ -422,7 +508,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-4"
-          value={formik.values.homeParroquia.toUpperCase()}
+          value={formik.values.homeParroquia}
         />
         <Input
           label="Municipio:"
@@ -442,7 +528,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-4"
-          value={formik.values.homeMunicipio.toUpperCase()}
+          value={formik.values.homeMunicipio}
         />
         <Input
           label="Dirección de habitación:"
@@ -462,7 +548,7 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-8"
-          value={formik.values.homeDir.toUpperCase()}
+          value={formik.values.homeDir}
         />
       </div>
 

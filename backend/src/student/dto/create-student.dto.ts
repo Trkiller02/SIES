@@ -42,11 +42,11 @@ export class CreateStudentDto extends CreatePersonDto {
   @IsNotEmpty()
   sex: string;
 
-  @IsDecimal()
+  @IsNumber()
   @IsOptional()
   weight?: number;
 
-  @IsDecimal()
+  @IsNumber()
   @IsOptional()
   size?: number;
 

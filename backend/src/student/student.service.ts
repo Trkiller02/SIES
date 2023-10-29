@@ -19,8 +19,9 @@ export class StudentService {
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
-    const person = await this.personService.findOneForRelation(
+    const person = await this.personService.findOne(
       createStudentDto.ciNumber,
+      true,
     );
 
     if (person) {
@@ -37,6 +38,8 @@ export class StudentService {
             ciNumber: createStudentDto.ciNumber,
             name: createStudentDto.name,
             lastName: createStudentDto.lastName,
+            email: createStudentDto.email,
+            phoneNumber: createStudentDto.phoneNumber,
             homeDir: createStudentDto.homeDir,
             homeParroquia: createStudentDto.homeParroquia,
             homeMunicipio: createStudentDto.homeMunicipio,
@@ -48,7 +51,7 @@ export class StudentService {
         bornMunicipio: createStudentDto.bornMunicipio,
         bornParroquia: createStudentDto.bornParroquia,
         bornPais: createStudentDto.bornPais,
-        bornDate: new Date(createStudentDto.bornDate),
+        bornDate: createStudentDto.bornDate,
         age: createStudentDto.age,
         sex: createStudentDto.sex,
         weight: createStudentDto.weight,

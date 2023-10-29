@@ -41,41 +41,48 @@ export const studentSchema = Yup.object({
     .matches(regexList.forDir, Messages.match_err)
     .required(Messages.required),
   homeParroquia: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   homeMunicipio: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   bornPlace: Yup.string()
     .matches(regexList.forDir, Messages.match_err)
     .required(Messages.required),
   bornState: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   bornMunicipio: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   bornParroquia: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   bornPais: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
-  bornDate: Yup.date().required(Messages.required),
+  bornDate: Yup.date()
+    .required(Messages.required)
+    .min(new Date("2002-01-01"), Messages.min_err)
+    .max(new Date(), Messages.max_err),
   age: Yup.number()
     .positive(Messages.min_err)
     .required(Messages.required)
     .min(3, Messages.min_err)
     .max(19, Messages.max_err),
-  weight: Yup.number().positive(Messages.min_err).required(Messages.required),
-  size: Yup.number().positive(Messages.min_err).required(Messages.required),
-  sex: Yup.string()
+  weight: Yup.number()
+    .positive(Messages.min_err)
     .required(Messages.required)
-    .matches(regexList.forRelation, Messages.match_err),
-  Lateralidad: Yup.string()
+    .min(10, Messages.min_err)
+    .max(120, Messages.max_err),
+  size: Yup.number()
+    .positive(Messages.min_err)
     .required(Messages.required)
-    .matches(regexList.forRelation, Messages.match_err),
+    .min(0.2, Messages.min_err)
+    .max(2.5, Messages.max_err),
+  sex: Yup.string().required(Messages.required),
+  Lateralidad: Yup.string().required(Messages.required),
   instPro: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
+    .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
 });

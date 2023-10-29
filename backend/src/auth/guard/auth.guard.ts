@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extratcTokenFromHeader(request);
 
     if (!token) {
-      unauth_err(messagesEnum.unauth_err, 'No haytoken.');
+      unauth_err(messagesEnum.unauth_err, 'No hay token.');
     }
 
     try {
@@ -29,7 +29,6 @@ export class AuthGuard implements CanActivate {
 
     return true;
   }
-
   private extratcTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;

@@ -11,8 +11,8 @@ export const fetchData = async (
       method: method,
       body: body,
       headers: {
+        Authorization: "Bearer " + (token ? token : null),
         "Content-Type": "application/json",
-        Authorization: "Bearer " + (token ? token.toString() : null),
       },
     });
 
@@ -28,13 +28,11 @@ export const fetchData = async (
   }
 };
 
-export const fetchDataGet = async (url: string, token: unknown) => {
-  console.log(token);
-
+export const fetchDataGET = async (url: string, token: unknown) => {
   try {
     const response = await fetch(url, {
       headers: {
-        Autorization: "Bearer " + (token ? token : null),
+        Authorization: "Bearer " + (token ? token : null),
         "Content-Type": "application/json",
       },
     });

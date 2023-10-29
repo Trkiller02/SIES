@@ -1,18 +1,21 @@
-import { withAuth } from "next-auth/middleware";
+import { NextRequestWithAuth, withAuth } from "next-auth/middleware";
 import { RoleList } from "./utils/roleList";
+import { NextResponse } from "next/server";
 
 export default withAuth(
   // `withAuth` augments your `Request` with the user's token.
-  function middleware(req) {
-    console.log(req.nextauth.token);
+  function middleware(request: NextRequestWithAuth) {
+    if (request.nextauth.token?.user.role === RoleList.USER) {
+      return NextResponse.rewrite(new URL("/restricted", request.url));
+    }
   },
   {
     callbacks: {
-      authorized: ({ token }) => {
-        return token?.user.role === RoleList.ADMIN;
-      },
+      authorized: ({ token }) => !!token,
     },
   }
 );
 
-export const config = { matcher: ["/dashboard"] };
+export const config = {
+  matcher: ["/dashboard", "/register/:path*", "/search/:path*"],
+};

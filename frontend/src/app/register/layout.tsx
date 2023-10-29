@@ -1,18 +1,14 @@
-"use client";
+import ProviderCtx from "@/components/register/ProviderCtx";
+import DashboardLayout from "../dashboard/layout";
 
-import { createContext, useState } from "react";
-
-export const ctxDataRelation = createContext({});
-
-export default function DashboardLayout({
+export default function RegisterLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [dataRelations, setDataRelations] = useState({ hola: "" });
   return (
-    <ctxDataRelation.Provider value={{ dataRelations, setDataRelations }}>
-      <DashboardLayout>{children}</DashboardLayout>
-    </ctxDataRelation.Provider>
+    <DashboardLayout>
+      <ProviderCtx>{children}</ProviderCtx>
+    </DashboardLayout>
   );
 }
