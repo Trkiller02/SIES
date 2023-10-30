@@ -1,24 +1,39 @@
 "use client";
 
 import { initValPerson, personSchema } from "@/utils/schemas/PersonSchema";
-import { fetchData } from "@/utils/fetchHandler";
-import { Input, Button, Select, SelectItem } from "@nextui-org/react";
+import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
+import { Input, Button, Select, SelectItem, Tooltip } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
-import { MdCancel, MdCheckCircle } from "react-icons/md";
+import { MdCancel, MdCheckCircle, MdSearch } from "react-icons/md";
 import { toast } from "sonner";
 import { ctxDataRelation } from "./ProviderCtx";
+import { useRouter } from "next/navigation";
+import { ProgressChecker } from "./ProgressChecker";
 
 export default function PersonForm({ person = true }: { person?: boolean }) {
+  const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const iconSuccess = <MdCheckCircle className="text-xl text-success-500" />;
   const iconFail = <MdCancel className="text-xl text-danger-500" />;
   const { data: session } = useSession();
-  const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
-  console.log(dataRelations);
-
   const router = useRouter();
+
+  const routeHandler = () => {
+    if (dataRelations.motherPersonCiNumbers === "") {
+      return formik.resetForm();
+    } else {
+      if (dataRelations.fatherPersonCiNumbers === "") {
+        return formik.resetForm();
+      } else {
+        if (dataRelations.thirdPersonCiNumbers === "") {
+          router.refresh();
+        } else {
+          router.push("/register/represent");
+        }
+      }
+    }
+  };
 
   const [Loading, setLoading] = useState(false);
 
@@ -27,21 +42,55 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
     validationSchema: personSchema,
     onSubmit: async (values) => {
       setLoading(true);
+      for (let key in values) {
+        if (key === "email" || key === "phoneNumber") {
+          continue;
+        }
+        values[key] = values[key].trim();
+      }
 
       try {
         await fetchData(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/person`,
           "POST",
-          session?.user.token,
-          values
+          values,
+          session?.user.token
         );
 
-        setDataRelations({ ...dataRelations, thirdPerson });
+        switch (values.relation) {
+          case "M":
+            setDataRelations({
+              ...dataRelations,
+              motherPersonCiNumbers: values.ciNumber,
+            });
+            break;
+          case "P":
+            setDataRelations({
+              ...dataRelations,
+              fatherPersonCiNumbers: values.ciNumber,
+            });
+            break;
+          case "F":
+            setDataRelations({
+              ...dataRelations,
+              thirdPersonCiNumbers: values.ciNumber,
+            });
+            break;
+          default:
+            setDataRelations({
+              ...dataRelations,
+              thirdPersonCiNumbers: values.ciNumber,
+            });
+            break;
+        }
+
         toast.success("¡Tarea exitosa!", {
-          description: "Usuario registrado con exito.",
+          description: "Persona registrada con exito.",
           important: true,
-          duration: 2000,
+          duration: 1000,
           icon: iconSuccess,
+          onAutoClose: () => routeHandler(),
+          onDismiss: () => routeHandler(),
         });
       } catch (error) {
         toast.error("¡Algo salió mal!", {
@@ -56,6 +105,50 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
     },
   });
 
+  const searchStudent = async () => {
+    let diag: string = "";
+    const data = await fetchDataWithoutBody(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/person/${formik.values.ciNumber}`,
+      session?.user.token
+    );
+    if (data) {
+      switch (data.relation) {
+        case "M":
+          setDataRelations({
+            ...dataRelations,
+            motherPersonCiNumbers: data.ciNumber,
+          });
+          diag = "Registro existente. Madre registrada...";
+          break;
+        case "P":
+          setDataRelations({
+            ...dataRelations,
+            fatherPersonCiNumbers: data.ciNumber,
+          });
+          diag = "Registro existente. Padre registrado...";
+          break;
+        case "F":
+          setDataRelations({
+            ...dataRelations,
+            thirdPersonCiNumbers: data.ciNumber,
+          });
+          diag = "Registro existente. Familiar registrado...";
+          break;
+        case "RL":
+          setDataRelations({
+            ...dataRelations,
+            representCiNumbers: data.ciNumber,
+          });
+          diag = "Registro existente. Representante registrado...";
+          break;
+        default:
+          break;
+      }
+      routeHandler();
+      return diag;
+    }
+  };
+
   return (
     <form
       className="h-2/4 w-3/4 border border-gray-300 rounded-xl shadow-xl p-8"
@@ -68,48 +161,60 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
       </div>
       <div className="grid grid-cols-8 gap-3">
         <Input
-          label="Nombres:"
-          name="name"
-          description="Ingrese sus Nombres"
+          label="Cedula de Identidad:"
+          name="ciNumber"
+          description="Ingrese su Cedula de Identidad"
           variant="bordered"
           color={
-            formik.errors.name && formik.touched.name ? "danger" : "primary"
-          }
-          errorMessage={
-            formik.errors.name && formik.touched.name && formik.errors.name
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-2"
-          value={formik.values.name.toUpperCase()}
-        />
-
-        <Input
-          label="Apellidos:"
-          name="lastName"
-          description="Ingrese sus Apellidos"
-          variant="bordered"
-          color={
-            formik.errors.lastName && formik.touched.lastName
+            formik.errors.ciNumber && formik.touched.ciNumber
               ? "danger"
               : "primary"
           }
           errorMessage={
-            formik.errors.lastName &&
-            formik.touched.lastName &&
-            formik.errors.lastName
+            formik.errors.ciNumber &&
+            formik.touched.ciNumber &&
+            formik.errors.ciNumber
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
-          value={formik.values.lastName.toUpperCase()}
+          className="col-span-3"
+          value={formik.values.ciNumber.toUpperCase()}
         />
+        <Tooltip
+          content="Buscar Estudiante"
+          className="border border-primary-500"
+        >
+          <Button
+            isDisabled={formik.values.ciNumber ? false : true}
+            isIconOnly
+            color="primary"
+            variant="ghost"
+            aria-label="Buscar entidad"
+            className="w-3/4 h-3/4"
+            onClick={() =>
+              toast.promise(searchStudent, {
+                loading: "Procesando...",
+                success: (data) => {
+                  return data;
+                },
+                error: (error: Error) => {
+                  if (error.message === "Failed to fetch") {
+                    return "Error en conexión.";
+                  }
+                  if (error.message === "Not Found") {
+                    return "Registro no encontrado. Puede continuar...";
+                  }
+                  routeHandler();
+                  return error.message;
+                },
+              })
+            }
+          >
+            <MdSearch className="text-2xl" />
+          </Button>
+        </Tooltip>
 
-        {person ? (
-          <div className="col-span-1"></div>
-        ) : (
-          <div className="col-span-4"></div>
-        )}
+        <div className="col-span-1"></div>
 
         {person && (
           <Select
@@ -134,19 +239,54 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
             value={formik.values.relation}
           >
             <SelectItem key={"M"} value={"MADRE"}>
-              Madre
+              MADRE
             </SelectItem>
             <SelectItem key={"P"} value={"PADRE"}>
-              Padre
-            </SelectItem>
-            <SelectItem key={"RL"} value={"REPRESENTANTE LEGAL"}>
-              Representante Legal
+              PADRE
             </SelectItem>
             <SelectItem key={"F"} value={"FAMILIAR"}>
-              Pariente
+              FAMILIAR
             </SelectItem>
           </Select>
         )}
+
+        <Input
+          label="Nombres:"
+          name="name"
+          description="Ingrese sus Nombres"
+          variant="bordered"
+          color={
+            formik.errors.name && formik.touched.name ? "danger" : "primary"
+          }
+          errorMessage={
+            formik.errors.name && formik.touched.name && formik.errors.name
+          }
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="col-span-3"
+          value={formik.values.name}
+        />
+
+        <Input
+          label="Apellidos:"
+          name="lastName"
+          description="Ingrese sus Apellidos"
+          variant="bordered"
+          color={
+            formik.errors.lastName && formik.touched.lastName
+              ? "danger"
+              : "primary"
+          }
+          errorMessage={
+            formik.errors.lastName &&
+            formik.touched.lastName &&
+            formik.errors.lastName
+          }
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="col-span-3"
+          value={formik.values.lastName}
+        />
 
         <Input
           label="Correo Electronico:"
@@ -162,7 +302,7 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-3"
+          className="col-span-4"
         />
         <Input
           label="Numero de Telefono:"
@@ -181,27 +321,7 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
-        />
-        <Input
-          label="Cedula de Identidad:"
-          name="ciNumber"
-          description="Ingrese su Cedula de Identidad"
-          variant="bordered"
-          color={
-            formik.errors.ciNumber && formik.touched.ciNumber
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.ciNumber &&
-            formik.touched.ciNumber &&
-            formik.errors.ciNumber
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
           className="col-span-3"
-          value={formik.values.ciNumber.toUpperCase()}
         />
         <Input
           label="Parroquia:"
@@ -221,7 +341,7 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-4"
-          value={formik.values.homeParroquia.toUpperCase()}
+          value={formik.values.homeParroquia}
         />
         <Input
           label="Municipio:"
@@ -241,7 +361,7 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-4"
-          value={formik.values.homeMunicipio.toUpperCase()}
+          value={formik.values.homeMunicipio}
         />
         <Input
           label="Dirección de habitación:"
@@ -261,7 +381,7 @@ export default function PersonForm({ person = true }: { person?: boolean }) {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-8"
-          value={formik.values.homeDir.toUpperCase()}
+          value={formik.values.homeDir}
         />
       </div>
       <div className="flex flex-row justify-around mt-7">

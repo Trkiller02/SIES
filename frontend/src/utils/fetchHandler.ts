@@ -28,9 +28,14 @@ export const fetchData = async (
   }
 };
 
-export const fetchDataGET = async (url: string, token: unknown) => {
+export const fetchDataWithoutBody = async (
+  url: string,
+  token: unknown,
+  method?: string
+) => {
   try {
     const response = await fetch(url, {
+      method: method ?? "GET",
       headers: {
         Authorization: "Bearer " + (token ? token : null),
         "Content-Type": "application/json",

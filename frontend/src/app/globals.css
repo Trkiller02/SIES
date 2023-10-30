@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Poppins";
+  src: url("../../public/Poppins-Regular.ttf");
+  font-style: normal;
+  font-weight: normal;
+}
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -11,6 +17,7 @@ input[type="number"]::-webkit-outer-spin-button {
 html,
 body {
   min-height: 100%;
+  font-family: "Poppins";
 }
 
 input[type="number"] {

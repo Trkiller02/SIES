@@ -1,5 +1,6 @@
-import ProviderCtx from "@/components/register/ProviderCtx";
+import { ProviderCtx } from "@/components/register/ProviderCtx";
 import DashboardLayout from "../dashboard/layout";
+import { ProgressChecker } from "@/components/register/ProgressChecker";
 
 export default function RegisterLayout({
   children,
@@ -8,7 +9,10 @@ export default function RegisterLayout({
 }) {
   return (
     <DashboardLayout>
-      <ProviderCtx>{children}</ProviderCtx>
+      <ProviderCtx>
+        <ProgressChecker />
+        {children}
+      </ProviderCtx>
     </DashboardLayout>
   );
 }

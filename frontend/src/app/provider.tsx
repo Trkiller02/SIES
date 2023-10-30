@@ -12,8 +12,8 @@ export default function Providers({
   session: Session | null;
 }) {
   return (
-    <NextUIProvider>
-      <SessionProvider session={session}>{children}</SessionProvider>
-    </NextUIProvider>
+    <SessionProvider session={session}>
+      <NextUIProvider>{children}</NextUIProvider>
+    </SessionProvider>
   );
 }

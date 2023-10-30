@@ -33,6 +33,7 @@ export function NavBar() {
           width={64}
           height={64}
           style={{ transform: "scale(0.6)" }}
+          priority
         />
         <p className="font-bold text-inherit px-2">SISINSES</p>
       </NavbarBrand>
@@ -67,7 +68,11 @@ export function NavBar() {
               <DropdownItem
                 key="estudiante"
                 description="Registrar un estudiante."
-                onPress={() => router.push("/register/student")}
+                onPress={() => {
+                  router.push("/register/student");
+                  if (typeof window !== "undefined")
+                    localStorage.removeItem("dataRelations");
+                }}
                 color="primary"
                 variant="light"
               >

@@ -1,24 +1,22 @@
 "use client";
 
-import { fetchData, fetchDataGET } from "@/utils/fetchHandler";
 import { Input, Button, Select, SelectItem, Tooltip } from "@nextui-org/react";
-import { useFormik } from "formik";
+import { MdCancel, MdCheckCircle, MdSearch } from "react-icons/md";
+import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
+import { useState, useContext, useEffect } from "react";
+import { initValStudent, studentSchema } from "@/utils/schemas/StudentSchema";
+import { ctxDataRelation } from "./ProviderCtx";
+import { dateHandler } from "@/utils/dateHandler";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useContext, useEffect } from "react";
-import { MdCancel, MdCheckCircle, MdSearch } from "react-icons/md";
+import { useFormik } from "formik";
 import { toast } from "sonner";
-import { initValStudent, studentSchema } from "@/utils/schemas/StudentSchema";
-import { dateHandler } from "@/utils/dateHandler";
-import { ctxDataRelation } from "./ProviderCtx";
 
 export default function StudentForm() {
+  const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const iconSuccess = <MdCheckCircle className="text-xl text-success-500" />;
   const iconFail = <MdCancel className="text-xl text-danger-500" />;
   const { data: session } = useSession();
-  const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
-
-  console.log(dataRelations);
 
   const router = useRouter();
 
@@ -64,7 +62,7 @@ export default function StudentForm() {
           description:
             error.message === "Failed to fetch"
               ? "Error en conexión."
-              : error.message,
+              : error.message ?? "",
           duration: 4000,
           icon: iconFail,
         });
@@ -75,17 +73,13 @@ export default function StudentForm() {
   });
 
   const searchStudent = async () => {
-    try {
-      const data = await fetchDataGET(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/${formik.values.ciNumber}`,
-        session?.user.token
-      );
-      if (data) {
-        setDataRelations({ ...dataRelations, studentId: data.studentCiNumber });
-        return "Registro existente. Redirigiendo...";
-      }
-    } catch (error) {
-      throw error;
+    const data = await fetchDataWithoutBody(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/${formik.values.ciNumber}`,
+      session?.user.token
+    );
+    if (data) {
+      setDataRelations({ ...dataRelations, studentId: data.studentCiNumber });
+      return "Registro existente. Redirigiendo...";
     }
   };
 

@@ -1,17 +1,20 @@
 "use client";
 
+import { RoleList } from "@/utils/roleList";
 import { Button, Tooltip } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function indexRegisterPage() {
+export default function indexSearchPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   return (
-    <section className="grid grid-cols-3 w-2/4 h-2/5 gap-2">
+    <section className="grid grid-cols-2 w-2/5 h-2/5 gap-2">
       <Tooltip
         content={
           <div className="px-1 py-2">
             <div className="text-small font-semibold text-primary-500">
-              Registrar Personas:
+              Buscar Personas:
             </div>
             <div className="text-tiny">PADRES, MADRES, TERCERAS PERSONAS</div>
           </div>
@@ -22,7 +25,7 @@ export default function indexRegisterPage() {
       >
         <Button
           variant="ghost"
-          onPress={() => router.push("/register/person")}
+          onPress={() => router.push("/search/person")}
           color="primary"
           className="py-12 shadow-md"
         >
@@ -34,7 +37,7 @@ export default function indexRegisterPage() {
       <Tooltip
         content={
           <p className="text-small font-semibold text-primary-500">
-            Registrar Representantes y vincular a estudiantes.
+            Buscar Representantes vinculados a estudiantes.
           </p>
         }
         offset={-10}
@@ -43,7 +46,7 @@ export default function indexRegisterPage() {
       >
         <Button
           variant="ghost"
-          onPress={() => router.push("/register/represent")}
+          onPress={() => router.push("/search/represent")}
           color="primary"
           className="py-12 shadow-md"
         >
@@ -55,7 +58,7 @@ export default function indexRegisterPage() {
       <Tooltip
         content={
           <p className="text-small font-semibold text-primary-500">
-            Registrar Estudiantes en la institución.
+            Buscar Estudiantes inscritos en la institución.
           </p>
         }
         offset={-10}
@@ -64,7 +67,7 @@ export default function indexRegisterPage() {
       >
         <Button
           variant="ghost"
-          onPress={() => router.push("/register/student")}
+          onPress={() => router.push("/search/student")}
           color="primary"
           className="py-12 shadow-md"
         >
@@ -73,6 +76,29 @@ export default function indexRegisterPage() {
           </div>
         </Button>
       </Tooltip>
+      {session?.user.role === RoleList.ADMIN && (
+        <Tooltip
+          content={
+            <p className="text-small font-semibold text-primary-500">
+              Buscar Usuarios dentro del sistema.
+            </p>
+          }
+          offset={-10}
+          closeDelay={100}
+          placement="bottom"
+        >
+          <Button
+            variant="ghost"
+            onPress={() => router.push("/search/user")}
+            color="primary"
+            className="py-12 shadow-md"
+          >
+            <div className="flex flex-row justify-center items-center">
+              <h1 className="font-bold text-lg">Usuarios</h1>
+            </div>
+          </Button>
+        </Tooltip>
+      )}
     </section>
   );
 }
