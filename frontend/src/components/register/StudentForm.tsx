@@ -1,7 +1,7 @@
 "use client";
 
 import { Input, Button, Select, SelectItem, Tooltip } from "@nextui-org/react";
-import { MdCancel, MdCheckCircle, MdSearch } from "react-icons/md";
+import { MdSearch } from "react-icons/md";
 import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { useState, useContext, useEffect } from "react";
 import { initValStudent, studentSchema } from "@/utils/schemas/StudentSchema";
@@ -14,67 +14,53 @@ import { toast } from "sonner";
 
 export default function StudentForm() {
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
-  const iconSuccess = <MdCheckCircle className="text-xl text-success-500" />;
-  const iconFail = <MdCancel className="text-xl text-danger-500" />;
   const { data: session } = useSession();
 
   const router = useRouter();
 
   const [Loading, setLoading] = useState(false);
 
+  const sendInfo = async (values: any) => {
+    const res = await fetchData(
+      '/student',
+      "POST",
+      values,
+      session?.user.token
+    );
+
+    setDataRelations({ ...dataRelations, studentId: values.ciNumber });
+
+    if (res) {
+      return "Registro exitoso."
+    }
+  }
+
   const formik = useFormik({
     initialValues: initValStudent,
     validationSchema: studentSchema,
     onSubmit: async (values) => {
       setLoading(true);
-      for (let key in values) {
-        if (
-          key === "weight" ||
-          key === "size" ||
-          key === "age" ||
-          key === "bornDate" ||
-          key === "email" ||
-          key === "phoneNumber"
-        ) {
-          continue;
+      toast.promise(sendInfo(values), {
+        loading: "Procesando...",
+        success: (data) => {
+          router.push('/register/health')
+          return data;
+        },
+        error: (error: Error) => {
+          return error.message === "Failed to fetch"
+            ? "Error en conexión."
+            : error.message ?? "";
+        },
+        finally: () => {
+          setLoading(false);
         }
-        values[key] = values[key].toUpperCase().trim();
-      }
-      try {
-        await fetchData(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/student`,
-          "POST",
-          values,
-          session?.user.token
-        );
-
-        setDataRelations({ ...dataRelations, studentId: values.ciNumber });
-        toast.success("¡Tarea exitosa!", {
-          description: "Usuario registrado con éxito.",
-          important: true,
-          duration: 2000,
-          icon: iconSuccess,
-        });
-        return 0;
-      } catch (error) {
-        toast.error("¡Algo salió mal!", {
-          important: true,
-          description:
-            error.message === "Failed to fetch"
-              ? "Error en conexión."
-              : error.message ?? "",
-          duration: 4000,
-          icon: iconFail,
-        });
-      } finally {
-        setLoading(false);
-      }
+      })
     },
   });
 
   const searchStudent = async () => {
     const data = await fetchDataWithoutBody(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/student/${formik.values.ciNumber}`,
+      `/student/${formik.values.ciNumber}`,
       session?.user.token
     );
     if (data) {
@@ -88,6 +74,12 @@ export default function StudentForm() {
     formik.setFieldValue("age", age);
   }, [formik.values.bornDate]);
 
+  useEffect(() => {
+    if (dataRelations.studentId !== '' && dataRelations.studentId !== undefined && dataRelations.studentId) {
+      router.push('/register/health')
+    }
+  }, [dataRelations]);
+
   return (
     <form
       className="h-2/4 w-3/4 border border-gray-300 rounded-xl shadow-xl p-8"
@@ -100,6 +92,7 @@ export default function StudentForm() {
       </div>
       <div className="grid grid-cols-8 gap-3">
         <Input
+          isRequired
           label="Cédula de Identidad:"
           name="ciNumber"
           description="Ingrese su Cédula de Identidad"
@@ -151,6 +144,7 @@ export default function StudentForm() {
 
         <div className="col-span-2"></div>
         <Select
+          isRequired
           label="Genero:"
           variant="bordered"
           name="sex"
@@ -172,6 +166,7 @@ export default function StudentForm() {
         </Select>
 
         <Input
+          isRequired
           label="Nombres:"
           name="name"
           description="Ingrese sus Nombres"
@@ -185,10 +180,11 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.name}
+          value={formik.values.name.toUpperCase()}
         />
 
         <Input
+          isRequired
           label="Apellidos:"
           name="lastName"
           description="Ingrese sus Apellidos"
@@ -206,12 +202,13 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-2"
-          value={formik.values.lastName}
+          value={formik.values.lastName.toUpperCase()}
         />
 
         <div className="col-span-1"></div>
 
         <Select
+          isRequired
           label="Lateralidad:"
           variant="bordered"
           name="Lateralidad"
@@ -239,6 +236,7 @@ export default function StudentForm() {
         </Select>
 
         <Input
+          isRequired
           label="Correo electrónico:"
           type="email"
           name="email"
@@ -255,6 +253,7 @@ export default function StudentForm() {
           className="col-span-3"
         />
         <Input
+          isRequired
           label="Número telefónico:"
           name="phoneNumber"
           description="Ingrese su número de teléfono"
@@ -271,7 +270,7 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
+          className="col-span-3"
         />
         <div className="col-span-1"></div>
 
@@ -291,7 +290,7 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-1"
+          className="col-span-3"
           value={`${formik.values.weight}`}
           endContent={<p className="text-gray-400 font-medium text-base">kg</p>}
         />
@@ -309,12 +308,35 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-1"
+          className="col-span-2"
           value={`${formik.values.size}`}
           endContent={<p className="text-gray-400 font-medium text-base">m</p>}
         />
 
         <Input
+          isRequired
+          label="Vive con:"
+          name="liveWith"
+          description="El estudiante vive con:"
+          variant="bordered"
+          color={
+            formik.errors.liveWith && formik.touched.liveWith
+              ? "danger"
+              : "primary"
+          }
+          errorMessage={
+            formik.errors.liveWith &&
+            formik.touched.liveWith &&
+            formik.errors.liveWith
+          }
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="col-span-3"
+          value={formik.values.liveWith.toUpperCase()}
+        />
+
+        <Input
+          isRequired
           label="Institución de procedencia:"
           name="instPro"
           description="Ingrese sus Nombres"
@@ -332,13 +354,16 @@ export default function StudentForm() {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="col-span-8"
-          value={formik.values.instPro}
+          value={formik.values.instPro.toUpperCase()}
         />
+
+
 
         <h1 className="col-span-8 font-semibold text-lg">
           Datos de Nacimiento:
         </h1>
         <Input
+          isRequired
           type="date"
           variant="bordered"
           name="bornDate"
@@ -360,6 +385,7 @@ export default function StudentForm() {
           value={`${formik.values.bornDate}`}
         />
         <Input
+          isRequired
           label="Edad:"
           type="number"
           name="age"
@@ -382,6 +408,7 @@ export default function StudentForm() {
         />
         <div className="col-span-3"></div>
         <Input
+          isRequired
           label="País:"
           name="bornPais"
           description="Ingrese País donde nació"
@@ -398,10 +425,11 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
+          className="col-span-4"
           value={formik.values.bornPais}
         />
         <Input
+          isRequired
           label="Estado:"
           name="bornState"
           description="Ingrese Estado donde nació"
@@ -418,73 +446,14 @@ export default function StudentForm() {
           }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="col-span-2"
+          className="col-span-4"
           value={formik.values.bornState}
-        />
-        <Input
-          label="Municipio:"
-          name="bornMunicipio"
-          description="Ingrese Municipio donde nació"
-          variant="bordered"
-          color={
-            formik.errors.bornMunicipio && formik.touched.bornMunicipio
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.bornMunicipio &&
-            formik.touched.bornMunicipio &&
-            formik.errors.bornMunicipio
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-2"
-          value={formik.values.bornMunicipio}
-        />
-        <Input
-          label="Parroquia:"
-          name="bornParroquia"
-          description="Ingrese Parroquia donde nació"
-          variant="bordered"
-          color={
-            formik.errors.bornParroquia && formik.touched.bornParroquia
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.bornParroquia &&
-            formik.touched.bornParroquia &&
-            formik.errors.bornParroquia
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-2"
-          value={formik.values.bornParroquia}
-        />
-        <Input
-          label="Lugar de nacimiento:"
-          name="bornPlace"
-          description="Ingrese donde donde nació"
-          variant="bordered"
-          color={
-            formik.errors.bornPlace && formik.touched.bornPlace
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.bornPlace &&
-            formik.touched.bornPlace &&
-            formik.errors.bornPlace
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-8"
-          value={formik.values.bornPlace}
         />
         <h1 className="col-span-8 font-semibold text-lg">
           Datos donde reside:
         </h1>
         <Input
+          isRequired
           label="Parroquia:"
           name="homeParroquia"
           description="Ingrese su Parroquia"
@@ -505,6 +474,7 @@ export default function StudentForm() {
           value={formik.values.homeParroquia}
         />
         <Input
+          isRequired
           label="Municipio:"
           name="homeMunicipio"
           description="Ingrese su Municipio"
@@ -525,6 +495,7 @@ export default function StudentForm() {
           value={formik.values.homeMunicipio}
         />
         <Input
+          isRequired
           label="Dirección de habitación:"
           name="homeDir"
           description="Ingrese su Dirección"

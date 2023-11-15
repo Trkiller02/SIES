@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
 import { PersonService } from 'src/person/person.service';
@@ -26,25 +22,24 @@ export class RepresentService {
     );
 
     if (person) {
-      return this.prisma.represent.create({
+      await this.prisma.represent.create({
         data: {
           personRelation: {
             connect: { ciNumber: person.ciNumber },
           },
-          civilStatus: createRepresentDto.civilStatus,
-          Instrution: createRepresentDto.Instrution,
+          tlfnHome: createRepresentDto.tlfnHome,
           profession: createRepresentDto.profession,
-          business: createRepresentDto.business,
           workPlace: createRepresentDto.workPlace,
           workPhoneNumber: createRepresentDto.workPhoneNumber,
-          workEmail: createRepresentDto.workEmail,
           incomeMonth: createRepresentDto.incomeMonth,
-          sourceIncome: createRepresentDto.sourceIncome,
         },
         include: {
           personRelation: true,
         },
       });
+      await this.personService.updateRelation(person.ciNumber);
+
+      return person.ciNumber;
     }
 
     return this.prisma.represent.create({
@@ -60,15 +55,10 @@ export class RepresentService {
             relation: createRepresentDto.relation,
           },
         },
-        civilStatus: createRepresentDto.civilStatus,
-        Instrution: createRepresentDto.Instrution,
         profession: createRepresentDto.profession,
-        business: createRepresentDto.business,
         workPlace: createRepresentDto.workPlace,
         workPhoneNumber: createRepresentDto.workPhoneNumber,
-        workEmail: createRepresentDto.workEmail,
         incomeMonth: createRepresentDto.incomeMonth,
-        sourceIncome: createRepresentDto.sourceIncome,
       },
       include: {
         personRelation: true,

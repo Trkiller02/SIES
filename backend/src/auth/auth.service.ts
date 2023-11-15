@@ -4,6 +4,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { RestorePasswordDto } from './dto/restore-password.dto';
+import { User as UserModel } from '@prisma/client';
+import { conflict_err, unauth_err } from 'src/utils/handlerErrors';
+import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class AuthService {
@@ -57,9 +61,46 @@ export class AuthService {
     return {
       name: user.name,
       lastName: user.lastName,
+      ciNumber: user.ciNumber,
       email: user.email,
       role: rolePatcher,
       token: token,
     };
+  }
+
+  async restorePassword(updatePassword: RestorePasswordDto) {
+    const user = await this.UserService.findOne(updatePassword.ciNumber);
+
+    const { password, repeatPassword, restoreToken } = updatePassword;
+
+    if (!restoreToken) {
+      return unauth_err(
+        messagesEnum.unauth_err,
+        'Credenciales incorrectas. (Token)',
+      );
+    }
+
+    const HashToken = await bcrypt.compare(restoreToken, user.restoreToken);
+
+    if (!HashToken) {
+      return unauth_err(
+        messagesEnum.unauth_err,
+        'Credenciales incorrectas. (Token compa)',
+      );
+    }
+
+    if (password !== repeatPassword) {
+      return conflict_err(
+        messagesEnum.conflict_err,
+        'Las contraseñas no coinciden.',
+      );
+    }
+    const id = updatePassword.ciNumber;
+
+    delete updatePassword.repeatPassword;
+    delete updatePassword.ciNumber;
+    delete updatePassword.restoreToken;
+
+    return await this.UserService.update(id, updatePassword);
   }
 }

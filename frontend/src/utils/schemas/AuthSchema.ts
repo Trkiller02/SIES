@@ -17,6 +17,14 @@ const RegisterValues = {
   email: "",
   password: "",
   repeatPassword: "",
+  restoreToken: "ADMIN1",
+};
+
+const initValUpdatePass = {
+  ciNumber: "",
+  restoreToken: "",
+  password: "",
+  repeatPassword: "",
 };
 
 // ESQUEMAS DE VALIDACION AUTH
@@ -25,8 +33,13 @@ const UpdatePassSchema = Yup.object({
   ciNumber: Yup.string()
     .matches(regexList.forDNI, Messages.dni_match)
     .required(Messages.required),
-  email: Yup.string().email(Messages.email_err).required(Messages.required),
+  restoreToken: Yup.string()
+    .matches(regexList.forToken, Messages.match_err)
+    .required(Messages.required),
   password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
+  repeatPassword: Yup.string()
+    .required(Messages.required)
+    .oneOf([Yup.ref("password"), "La contraseña no coincide."]),
 });
 
 const LoginSchema = Yup.object({
@@ -45,7 +58,7 @@ const RegisterSchema = Yup.object({
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   ciNumber: Yup.string()
-    .matches(regexList.forDir, Messages.dni_match)
+    .matches(regexList.forDNI, Messages.dni_match)
     .required(Messages.required),
   email: Yup.string().email(Messages.email_err).required(Messages.required),
   password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
@@ -60,4 +73,5 @@ export {
   RegisterValues,
   RegisterSchema,
   UpdatePassSchema,
+  initValUpdatePass,
 };

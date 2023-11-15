@@ -6,50 +6,42 @@ export const fetchData = async (
 ) => {
   const body = JSON.stringify(content);
 
-  try {
-    const response = await fetch(url, {
-      method: method,
-      body: body,
-      headers: {
-        Authorization: "Bearer " + (token ? token : null),
-        "Content-Type": "application/json",
-      },
-    });
+  const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + url, {
+    method: method,
+    body: body,
+    headers: {
+      Authorization: "Bearer " + (token ? token : null),
+      "Content-Type": "application/json",
+    },
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw data;
-    }
-
-    return data;
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    throw data;
   }
+
+  return data;
 };
 
 export const fetchDataWithoutBody = async (
   url: string,
-  token: unknown,
+  token?: unknown,
   method?: string
 ) => {
-  try {
-    const response = await fetch(url, {
-      method: method ?? "GET",
-      headers: {
-        Authorization: "Bearer " + (token ? token : null),
-        "Content-Type": "application/json",
-      },
-    });
+  const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + url, {
+    method: method ?? "GET",
+    headers: {
+      Authorization: "Bearer " + (token ? token : null),
+      "Content-Type": "application/json",
+    },
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (!response.ok) {
-      throw data;
-    }
-
-    return data;
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    throw data;
   }
+
+  return data;
 };

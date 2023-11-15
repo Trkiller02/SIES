@@ -21,8 +21,8 @@ import { useRouter } from "next/navigation";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 export function NavBar() {
-  const router = useRouter();
   const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <Navbar maxWidth="full" isBordered className="font-semibold">
@@ -35,7 +35,7 @@ export function NavBar() {
           style={{ transform: "scale(0.6)" }}
           priority
         />
-        <p className="font-bold text-inherit px-2">SISINSES</p>
+        <p className="font-bold text-inherit px-2">SIES</p>
       </NavbarBrand>
 
       {session?.user.role !== RoleList.USER && (
@@ -59,15 +59,6 @@ export function NavBar() {
               <DropdownItem
                 key="register_total"
                 description="Realizar un registro desde cero."
-                onPress={() => router.push("/register")}
-                color="primary"
-                variant="light"
-              >
-                Registro Total
-              </DropdownItem>
-              <DropdownItem
-                key="estudiante"
-                description="Registrar un estudiante."
                 onPress={() => {
                   router.push("/register/student");
                   if (typeof window !== "undefined")
@@ -76,16 +67,7 @@ export function NavBar() {
                 color="primary"
                 variant="light"
               >
-                Estudiante
-              </DropdownItem>
-              <DropdownItem
-                key="persona"
-                description="Registrar una persona vinculada a un estudiante."
-                onPress={() => router.push("/register/person")}
-                color="primary"
-                variant="light"
-              >
-                Persona
+                Registro Total
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -108,7 +90,7 @@ export function NavBar() {
               <DropdownItem
                 key="estudiante"
                 description="Buscar un estudiante."
-                onPress={() => router.push("/register/student")}
+                onPress={() => router.push("/search/student")}
                 color="primary"
                 variant="light"
               >
@@ -117,18 +99,40 @@ export function NavBar() {
               <DropdownItem
                 key="persona"
                 description="Buscar una persona vinculada a un estudiante."
-                onPress={() => router.push("/register/person")}
+                onPress={() => router.push("/search/person")}
                 color="primary"
                 variant="light"
               >
                 Persona
               </DropdownItem>
+              <DropdownItem
+                key="represent"
+                description="Buscar un representante vinculada a un estudiante."
+                onPress={() => router.push("/search/represent")}
+                color="primary"
+                variant="light"
+              >
+                Representante
+              </DropdownItem>
+              {session?.user.role === RoleList.ADMIN ? (
+                <DropdownItem
+                  key="users"
+                  description="Buscar usuarios del sistema."
+                  onPress={() => router.push("/search/user")}
+                  color="primary"
+                  variant="light"
+                >
+                  Usuarios
+                </DropdownItem>
+              ) : (
+                <h1></h1>
+              )}
             </DropdownMenu>
           </Dropdown>
 
           <NavbarItem>
             <Link color="foreground" href="#">
-              Integrations
+              Herramientas
             </Link>
           </NavbarItem>
         </NavbarContent>
@@ -160,14 +164,17 @@ export function NavBar() {
                 {session?.user.role ? session?.user.role : "Role"}
               </p>
             </DropdownItem>
-            <DropdownItem key="settings" textValue="My Settings">
-              My Settings
-            </DropdownItem>
-            <DropdownItem key="analytics" textValue="Analytics">
-              Analytics
-            </DropdownItem>
-            <DropdownItem key="configurations" textValue="Configurations">
-              Configurations
+            <DropdownItem
+              key="configurations"
+              textValue="Configurations"
+              onPress={() => {
+                if (typeof window !== "undefined") {
+                  localStorage.removeItem("dataRelations");
+                }
+                router.push("/settings");
+              }}
+            >
+              Configuraciones
             </DropdownItem>
             <DropdownItem
               key="logout"
@@ -175,15 +182,15 @@ export function NavBar() {
               color="danger"
               onPress={() => {
                 signOut({
-                  redirect: false,
+                  redirect: true,
                 });
+                router.push("/auth/login");
                 if (typeof window !== "undefined") {
                   localStorage.removeItem("dataRelations");
                 }
-                router.push("/auth/login");
               }}
             >
-              Log Out
+              Cerrar Sesión
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>

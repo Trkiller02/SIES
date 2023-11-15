@@ -7,19 +7,16 @@ export const initValRepresent = {
   lastName: "",
   phoneNumber: "",
   ciNumber: "",
+  tlfnHome: "",
   email: "",
   homeDir: "",
   homeParroquia: "",
   homeMunicipio: "",
-  civilStatus: "",
-  Instrution: "",
   profession: "",
-  business: "",
   workPlace: "",
   workPhoneNumber: "",
-  workEmail: "",
   incomeMonth: 0,
-  sourceIncome: "",
+  relation: "",
 };
 
 export const representSchema = Yup.object({
@@ -30,6 +27,7 @@ export const representSchema = Yup.object({
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   phoneNumber: Yup.string().required(Messages.required),
+  tlfnHome: Yup.string().required(Messages.required),
   ciNumber: Yup.string()
     .matches(regexList.forDNI, Messages.dni_match)
     .required(Messages.required),
@@ -46,16 +44,13 @@ export const representSchema = Yup.object({
   profession: Yup.string()
     .matches(regexList.onlyString)
     .required(Messages.required),
-  business: Yup.string()
-    .matches(regexList.onlyString)
-    .required(Messages.required),
   workPlace: Yup.string()
     .required(Messages.required)
-    .matches(regexList.onlyString, Messages.match_err),
-  workPhoneNumber: Yup.string().required(Messages.required),
-  workEmail: Yup.string().email(Messages.email_err).required(Messages.required),
+    .matches(regexList.onlyString, Messages.match_err)
+    .optional(),
+  workPhoneNumber: Yup.string().required(Messages.required).optional(),
   incomeMonth: Yup.number().positive().optional(),
-  sourceIncome: Yup.string()
+  relation: Yup.string()
     .matches(regexList.onlyString)
     .required(Messages.required),
 });

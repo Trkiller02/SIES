@@ -2,29 +2,19 @@ import {
   IsString,
   IsDateString,
   IsNumber,
-  IsDecimal,
   IsNotEmpty,
   IsOptional,
-  IsEmail,
 } from 'class-validator';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 
 export class CreateStudentDto extends CreatePersonDto {
   @IsNotEmpty()
   @IsString()
-  bornPlace: string;
+  liveWith: string;
 
   @IsNotEmpty()
   @IsString()
   bornState: string;
-
-  @IsNotEmpty()
-  @IsString()
-  bornMunicipio: string;
-
-  @IsString()
-  @IsNotEmpty()
-  bornParroquia: string;
 
   @IsString()
   @IsNotEmpty()

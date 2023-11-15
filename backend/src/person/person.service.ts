@@ -80,6 +80,17 @@ export class PersonService {
     });
   }
 
+  async updateRelation(id: string): Promise<PersonModel> {
+    const person = await this.findOne(id);
+
+    return await this.prisma.person.update({
+      where: person,
+      data: {
+        relation: person.relation + ',RL',
+      },
+    });
+  }
+
   async remove(id: string): Promise<PersonModel> {
     const person = await this.findOne(id);
 

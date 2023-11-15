@@ -18,6 +18,7 @@ async function main() {
 
   const user1 = await prisma.user.create({
     data: {
+      restoreToken: await bcrypt.hash('ADMIN1', 10),
       ciNumber: 'V08999245',
       name: 'Jose',
       lastName: 'Monroe',
@@ -33,6 +34,7 @@ async function main() {
 
   const user2 = await prisma.user.create({
     data: {
+      restoreToken: await bcrypt.hash('EDITOR1', 10),
       ciNumber: 'V29886239',
       name: 'PEPE',
       lastName: 'JUVENCIO',
@@ -49,6 +51,7 @@ async function main() {
   const user3 = await prisma.user.create({
     data: {
       ciNumber: 'V29886129',
+      restoreToken: await bcrypt.hash('USER1', 10),
       name: 'JOSUE',
       lastName: 'BRITO',
       email: 'user@user.com',

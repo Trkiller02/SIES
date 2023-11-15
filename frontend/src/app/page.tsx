@@ -1,9 +1,12 @@
-import LoginComponent from "@/components/auth/LoginComponent";
+'use client'
+
+import BarChart from '@/components/Charts';
+import DashboardLayout from './dashboard/layout';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <LoginComponent />
-    </main>
+    <DashboardLayout>
+      <BarChart />
+    </DashboardLayout>
   );
 }

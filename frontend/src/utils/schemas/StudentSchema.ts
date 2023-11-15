@@ -11,18 +11,17 @@ export const initValStudent = {
   homeDir: "",
   homeParroquia: "",
   homeMunicipio: "",
-  bornPlace: "",
   bornState: "",
-  bornMunicipio: "",
-  bornParroquia: "",
   bornPais: "",
-  bornDate: "2003-01-01",
+  bornDate: "2006-01-01",
   age: 0,
   sex: "",
   weight: 0,
   size: 0,
+  liveWith: "",
   Lateralidad: "",
   instPro: "",
+  relation: "E",
 };
 
 export const studentSchema = Yup.object({
@@ -46,16 +45,7 @@ export const studentSchema = Yup.object({
   homeMunicipio: Yup.string()
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
-  bornPlace: Yup.string()
-    .matches(regexList.forDir, Messages.match_err)
-    .required(Messages.required),
   bornState: Yup.string()
-    .matches(regexList.onlyString, Messages.match_err)
-    .required(Messages.required),
-  bornMunicipio: Yup.string()
-    .matches(regexList.onlyString, Messages.match_err)
-    .required(Messages.required),
-  bornParroquia: Yup.string()
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
   bornPais: Yup.string()
@@ -83,6 +73,9 @@ export const studentSchema = Yup.object({
   sex: Yup.string().required(Messages.required),
   Lateralidad: Yup.string().required(Messages.required),
   instPro: Yup.string()
+    .matches(regexList.onlyString, Messages.match_err)
+    .required(Messages.required),
+  liveWith: Yup.string()
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
 });

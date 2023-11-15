@@ -1,6 +1,6 @@
 import DashboardLayout from "../dashboard/layout";
 
-export default function restrictedLayout({
+export default function SetttingLayout({
   children,
 }: {
   children: React.ReactNode;

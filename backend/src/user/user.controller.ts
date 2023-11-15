@@ -14,11 +14,11 @@ import { User as UserModel } from '@prisma/client';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
 
-@Auth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Auth()
   @Post()
   create(@Body() createUserDto: CreateUserDto): Promise<UserModel> {
     return this.userService.create(createUserDto);
@@ -35,6 +35,7 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
+  @Auth()
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -43,6 +44,7 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
+  @Auth()
   @Delete(':id')
   remove(@Param('id') id: string): Promise<UserModel> {
     return this.userService.remove(id);

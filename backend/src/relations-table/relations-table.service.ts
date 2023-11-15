@@ -29,9 +29,8 @@ export class RelationsTableService {
       include: {
         representRelation: true,
         fichaRelation: true,
-        motherPersonRelation: true,
-        fatherPersonRelation: true,
-        thirdPersonRelation: true,
+        motherRelation: true,
+        fatherRelation: true,
         statusRelation: true,
         studentRelation: true,
       },

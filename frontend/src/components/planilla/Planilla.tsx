@@ -1,4 +1,4 @@
-export default function PlanillaMedia() {
+export default function PlanillaMedia1() {
   return (
     <section>
       <style>

@@ -2,18 +2,20 @@
 
 import { LoginSchema, LoginValues } from "@/utils/schemas/AuthSchema";
 import { Button, Input, Link } from "@nextui-org/react";
+import Image from "next/image";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
 import {
-  MdCancel,
-  MdCheckCircle,
   MdOutlineRemoveRedEye,
   MdRemoveRedEye,
 } from "react-icons/md";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { LoginI } from '@/types/auth.interfaces';
+
+
 
 export default function LoginComponent() {
   const [nameInput, setNameInput] = useState("email");
@@ -22,37 +24,42 @@ export default function LoginComponent() {
   const toggleVisibility = () => setVisible(!isVisible);
   const router = useRouter();
 
+  const sendInfo = async (values: LoginI) => {
+    setLoading(true);
+    try {
+      const sendAuth = await signIn("credentials", {
+        email: values.email,
+        ciNumber: values.ciNumber,
+        password: values.password,
+        redirect: false,
+      });
+      if (sendAuth?.ok) {
+        return "¡Inicio de Sesion con exito!";
+      } else {
+        throw sendAuth;
+      }
+    } catch (error) {
+      throw new Error(error.error === "fetch failed" ? "Error en conexión." : error.error ?? "Algo salio mal.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const formik = useFormik({
     initialValues: LoginValues,
     validationSchema: LoginSchema,
     onSubmit: async (values) => {
-      setLoading(true);
-      try {
-        const sendAuth = await signIn("credentials", {
-          email: values.email,
-          ciNumber: values.ciNumber,
-          password: values.password,
-          redirect: false,
-        });
-        if (sendAuth?.ok) {
-          toast.success("¡Inicio de Sesion con exito!", {
-            description: "Redirigiendo al sistema 🚀",
-            duration: 3000,
-            icon: <MdCheckCircle />,
-            onDismiss: () => router.push("/dashboard"),
-            onAutoClose: () => router.push("/dashboard"),
-          });
+      toast.promise(sendInfo(values), {
+        loading: "Procesando...",
+        success: (data) => {
+          router.push('/');
+          return data;
+        },
+        error: (error: Error) => {
+          return error.message;
         }
-        if (sendAuth?.error) throw sendAuth;
-      } catch (error) {
-        toast.error("¡Algo salió mal!", {
-          description: `${error.error}`,
-          duration: 6000,
-          icon: <MdCancel />,
-        });
-      } finally {
-        setLoading(false);
-      }
+      })
+
     },
   });
 
@@ -75,7 +82,14 @@ export default function LoginComponent() {
       className="grid place-items-center h-2/4 w-2/4 border border-gray-300 rounded-xl p-16 shadow-xl"
     >
       <div>
-        <h1>Iniciar Sesion | SINSES</h1>
+        <Image
+          src="/img/image1.svg"
+          alt="logo"
+          width={164}
+          height={164}
+          priority
+        />
+        <h1>Iniciar Sesion | SIES</h1>
       </div>
       <div className="flex flex-col gap-5 w-full">
         <Input

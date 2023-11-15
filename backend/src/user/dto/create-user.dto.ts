@@ -7,30 +7,52 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { messagesEnum, validationMsg } from 'src/utils/handlerMsg';
 
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: validationMsg('El nombre', messagesEnum.not_empty),
+  })
   ciNumber: string;
 
   @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
+  @IsNotEmpty({
+    message: validationMsg('El nombre', messagesEnum.not_empty),
+  })
+  @MinLength(2, {
+    message: validationMsg('El nombre', messagesEnum.not_min),
+  })
   name: string;
 
   @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
+  @IsNotEmpty({
+    message: validationMsg('El apellido', messagesEnum.not_empty),
+  })
+  @MinLength(2, {
+    message: validationMsg('El apellido', messagesEnum.not_min),
+  })
   lastName: string;
 
   @IsEmail()
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: validationMsg('La email', messagesEnum.not_empty),
+  })
   email: string;
 
   @Transform(({ value }) => value.trim())
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: validationMsg('La contraseña', messagesEnum.not_empty),
+  })
   @MinLength(4)
   password: string;
+
+  @Transform(({ value }) => value.trim().toUpperCase())
+  @IsNotEmpty({
+    message: validationMsg('El token de recuperación', messagesEnum.not_empty),
+  })
+  @MinLength(4)
+  restoreToken: string;
 
   @IsDate()
   @IsOptional()

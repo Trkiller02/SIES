@@ -10,13 +10,21 @@ export class CreateFichaDto {
 
   @IsNotEmpty()
   @IsString()
+  etapa: string;
+
+  @IsNotEmpty()
+  @IsString()
+  turno: string;
+
+  @IsNotEmpty()
+  @IsString()
   section: string;
 
   @IsNotEmpty()
   @IsString()
   procePlant: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   escolarPeriod: string;
 

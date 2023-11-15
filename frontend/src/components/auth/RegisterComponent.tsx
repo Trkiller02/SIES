@@ -48,6 +48,7 @@ export default function RegisterComponent() {
             lastName: values.lastName,
             name: values.name,
             password: values.password,
+            restoreToken: values.restoreToken,
           }
         );
 
@@ -56,6 +57,7 @@ export default function RegisterComponent() {
           duration: 4000,
           icon: <MdCheckCircle />,
           onAutoClose: () => router.push("/auth/login"),
+          onDismiss: () => router.push("/auth/login"),
         });
       } catch (error) {
         toast.error("¡Algo salió mal!", {

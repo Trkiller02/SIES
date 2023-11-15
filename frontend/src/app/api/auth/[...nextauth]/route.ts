@@ -17,21 +17,18 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        try {
-          const res = await fetch(backendUrl + "/auth/login", {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          });
 
-          const user = await res.json();
+        const res = await fetch(backendUrl + "/auth/login", {
+          method: "POST",
+          body: JSON.stringify(credentials),
+          headers: { "Content-Type": "application/json" },
+        });
 
-          if (user.error) throw user;
+        const user = await res.json();
 
-          if (res.ok && user) return user;
-        } catch (error) {
-          throw error;
-        }
+        if (!res.ok) throw user;
+
+        if (res.ok && user) return user;
       },
     }),
   ],
@@ -41,6 +38,7 @@ export const authOptions: AuthOptions = {
         token.user = {
           name: user.name,
           lastName: user.lastName,
+          ciNumber: user.ciNumber,
           email: user.email,
           role: user.role,
           token: user.token,

@@ -9,25 +9,22 @@ export function ProgressChecker() {
   const [values, setValues] = useState<string[]>([]);
 
   const dataHandler = () => {
-    if (dataRelations.fichaId !== "")
+    if (dataRelations.fichaId !== "" && dataRelations.fichaId !== undefined && dataRelations.fichaId)
       setValues((values) => [...values, "fichaId"]);
-    if (dataRelations.statusId !== "")
+    if (dataRelations.statusId !== "" && dataRelations.statusId !== undefined && dataRelations.statusId)
       setValues((values) => [...values, "statusId"]);
-    if (dataRelations.representCiNumbers !== "")
+    if (dataRelations.representCiNumbers !== "" && dataRelations.representCiNumbers !== undefined && dataRelations.representCiNumbers)
       setValues((values) => [...values, "representCiNumbers"]);
-    if (dataRelations.motherPersonCiNumbers !== "")
+    if (dataRelations.motherPersonCiNumbers !== "" && dataRelations.motherPersonCiNumbers !== undefined && dataRelations.motherPersonCiNumbers)
       setValues((values) => [...values, "motherPersonCiNumbers"]);
-    if (dataRelations.fatherPersonCiNumbers !== "")
+    if (dataRelations.fatherPersonCiNumbers !== "" && dataRelations.fatherPersonCiNumbers !== undefined && dataRelations.fatherPersonCiNumbers)
       setValues((values) => [...values, "fatherPersonCiNumbers"]);
-    if (dataRelations.studentId !== "")
+    if (dataRelations.studentId !== "" && dataRelations.studentId && dataRelations.studentId !== undefined)
       setValues((values) => [...values, "studentId"]);
-    if (dataRelations.thirdPersonCiNumbers !== "")
-      setValues((values) => [...values, "thirdPersonCiNumbers"]);
   };
 
   useEffect(() => {
     dataHandler();
-    console.log(values);
   }, [dataRelations]);
 
   return (
@@ -36,10 +33,9 @@ export function ProgressChecker() {
         <Checkbox value="studentId">ESTUDIANTE</Checkbox>
         <Checkbox value="statusId">DATOS MEDICOS</Checkbox>
         <Checkbox value="fichaId">DATOS ACADEMICOS</Checkbox>
-        <Checkbox value="representCiNumbers">REPRESENTANTE</Checkbox>
-        <Checkbox value="motherPersonCiNumbers">MADRE</Checkbox>
         <Checkbox value="fatherPersonCiNumbers">PADRE</Checkbox>
-        <Checkbox value="thirdPersonCiNumbers">FAMILIAR</Checkbox>
+        <Checkbox value="motherPersonCiNumbers">MADRE</Checkbox>
+        <Checkbox value="representCiNumbers">REPRESENTANTE</Checkbox>
       </CheckboxGroup>
     </section>
   );

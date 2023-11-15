@@ -8,6 +8,8 @@ import { User as UserModel } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
+import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class UserService {
@@ -21,9 +23,13 @@ export class UserService {
           { email: { equals: userCreateData.email } },
         ],
       },
+      select: {
+        id: true,
+      },
     });
 
-    if (user) throw new ConflictException('El usuario ya existe');
+    if (user)
+      conflict_err(messagesEnum.conflict_err, 'El usuario ya está registrado.');
 
     const passHashed = await bcrypt.hash(userCreateData.password, 10);
     userCreateData.password = passHashed;
@@ -40,7 +46,7 @@ export class UserService {
     const users = await this.prisma.user.findMany();
 
     if (users.length === 0) {
-      throw new NotFoundException('No existen usuarios');
+      not_found_err(messagesEnum.not_found, 'No existen usuarios.');
     }
 
     return users;
@@ -53,7 +59,7 @@ export class UserService {
       },
     });
 
-    if (!user) throw new NotFoundException('Usuario no encontrado');
+    if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
 
     return user;
   }
@@ -68,7 +74,7 @@ export class UserService {
       },
     });
 
-    if (!user) throw new NotFoundException('Usuario no encontrado');
+    if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
 
     return user;
   }
@@ -77,35 +83,31 @@ export class UserService {
     ciNumber: string,
     updateData: UpdateUserDto,
   ): Promise<UserModel> {
-    const id = await this.prisma.user.findFirst({
-      where: { ciNumber },
-      select: { id: true },
-    });
+    const user = await this.findOne(ciNumber);
 
-    if (!id) throw new NotFoundException('Usuario no encontrado');
+    const { password, restoreToken } = updateData;
 
-    const { password } = updateData;
     if (password) {
       const passHashed = await bcrypt.hash(password, 10);
       updateData.password = passHashed;
     }
 
+    if (restoreToken) {
+      const rTokenHashed = await bcrypt.hash(restoreToken, 10);
+      updateData.password = rTokenHashed;
+    }
+
     return await this.prisma.user.update({
-      where: id,
+      where: user,
       data: updateData,
     });
   }
 
   async remove(ciNumber: string) {
-    const id = await this.prisma.user.findFirst({
-      where: { ciNumber: ciNumber },
-      select: { id: true },
-    });
-
-    if (!id) throw new NotFoundException('Usuario no encontrado');
+    const user = await this.findOne(ciNumber);
 
     return await this.prisma.user.delete({
-      where: id,
+      where: user,
     });
   }
 }

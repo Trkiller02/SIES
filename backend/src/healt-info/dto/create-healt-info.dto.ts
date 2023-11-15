@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateHealtInfoDto {
   @IsOptional()
@@ -7,69 +7,25 @@ export class CreateHealtInfoDto {
 
   @IsOptional()
   @IsString()
-  operation?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  enfermedades: string;
-
-  @IsNotEmpty()
-  @IsString()
-  conditionEsp: string;
-
-  @IsNotEmpty()
-  @IsString()
-  asisMedica: string;
-
-  @IsNotEmpty()
-  @IsString()
-  bloodType: string;
-
-  @IsNotEmpty()
-  @IsString()
-  medicEsp: string;
-
-  @IsNotEmpty()
-  @IsString()
-  infoMedic: string;
-
-  @IsNotEmpty()
-  @IsString()
-  liveWith: string;
-
-  @IsNotEmpty()
-  @IsString()
-  poseeHer: string;
+  trataEsp: string;
 
   @IsOptional()
-  @IsString()
-  levelHer?: string;
-
-  @IsOptional()
-  @IsString()
-  ageHer?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  preferComp: string;
-
-  @IsNotEmpty()
-  @IsString()
-  creationGroup: string;
-
-  @IsNotEmpty()
   @IsString()
   preferAct: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   recreTime: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  transporte: string;
+  siteAct: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  resOriStudent: string;
+  proLevel: string;
+
+  @IsOptional()
+  @IsString()
+  plantProce: string;
 }
