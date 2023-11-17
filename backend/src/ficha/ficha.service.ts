@@ -21,20 +21,100 @@ export class FichaService {
   }
 
   //TODO: BUSCA TODAS LAS FICHAS
-  async findAll(): Promise<FichaModel[]> {
-    const fichas = await this.prismaService.ficha.findMany();
+  async findAll(querys: any | undefined): Promise<FichaModel[]> {
+    const { level, etapa, section } = querys;
 
-    if (fichas.length === 0) {
-      not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
+    if (level || etapa || section) {
+      const fichas = await this.prismaService.ficha.findMany({
+        where: {
+          OR: [
+            { level: { equals: level } },
+            { etapa: { equals: etapa }, section: { equals: section } },
+          ],
+        },
+        include: {
+          relationTable: {
+            include: {
+              studentRelation: {
+                include: {
+                  studentRelation: {
+                    select: {
+                      name: true,
+                      lastName: true,
+                      ciNumber: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      if (fichas.length === 0) {
+        not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
+      }
+
+      return fichas;
+    } else {
+      const fichas = await this.prismaService.ficha.findMany({
+        include: {
+          relationTable: {
+            include: {
+              studentRelation: {
+                include: {
+                  studentRelation: {
+                    select: {
+                      name: true,
+                      lastName: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (fichas.length === 0) {
+        not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
+      }
+
+      return fichas;
     }
-
-    return fichas;
   }
 
   //TODO: BUSCA UNA FICHA
   async findOne(id: string): Promise<FichaModel> {
     const ficha = await this.prismaService.ficha.findFirst({
       where: { idFicha: id },
+      include: {
+        relationTable: {
+          include: {
+            studentRelation: {
+              include: {
+                studentRelation: true,
+              },
+            },
+            representRelation: {
+              include: {
+                personRelation: true,
+              },
+            },
+            statusRelation: true,
+            fichaRelation: true,
+            motherRelation: {
+              include: {
+                personRelation: true,
+              },
+            },
+            fatherRelation: {
+              include: {
+                personRelation: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!ficha) {

@@ -15,6 +15,7 @@ import { toast } from "sonner";
 export default function StudentForm() {
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const { data: session } = useSession();
+  const [caseOther, setCaseOther] = useState(false);
 
   const router = useRouter();
 
@@ -79,6 +80,16 @@ export default function StudentForm() {
       router.push('/register/health')
     }
   }, [dataRelations]);
+
+  useEffect(() => {
+    if (formik.values.liveWith === 'OTRO' && formik.values.liveWith !== '') {
+      setCaseOther(true);
+    }
+    if (formik.values.liveWith === 'MADRE' || formik.values.liveWith === 'PADRE') {
+      setCaseOther(false);
+    }
+
+  }, [formik.values.liveWith])
 
   return (
     <form
@@ -313,27 +324,61 @@ export default function StudentForm() {
           endContent={<p className="text-gray-400 font-medium text-base">m</p>}
         />
 
-        <Input
+        <Select
           isRequired
           label="Vive con:"
-          name="liveWith"
-          description="El estudiante vive con:"
           variant="bordered"
-          color={
-            formik.errors.liveWith && formik.touched.liveWith
-              ? "danger"
-              : "primary"
-          }
+          name="liveWith"
+          className="col-span-3"
+          description="El estudiante vive con:"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
           errorMessage={
             formik.errors.liveWith &&
             formik.touched.liveWith &&
             formik.errors.liveWith
           }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-3"
-          value={formik.values.liveWith.toUpperCase()}
-        />
+          color={
+            formik.errors.liveWith && formik.touched.liveWith
+              ? "danger"
+              : "primary"
+          }
+        >
+          <SelectItem key={"MADRE"} value={"MADRE"}>
+            MADRE
+          </SelectItem>
+          <SelectItem key={"PADRE"} value={"PADRE"}>
+            PADRE
+          </SelectItem>
+          <SelectItem key={"OTRO"} value={"OTRO"}>
+            OTRO
+          </SelectItem>
+        </Select>
+
+        {
+          caseOther && <Input
+            isRequired
+            label="Vive con:"
+            name="liveWith"
+            description="El estudiante vive con:"
+            variant="bordered"
+            color={
+              formik.errors.liveWith && formik.touched.liveWith
+                ? "danger"
+                : "primary"
+            }
+            errorMessage={
+              formik.errors.liveWith &&
+              formik.touched.liveWith &&
+              formik.errors.liveWith
+            }
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="col-span-2"
+            value={formik.values.liveWith.toUpperCase()}
+          />
+
+        }
 
         <Input
           isRequired

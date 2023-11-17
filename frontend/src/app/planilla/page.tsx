@@ -18,16 +18,16 @@ export default function planillaPage() {
       await doc.html(planilla1, {
         x: 0,
         y: 0,
-        autoPaging: "text",
+        autoPaging: "slice",
         html2canvas: {
           windowWidth: wDoc,
           windowHeight: hDoc,
           height: hDoc,
           width: wDoc,
-          scale: 0.26,
+          scale: 0.193,
         },
-        width: wDoc * 2,
-        windowWidth: wDoc * 3.7,
+        width: wDoc,
+        windowWidth: wDoc * 4.9,
       });
       doc.output("dataurlnewwindow", { filename: "planilla" });
 

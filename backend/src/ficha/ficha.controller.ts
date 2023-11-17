@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { FichaService } from './ficha.service';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
+import { query } from 'express';
 
 @Auth([Role.EDITOR])
 @Controller('ficha')
@@ -24,8 +26,8 @@ export class FichaController {
   }
 
   @Get()
-  findAll() {
-    return this.fichaService.findAll();
+  findAll(@Query() querys) {
+    return this.fichaService.findAll(querys);
   }
 
   @Get(':id')

@@ -6,9 +6,11 @@ import { fetchData } from "@/utils/fetchHandler";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "@nextui-org/react";
+import { useRouter } from 'next/navigation';
 
 export default function RelationsForm() {
   const { data: session } = useSession();
+  const router = useRouter()
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
 
   const clearRelationsFunc = () => {
@@ -27,53 +29,73 @@ export default function RelationsForm() {
     const data = clearRelationsFunc();
 
     const res = fetchData(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/relations-table`,
+      `/relations-table`,
       "POST",
       data,
       session?.user.token
     );
 
-    return res;
+    if (res) {
+      return "Registro completado";
+    }
   };
   return (
     <section>
-      {dataRelations.motherPersonCiNumbers && (
-        <p>C.I MADRE: {dataRelations.motherPersonCiNumbers}</p>
-      )}
-      {dataRelations.motherPersonCiNumbers === "omit" && (
-        <p>C.I MADRE: SIN PARENTESCO</p>
-      )}
-      {dataRelations.fatherPersonCiNumbers && (
-        <p>C.I Padre: {dataRelations.fatherPersonCiNumbers}</p>
-      )}
-      {dataRelations.fatherPersonCiNumbers === "omit" && (
-        <p>C.I PADRE: SIN PARENTESCO.</p>
-      )}
-      {dataRelations.representCiNumbers && (
-        <p>C.I REPRESENTANTE: {dataRelations.representCiNumbers}</p>
-      )}
-      {dataRelations.representCiNumbers === "omit" ||
-        (dataRelations.representCiNumbers === "" && (
-          <p>C.I REPRESENTANTE: SIN PARENTESCO.</p>
-        ))}
-      {dataRelations.thirdPersonCiNumbers && (
-        <p>C.I FAMILIAR: {dataRelations.thirdPersonCiNumbers}</p>
-      )}{" "}
-      {dataRelations.thirdPersonCiNumbers === "omit" ||
-        (dataRelations.thirdPersonCiNumbers === "" && (
-          <p>C.I FAIMILIAR: SIN PARENTESCO.</p>
-        ))}
-      {dataRelations.studentId ? dataRelations.studentId : ""}
+      {
+        dataRelations ?
+          <table className="table-auto border-collapse">
+            <tbody>
+              <tr>
+                <td className="border border-blue-300 px-4 py-2">C.I Madre:</td>
+                <td className="border border-blue-300 px-4 py-2">
+                  {dataRelations.motherPersonCiNumbers === "omit" || dataRelations.motherPersonCiNumbers === "" || dataRelations.motherPersonCiNumbers === undefined ? (
+                    "SIN PARENTESCO"
+                  ) : dataRelations.motherPersonCiNumbers}
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-blue-300 px-4 py-2">C.I Padre:</td>
+                <td className="border border-blue-300 px-4 py-2">
+                  {dataRelations.fatherPersonCiNumbers === "omit" || dataRelations.fatherPersonCiNumbers === "" || dataRelations.fatherPersonCiNumbers === undefined ? (
+                    "SIN PARENTESCO"
+                  ) : dataRelations.fatherPersonCiNumbers}
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-blue-300 px-4 py-2">C.I REPRESENTANTE:</td>
+                <td className="border border-blue-300 px-4 py-2">
+                  {dataRelations.representCiNumbers === "omit" || dataRelations.representCiNumbers === "" || dataRelations.representCiNumbers === undefined ? (
+                    "SIN PARENTESCO"
+                  ) : dataRelations.representCiNumbers}
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-blue-300 px-4 py-2">C.I Estudiante:</td>
+                <td className="border border-blue-300 px-4 py-2">
+                  {dataRelations.studentId ? dataRelations.studentId : ""}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          : <p>No se encuentra información</p>
+      }
+
+
       <Button
         isDisabled={dataRelations.studentId ? false : true}
         color="primary"
         variant="ghost"
         aria-label="Buscar entidad"
         className="w-3/4 h-3/4"
+        size='md'
         onClick={() =>
           toast.promise(handleSubmit(), {
             loading: "Procesando...",
             success: (data) => {
+              router.push(`/search/student/${dataRelations.studentId}`)
+              if (typeof window !== 'undefined') {
+                localStorage.removeItem('dataRelations')
+              }
               return data;
             },
             error: (error: Error) => {

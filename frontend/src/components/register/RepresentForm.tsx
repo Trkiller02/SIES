@@ -18,6 +18,8 @@ export default function RepresentForm() {
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const { data: session } = useSession();
 
+  const [disKeys, setDisKeys] = useState([]);
+
   const router = useRouter();
 
   const [Loading, setLoading] = useState(false);
@@ -91,10 +93,25 @@ export default function RepresentForm() {
         },
         error: (error: Error) => {
           return error.message;
+        },
+        finally: () => {
+          setLoading(false);
         }
       })
     },
   });
+
+  const disabledKeys = () => {
+    if (dataRelations.motherPersonCiNumbers !== "") {
+      setDisKeys((disKeys) => [...disKeys, "M"])
+    }
+    if (dataRelations.fatherPersonCiNumbers !== "") {
+      setDisKeys((disKeys) => [...disKeys, "P"])
+    }
+    if (dataRelations.representCiNumbers !== "") {
+      setDisKeys((disKeys) => [...disKeys, "RL"])
+    }
+  }
 
   const searchRepresent = async () => {
     const data = await fetchDataWithoutBody(
@@ -133,6 +150,10 @@ export default function RepresentForm() {
   useEffect(() => {
     routeHandler()
   }, [])
+
+  useEffect(() => {
+    disabledKeys()
+  }, [dataRelations])
 
   return (
     <form
@@ -213,13 +234,13 @@ export default function RepresentForm() {
                 case "M":
                   setDataRelations({
                     ...dataRelations,
-                    motherPersonCiNumbers: "null",
+                    motherPersonCiNumbers: "omit",
                   });
                   break;
                 case "P":
                   setDataRelations({
                     ...dataRelations,
-                    fatherPersonCiNumbers: "null",
+                    fatherPersonCiNumbers: "omit",
                   });
                   break;
                 default:
@@ -236,6 +257,7 @@ export default function RepresentForm() {
           variant="bordered"
           name="relation"
           id="relation"
+          disabledKeys={disKeys}
           className="col-span-3"
           description={"Ingrese la relacion con el estudiante."}
           onChange={formik.handleChange}
@@ -308,6 +330,7 @@ export default function RepresentForm() {
           label="Correo electrónico:"
           type="email"
           name="email"
+          value={formik.values.email}
           description="Ingrese su correo electrónico"
           variant="bordered"
           color={
@@ -327,6 +350,7 @@ export default function RepresentForm() {
           name="phoneNumber"
           description="Ingrese su número de teléfono"
           variant="bordered"
+          value={formik.values.phoneNumber}
           color={
             formik.errors.phoneNumber && formik.touched.phoneNumber
               ? "danger"

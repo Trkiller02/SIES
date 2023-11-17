@@ -1,17 +1,49 @@
 "use client";
 
+import { Avatar, AvatarIcon } from '@nextui-org/react';
 import { useSession } from "next-auth/react";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
 
   return (
-    <section>
-      <h1>
-        {session?.user.name}&nbsp;{session?.user.lastName}
-      </h1>
-      <p>{session?.user.email}</p>
-      <p>{session?.user.ciNumber}</p>
+    <section className="p-20 bg-white rounded-xl shadow-md grid grid-cols-2">
+      <div className='grid grid-rows-2 place-items-center gap-6'>
+        <Avatar
+          isBordered
+          as="button"
+          className="transition-transform scale-150"
+          color="primary"
+          size="lg"
+          icon={<AvatarIcon />}
+        />
+        <h1 className="text-3xl font-semibold text-black">
+          {session?.user.name}&nbsp;{session?.user.lastName}
+        </h1>
+      </div>
+      <div className='grid grid-cols-2 gap-4 place-items-baseline'>
+        <p className="text-2xl text-gray-500">
+          Correo electronico:
+        </p>
+        <p className="text-xl text-gray-700">
+          {session?.user.email}
+        </p>
+
+        <p className="text-2xl text-gray-500">
+          Cedula de Identidad:
+        </p>
+        <p className="text-xl text-gray-700">
+          {session?.user.ciNumber}
+        </p>
+
+        <p className="text-2xl text-gray-500 text-end">
+          Rol:
+        </p>
+        <p className="text-xl text-gray-700">
+          {session?.user.role}
+        </p>
+
+      </div>
     </section>
   );
 }
