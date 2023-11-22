@@ -13,7 +13,6 @@ import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
-import { query } from 'express';
 
 @Auth([Role.EDITOR])
 @Controller('ficha')

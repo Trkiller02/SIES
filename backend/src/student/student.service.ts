@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -11,6 +7,7 @@ import { Student as StudentModel } from '@prisma/client';
 import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
 
+// ... ...
 @Injectable()
 export class StudentService {
   constructor(
@@ -62,6 +59,7 @@ export class StudentService {
       },
     });
   }
+  // ...  ...
 
   async findAll() {
     const students = await this.prisma.student.findMany();
@@ -71,6 +69,8 @@ export class StudentService {
 
     return students;
   }
+
+  // ... ...
 
   async findOne(id: string, pass?: boolean): Promise<StudentModel> {
     const student = await this.prisma.student.findUnique({
@@ -86,6 +86,8 @@ export class StudentService {
 
     return student;
   }
+
+  // ... ...
 
   async update(id: string, updateStudentDto: UpdateStudentDto) {
     const student = await this.findOne(id);

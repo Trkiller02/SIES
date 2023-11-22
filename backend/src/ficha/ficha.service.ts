@@ -27,10 +27,10 @@ export class FichaService {
     if (level || etapa || section) {
       const fichas = await this.prismaService.ficha.findMany({
         where: {
-          OR: [
-            { level: { equals: level } },
-            { etapa: { equals: etapa }, section: { equals: section } },
-          ],
+          level: { equals: level },
+          etapa: { equals: etapa },
+          section: { equals: section },
+          relationTable: { isNot: null },
         },
         include: {
           relationTable: {
@@ -86,30 +86,28 @@ export class FichaService {
   //TODO: BUSCA UNA FICHA
   async findOne(id: string): Promise<FichaModel> {
     const ficha = await this.prismaService.ficha.findFirst({
-      where: { idFicha: id },
+      where: {
+        OR: [
+          {
+            relationTable: {
+              studentId: { equals: id },
+            },
+          },
+          { idFicha: id },
+        ],
+      },
       include: {
         relationTable: {
           include: {
             studentRelation: {
               include: {
-                studentRelation: true,
-              },
-            },
-            representRelation: {
-              include: {
-                personRelation: true,
-              },
-            },
-            statusRelation: true,
-            fichaRelation: true,
-            motherRelation: {
-              include: {
-                personRelation: true,
-              },
-            },
-            fatherRelation: {
-              include: {
-                personRelation: true,
+                studentRelation: {
+                  select: {
+                    name: true,
+                    lastName: true,
+                    ciNumber: true,
+                  },
+                },
               },
             },
           },

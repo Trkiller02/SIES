@@ -24,10 +24,10 @@ export default function planillaPage() {
           windowHeight: hDoc,
           height: hDoc,
           width: wDoc,
-          scale: 0.193,
+          scale: 0.19,
         },
         width: wDoc,
-        windowWidth: wDoc * 4.9,
+        windowWidth: wDoc * 5,
       });
       doc.output("dataurlnewwindow", { filename: "planilla" });
 
@@ -39,7 +39,7 @@ export default function planillaPage() {
   return (
     <section className="px-9 pt-9 pb-6 m-4 shadow-md w-4/5 border border-gray-300 rounded-2xl">
       <div className="rounded-md p-1 border border-gray-300 shadow-inner">
-        <PlanillaMedia />
+        <PlanillaMedia data={undefined} />
       </div>
       <div className="flex flex-row justify-between mt-5 mx-5">
         <Button

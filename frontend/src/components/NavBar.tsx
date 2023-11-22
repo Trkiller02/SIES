@@ -38,8 +38,8 @@ export function NavBar() {
         <p className="font-bold text-inherit px-2">SIES</p>
       </NavbarBrand>
 
-      {session?.user.role !== RoleList.USER && (
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      {session?.user.role === RoleList.USER ?
+        <NavbarContent>
           <Dropdown>
             <NavbarItem>
               <DropdownTrigger>
@@ -51,92 +51,161 @@ export function NavBar() {
                     <MdKeyboardArrowDown className="text-primary-300 text-lg" />
                   }
                 >
-                  Registrar
+                  Herramientas
                 </Button>
               </DropdownTrigger>
             </NavbarItem>
             <DropdownMenu aria-label="register actions">
               <DropdownItem
-                key="register_total"
-                description="Realizar un registro desde cero."
+                key="planilla_media"
+                description="Planilla Inscripción Educación Media General."
                 onPress={() => {
-                  router.push("/register/student");
-                  if (typeof window !== "undefined")
-                    localStorage.removeItem("dataRelations");
+                  router.push("/planilla/media");
                 }}
                 color="primary"
                 variant="light"
               >
-                Registro Total
+                Planilla Educación Media General
+              </DropdownItem>
+              <DropdownItem
+                key="planilla_primaria"
+                description="Planilla Educación Primaria"
+                onPress={() => {
+                  router.push("/planilla/primaria");
+                }}
+                color="primary"
+                variant="light"
+              >
+                Planilla Educación Primaria
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <Dropdown>
-            <NavbarItem>
-              <DropdownTrigger>
-                <Button
-                  disableRipple
-                  className="p-0 bg-transparent data-[hover=true]:bg-transparent font-semibold"
-                  variant="light"
-                  endContent={
-                    <MdKeyboardArrowDown className="text-primary-300 text-lg" />
-                  }
-                >
-                  Buscar
-                </Button>
-              </DropdownTrigger>
-            </NavbarItem>
-            <DropdownMenu aria-label="search actions">
-              <DropdownItem
-                key="estudiante"
-                description="Buscar un estudiante."
-                onPress={() => router.push("/search/student")}
-                color="primary"
-                variant="light"
-              >
-                Estudiante
-              </DropdownItem>
-              <DropdownItem
-                key="persona"
-                description="Buscar una persona vinculada a un estudiante."
-                onPress={() => router.push("/search/person")}
-                color="primary"
-                variant="light"
-              >
-                Persona
-              </DropdownItem>
-              <DropdownItem
-                key="represent"
-                description="Buscar un representante vinculada a un estudiante."
-                onPress={() => router.push("/search/represent")}
-                color="primary"
-                variant="light"
-              >
-                Representante
-              </DropdownItem>
-              {session?.user.role === RoleList.ADMIN ? (
+        </NavbarContent>
+        : (
+          <NavbarContent className="hidden sm:flex gap-4" justify="center">
+            <Dropdown>
+              <NavbarItem>
+                <DropdownTrigger>
+                  <Button
+                    disableRipple
+                    className="p-0 bg-transparent data-[hover=true]:bg-transparent font-semibold"
+                    variant="light"
+                    endContent={
+                      <MdKeyboardArrowDown className="text-primary-300 text-lg" />
+                    }
+                  >
+                    Registrar
+                  </Button>
+                </DropdownTrigger>
+              </NavbarItem>
+              <DropdownMenu aria-label="register actions">
                 <DropdownItem
-                  key="users"
-                  description="Buscar usuarios del sistema."
-                  onPress={() => router.push("/search/user")}
+                  key="register_total"
+                  description="Realizar un registro desde cero."
+                  onPress={() => {
+                    router.push("/register/student");
+                    if (typeof window !== "undefined")
+                      localStorage.removeItem("dataRelations");
+                  }}
                   color="primary"
                   variant="light"
                 >
-                  Usuarios
+                  Registro Total
                 </DropdownItem>
-              ) : (
-                <h1></h1>
-              )}
-            </DropdownMenu>
-          </Dropdown>
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown>
+              <NavbarItem>
+                <DropdownTrigger>
+                  <Button
+                    disableRipple
+                    className="p-0 bg-transparent data-[hover=true]:bg-transparent font-semibold"
+                    variant="light"
+                    endContent={
+                      <MdKeyboardArrowDown className="text-primary-300 text-lg" />
+                    }
+                  >
+                    Buscar
+                  </Button>
+                </DropdownTrigger>
+              </NavbarItem>
+              <DropdownMenu aria-label="search actions">
+                <DropdownItem
+                  key="estudiante"
+                  description="Buscar un estudiante."
+                  onPress={() => router.push("/search/student")}
+                  color="primary"
+                  variant="light"
+                >
+                  Estudiante
+                </DropdownItem>
+                <DropdownItem
+                  key="represent"
+                  description="Buscar un representante vinculada a un estudiante."
+                  onPress={() => router.push("/search/represent")}
+                  color="primary"
+                  variant="light"
+                >
+                  Representante
+                </DropdownItem>
+                {(session?.user.role as string) === RoleList.ADMIN ? (
+                  <DropdownItem
+                    key="users"
+                    description="Buscar usuarios del sistema."
+                    onPress={() => router.push("/search/user")}
+                    color="primary"
+                    variant="light"
+                  >
+                    Usuarios
+                  </DropdownItem>
+                ) : (
+                  <h1></h1>
+                )}
+              </DropdownMenu>
+            </Dropdown>
 
-          <NavbarItem>
-            <Link color="foreground" href="#">
-              Herramientas
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-      )}
+            <Dropdown>
+              <NavbarItem>
+                <DropdownTrigger>
+                  <Button
+                    disableRipple
+                    className="p-0 bg-transparent data-[hover=true]:bg-transparent font-semibold"
+                    variant="light"
+                    endContent={
+                      <MdKeyboardArrowDown className="text-primary-300 text-lg" />
+                    }
+                  >
+                    Herramientas
+                  </Button>
+                </DropdownTrigger>
+              </NavbarItem>
+              <DropdownMenu aria-label="register actions">
+                <DropdownItem
+                  key="planilla_media"
+                  description="Planilla Inscripción Educación Media General."
+                  onPress={() => {
+                    router.push("/planilla/media");
+                  }}
+                  color="primary"
+                  variant="light"
+                >
+                  Planilla Educación Media General
+                </DropdownItem>
+                <DropdownItem
+                  key="planilla_primaria"
+                  description="Planilla Educación Primaria"
+                  onPress={() => {
+                    router.push("/planilla/primaria");
+                  }}
+                  color="primary"
+                  variant="light"
+                >
+                  Planilla Educación Primaria
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </NavbarContent>
+        )}
       <NavbarContent as="div" justify="end">
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
@@ -182,12 +251,13 @@ export function NavBar() {
               color="danger"
               onPress={() => {
                 signOut({
-                  redirect: true,
+                  redirect: false,
                 });
-                router.push("/auth/login");
+
                 if (typeof window !== "undefined") {
                   localStorage.removeItem("dataRelations");
                 }
+                router.push("/auth/login");
               }}
             >
               Cerrar Sesión

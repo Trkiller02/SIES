@@ -56,8 +56,8 @@ export const authOptions: AuthOptions = {
     signIn: "/auth/login",
     error: "/auth/login",
   },
-  session: { strategy: "jwt", maxAge: 12 * 60 * 60 },
-  jwt: { maxAge: 12 * 60 * 60 },
+  session: { strategy: "jwt", maxAge: 43200000 },
+  jwt: { maxAge: 43200000 },
 };
 
 const handler = NextAuth(authOptions);

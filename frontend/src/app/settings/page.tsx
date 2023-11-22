@@ -2,9 +2,15 @@
 
 import { Avatar, AvatarIcon } from '@nextui-org/react';
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter()
+
+  if (status === 'unauthenticated') {
+    router.push('/auth/login')
+  }
 
   return (
     <section className="p-20 bg-white rounded-xl shadow-md grid grid-cols-2">

@@ -31,43 +31,45 @@ export default function RegisterComponent() {
   const [Loading, setLoading] = useState(false);
   const [isVisible, setVisible] = useState(false);
 
+  const sendInfo = async (values: any) => {
+    setLoading(true);
+
+    const res = await fetchData(
+      `/auth/register`,
+      "POST",
+      {
+        ciNumber: values.ciNumber,
+        email: values.email,
+        lastName: values.lastName,
+        name: values.name,
+        password: values.password,
+        restoreToken: values.restoreToken,
+      });
+
+    if (res) {
+      return "Usuario registrado con exito."
+    }
+  }
+
   const toggleVisibility = () => setVisible(!isVisible);
 
   const formik = useFormik({
     initialValues: RegisterValues,
     validationSchema: RegisterSchema,
     onSubmit: async (values) => {
-      setLoading(true);
-      try {
-        await fetchData(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`,
-          "POST",
-          {
-            ciNumber: values.ciNumber,
-            email: values.email,
-            lastName: values.lastName,
-            name: values.name,
-            password: values.password,
-            restoreToken: values.restoreToken,
-          }
-        );
-
-        toast.success("¡Tarea exitosa!", {
-          description: "Usuario registrado con exito.",
-          duration: 4000,
-          icon: <MdCheckCircle />,
-          onAutoClose: () => router.push("/auth/login"),
-          onDismiss: () => router.push("/auth/login"),
-        });
-      } catch (error) {
-        toast.error("¡Algo salió mal!", {
-          description: error.message,
-          duration: 4000,
-          icon: <MdCancel />,
-        });
-      } finally {
-        setLoading(false);
-      }
+      toast.promise(sendInfo(values), {
+        loading: "Procesando...",
+        success: (data) => {
+          router.push('/auth/login')
+          return data;
+        },
+        error: (error: Error) => {
+          return error.message;
+        },
+        finally: () => {
+          setLoading(false)
+        }
+      })
     },
   });
 

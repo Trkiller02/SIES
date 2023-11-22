@@ -35,6 +35,8 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
+  // ... ...
+  // RUTA DE ACCESO PARA USUARIOS AUTENTICADOS
   @Auth()
   @Patch(':id')
   update(
@@ -43,6 +45,7 @@ export class UserController {
   ): Promise<UserModel> {
     return this.userService.update(id, updateUserDto);
   }
+  // ... ...
 
   @Auth()
   @Delete(':id')

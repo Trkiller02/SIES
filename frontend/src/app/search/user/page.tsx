@@ -10,14 +10,16 @@ import { Button, Input } from "@nextui-org/react";
 import { Messages } from "@/utils/messages";
 import { regexList } from "@/utils/regexPatterns";
 import UserCards from "@/components/UserCards";
+import { UserI } from '@/components/UserCards';
+
 
 export default function UserPageSearch() {
     const { data: session } = useSession();
-    const [info, setInfo] = useState([]);
+    const [info, setInfo] = useState<UserI[]>([]);
 
-    const getUser = async (value?: unknown) => {
+    const getUser = async (value?: { id: string }) => {
         const res = await fetchDataWithoutBody(
-            "/user/" + value.id,
+            "/user/" + value?.id,
             session?.user.token
         );
         if (res) {

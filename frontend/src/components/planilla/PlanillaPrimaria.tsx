@@ -1,5 +1,5 @@
 
-export interface PersonI {
+interface PersonI {
     ciNumber: string;
     name: string;
     lastName: string;
@@ -11,7 +11,7 @@ export interface PersonI {
     relation: string;
 }
 
-export interface StudentI {
+interface StudentI {
     studentRelation: PersonI;
     bornState: string;
     bornPais: string;
@@ -25,7 +25,7 @@ export interface StudentI {
     instPro: string;
 }
 
-export interface RepresentI {
+interface RepresentI {
     personRelation: PersonI;
     profession: string;
     tlfnHome: string;
@@ -34,7 +34,7 @@ export interface RepresentI {
     incomeMonth: number;
 }
 
-export interface StatusI {
+interface StatusI {
     typeAler: string;
     trataEsp: string;
     preferAct: string;
@@ -44,7 +44,7 @@ export interface StatusI {
     plantProce: string;
 }
 
-export interface FichaI {
+interface FichaI {
     level: string;
     section: string;
     etapa: string;
@@ -54,7 +54,7 @@ export interface FichaI {
     InsDate: string;
 }
 
-export interface dataI {
+interface dataI {
     studentRelation: StudentI;
     representRelation: RepresentI;
     motherRelation?: RepresentI;
@@ -87,7 +87,7 @@ function PreTitle({ data }: { data: FichaI | undefined }) {
         <div className="pre-title">
             <p className='mb-[10px] text-xl font-bold'>PLANILLA DE INSCRIPCION</p>
             <p className='mb-[10px] text-base'>AÑO ESCOLAR {new Date().getFullYear()}-{new Date().getFullYear() + 1}</p>
-            <p className='mb-[10px] text-lg'>AÑO {data ? <sub>{data.level}</sub> : "____"} SECCION {data ? <sub>{data.section}</sub> : "____"} TURNO {data ? <sub>{data.turno}</sub> : "___"}</p>
+            <p className='mb-[10px] text-lg'>GRADO {data ? <sub>{data.level}</sub> : "____"} SECCION {data ? <sub>{data.section}</sub> : "____"} TURNO {data ? <sub>{data.turno}</sub> : "___"}</p>
         </div>
     );
 }
@@ -96,7 +96,7 @@ function PreTitle({ data }: { data: FichaI | undefined }) {
 function StudentData({ data }: { data: StudentI | undefined }) {
     return (
         <p className='w-full'>
-            {data ? <p>
+            {data ? <p className='text-[12px]'>
                 Apellidos: <sub>{data.studentRelation.lastName}</sub> Nombres:<sub>{data.studentRelation.name}</sub> <br />
                 Lugar de Nacionalidad: V <p style={{ display: "inline-block", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "sub" }}>{data.studentRelation.ciNumber.charAt(0) === "V" && "x"}</p> E <p style={{ display: "inline-block", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "sub" }}>{data.studentRelation.ciNumber.charAt(0) === "E" && "x"}</p>
                 Cedula de Identidad:{data.studentRelation.ciNumber} Fecha de Nacimiento: {data.bornDate.toISOString().split('T')[0]} Edad: {data.age + " años."}
@@ -105,7 +105,7 @@ function StudentData({ data }: { data: StudentI | undefined }) {
                 <>Con quien vive el estudiante: {data.liveWith === "MADRE" ? "MADRE" : data.liveWith === "PADRE" ? "PADRE" : "OTRO"}  En caso de otro especifique: {data.liveWith === "MADRE" ? "MADRE" : data.liveWith === "PADRE" ? "PADRE" : data.liveWith} </>
                 <p>Dirección de Habitación: {data.studentRelation.homeParroquia + " " + data.studentRelation.homeParroquia + " " + data.studentRelation.homeDir}</p>
             </p> :
-                <p className='w-full text-justify'>
+                <p className='text-[12px]'>
                     Apellidos:______________________________________ Nombres:____________________________________ <br />
                     Lugar de Nacionalidad: V <span style={{ display: "inline-flex", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "bottom" }}></span> E <span style={{ display: "inline-flex", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "bottom" }}></span>
                     Cedula de Identidad:________________ Fecha de Nacimiento: ____________ Edad: _______
@@ -197,7 +197,7 @@ function StatusInfo({ data }: { data: StatusI | undefined }) {
 
 
 
-export default function PlanillaMedia({ data }: { data: dataI | undefined }) {
+export default function PlanillaPrimaria({ data }: { data: dataI | undefined }) {
     return (
         <section className='w-full planilla1 flex flex-col p-9 gap-2'>
             <style>

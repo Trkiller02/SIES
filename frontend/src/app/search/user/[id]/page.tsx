@@ -24,12 +24,12 @@ export default function page({ params: { id } }: { params: { id: string } }) {
         }
     }
 
-    const sendInfo = async (values: { roleId: number, email: string }) => {
+    const sendInfo = async (values: { roleId: string, email: string }) => {
         const res = await fetchData(
             "/user/" + id,
             "PATCH",
             {
-                roleId: parseInt(values.roleId) === 0 || values.roleId === undefined ? info?.roleId : parseInt(values.roleId),
+                roleId: Number(values.roleId) === 0 || values.roleId === undefined ? info?.roleId : Number(values.roleId),
                 email: values.email === '' ? undefined : values.email
             },
             session?.user.token
@@ -49,7 +49,7 @@ export default function page({ params: { id } }: { params: { id: string } }) {
             email: Yup.string().email().optional(),
         }),
         onSubmit: async (values) => {
-            toast.promise(sendInfo(values), {
+            toast.promise(sendInfo(values as any), {
                 loading: "Procesando...",
                 success: (data) => {
                     return data;

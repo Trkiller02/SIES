@@ -79,15 +79,27 @@ export class UserService {
     return user;
   }
 
+  // ... ...
   async update(
     ciNumber: string,
     updateData: UpdateUserDto,
   ): Promise<UserModel> {
     const user = await this.findOne(ciNumber);
 
+    /* 
+    DESESTRUCTURAMOS EL OBJETO PARA ACTUALIZAR
+    EN ESTE CASO NOS INTERESA POR SI HAY UNA CONTRASEÑA
+    O UN TOKEN DE RESTAURACION
+    */
     const { password, restoreToken } = updateData;
 
+    // SI EXITEN VALORES PARA ESTAS VARIABLES
+    // SE REALIZA LA ENCRIPTACION
     if (password) {
+      /* 
+      ENCRIPTAMOS LA NUEVA CONTRASEÑA 
+      E INYECTAMOS LOS DATOS EN EL  OBJETO DE ACTUALIZACION
+      */
       const passHashed = await bcrypt.hash(password, 10);
       updateData.password = passHashed;
     }
@@ -97,11 +109,13 @@ export class UserService {
       updateData.password = rTokenHashed;
     }
 
+    // MANDAMOS EL OBJETO ACTUALIZADO
     return await this.prisma.user.update({
       where: user,
       data: updateData,
     });
   }
+  // ... ...
 
   async remove(ciNumber: string) {
     const user = await this.findOne(ciNumber);

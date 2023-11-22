@@ -18,7 +18,7 @@ export default function RepresentForm() {
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const { data: session } = useSession();
 
-  const [disKeys, setDisKeys] = useState([]);
+  const [disKeys, setDisKeys] = useState<string[]>([]);
 
   const router = useRouter();
 
@@ -246,7 +246,9 @@ export default function RepresentForm() {
                 default:
                   break;
               }
-            }}
+              routeHandler()
+            }
+            }
           >
             <MdCancel className="text-2xl text-danger" />
           </Button>

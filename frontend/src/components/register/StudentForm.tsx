@@ -82,7 +82,7 @@ export default function StudentForm() {
   }, [dataRelations]);
 
   useEffect(() => {
-    if (formik.values.liveWith === 'OTRO' && formik.values.liveWith !== '') {
+    if ((formik.values.liveWith as string) === "OTRO" && (formik.values.liveWith as string) !== "") {
       setCaseOther(true);
     }
     if (formik.values.liveWith === 'MADRE' || formik.values.liveWith === 'PADRE') {

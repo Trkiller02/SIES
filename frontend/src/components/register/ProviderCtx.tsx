@@ -17,7 +17,7 @@ interface ContextType {
 }
 
 
-export const ctxDataRelation = createContext<ContextType>({});
+export const ctxDataRelation = createContext<ContextType | any>({});
 
 export function ProviderCtx({ children }: { children: React.ReactNode }) {
   const data =

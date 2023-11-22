@@ -12,7 +12,7 @@ import {
 } from "react-icons/md";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { SignInResponse, signIn } from "next-auth/react";
 import { LoginI } from '@/types/auth.interfaces';
 
 
@@ -26,22 +26,17 @@ export default function LoginComponent() {
 
   const sendInfo = async (values: LoginI) => {
     setLoading(true);
-    try {
-      const sendAuth = await signIn("credentials", {
-        email: values.email,
-        ciNumber: values.ciNumber,
-        password: values.password,
-        redirect: false,
-      });
-      if (sendAuth?.ok) {
-        return "¡Inicio de Sesion con exito!";
-      } else {
-        throw sendAuth;
-      }
-    } catch (error) {
-      throw new Error(error.error === "fetch failed" ? "Error en conexión." : error.error ?? "Algo salio mal.");
-    } finally {
-      setLoading(false);
+    const sendAuth = await signIn("credentials", {
+      email: values.email,
+      ciNumber: values.ciNumber,
+      password: values.password,
+      redirect: false,
+    });
+
+    if (sendAuth?.ok) {
+      return "¡Inicio de Sesion con exito!";
+    } else {
+      throw sendAuth;
     }
   }
 
@@ -55,8 +50,11 @@ export default function LoginComponent() {
           router.push('/');
           return data;
         },
-        error: (error: Error) => {
-          return error.message;
+        error: (error: SignInResponse) => {
+          return error.error;
+        },
+        finally: () => {
+          setLoading(false);
         }
       })
 
