@@ -77,7 +77,45 @@ export class StudentService {
       where: { studentCiNumber: id },
       include: {
         studentRelation: true,
-        relationTable: true,
+        relationTable: {
+          select: {
+            representRelation: {
+              select: {
+                personRelation: {
+                  select: {
+                    name: true,
+                    lastName: true,
+                    ciNumber: true,
+                  },
+                },
+              },
+            },
+            motherRelation: {
+              select: {
+                personRelation: {
+                  select: {
+                    name: true,
+                    lastName: true,
+                    ciNumber: true,
+                  },
+                },
+              },
+            },
+            fatherRelation: {
+              select: {
+                personRelation: {
+                  select: {
+                    name: true,
+                    lastName: true,
+                    ciNumber: true,
+                  },
+                },
+              },
+            },
+            statusRelation: true,
+            fichaRelation: true,
+          },
+        },
       },
     });
 

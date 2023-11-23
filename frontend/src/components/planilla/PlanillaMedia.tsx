@@ -1,64 +1,10 @@
-
-export interface PersonI {
-    ciNumber: string;
-    name: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    homeDir: string;
-    homeParroquia: string;
-    homeMunicipio: string;
-    relation: string;
-}
-
-export interface StudentI {
-    studentRelation: PersonI;
-    bornState: string;
-    bornPais: string;
-    bornDate: Date;
-    liveWith: string;
-    age: string;
-    sex: string;
-    weight: string;
-    size: string;
-    Lateralidad: string;
-    instPro: string;
-}
-
-export interface RepresentI {
-    personRelation: PersonI;
-    profession: string;
-    tlfnHome: string;
-    workPlace: string;
-    workPhoneNumber: string;
-    incomeMonth: number;
-}
-
-export interface StatusI {
-    typeAler: string;
-    trataEsp: string;
-    preferAct: string;
-    recreTime: string;
-    siteAct: string;
-    proLevel: string;
-    plantProce: string;
-}
-
-export interface FichaI {
-    level: string;
-    section: string;
-    etapa: string;
-    turno: string;
-    procePlant: string;
-    escolarPeriod: string;
-    InsDate: string;
-}
+import { FichaI, RepresentI, StatusI, StudentI } from '@/types/register.interfaces';
 
 export interface dataI {
     studentRelation: StudentI;
     representRelation: RepresentI;
-    motherRelation?: RepresentI;
-    fatherRelation?: RepresentI;
+    motherRelation?: RepresentI | null;
+    fatherRelation?: RepresentI | null;
     statusRelation: StatusI;
     fichaRelation: FichaI
 }
@@ -87,7 +33,7 @@ function PreTitle({ data }: { data: FichaI | undefined }) {
         <div className="pre-title">
             <p className='mb-[10px] text-xl font-bold'>PLANILLA DE INSCRIPCION</p>
             <p className='mb-[10px] text-base'>AÑO ESCOLAR {new Date().getFullYear()}-{new Date().getFullYear() + 1}</p>
-            <p className='mb-[10px] text-lg'>AÑO {data ? <sub>{data.level}</sub> : "____"} SECCION {data ? <sub>{data.section}</sub> : "____"} TURNO {data ? <sub>{data.turno}</sub> : "___"}</p>
+            <p className='mb-[10px] text-lg'>AÑO {data ? <u>{data.level}</u> : "____"} SECCION {data ? <u>{data.section}</u> : "____"} TURNO {data ? <u>{data.turno === 'T' ? "TARDE" : data.turno === 'D' ? "MAÑANA" : ""}</u> : "___"}</p>
         </div>
     );
 }
@@ -97,9 +43,9 @@ function StudentData({ data }: { data: StudentI | undefined }) {
     return (
         <p className='w-full'>
             {data ? <p>
-                Apellidos: <sub>{data.studentRelation.lastName}</sub> Nombres:<sub>{data.studentRelation.name}</sub> <br />
-                Lugar de Nacionalidad: V <p style={{ display: "inline-block", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "sub" }}>{data.studentRelation.ciNumber.charAt(0) === "V" && "x"}</p> E <p style={{ display: "inline-block", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "sub" }}>{data.studentRelation.ciNumber.charAt(0) === "E" && "x"}</p>
-                Cedula de Identidad:{data.studentRelation.ciNumber} Fecha de Nacimiento: {data.bornDate.toISOString().split('T')[0]} Edad: {data.age + " años."}
+                Apellidos: <u>{data.studentRelation.lastName}</u> Nombres:<u>{data.studentRelation.name}</u> <br />
+                Lugar de Nacionalidad: V <p style={{ display: "inline-block", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "sub" }}>{data.studentRelation.ciNumber.charAt(0) === "V" && "X"}</p> E <p style={{ display: "inline-block", border: "1px solid black", width: "15px", height: "15px", verticalAlign: "sub" }}>{data.studentRelation.ciNumber.charAt(0) === "E" && "X"}</p>
+                Cedula de Identidad:{data.studentRelation.ciNumber} Fecha de Nacimiento: {data.bornDate.split('T')[0]} Edad: {data.age + " años."}
                 <p>País: {data.bornPais} Estado: {data.bornState} Genero:{data.sex} Estatura:{data.size} Peso: {data.weight}</p>
                 <br />
                 <>Con quien vive el estudiante: {data.liveWith === "MADRE" ? "MADRE" : data.liveWith === "PADRE" ? "PADRE" : "OTRO"}  En caso de otro especifique: {data.liveWith === "MADRE" ? "MADRE" : data.liveWith === "PADRE" ? "PADRE" : data.liveWith} </>
@@ -120,15 +66,15 @@ function StudentData({ data }: { data: StudentI | undefined }) {
     );
 }
 
-function RepresentData({ data, prefix }: { data: RepresentI | undefined, prefix: string }) {
+function RepresentData({ data, prefix }: { data: RepresentI | undefined | null, prefix: string }) {
     return (
         <p className='w-full'>
             {
                 data ? <>
-                    <p><b>{prefix}</b>: APELLIDOS: <sub>{data.personRelation.lastName}</sub> NOMBRE: <sub>{data.personRelation.name}</sub> C.I.:<sub>{data.personRelation.ciNumber}</sub></p>
-                    <p>TLF. HABITACION:<sub>{data.tlfnHome}</sub> CELULAR: <sub>{data.personRelation.phoneNumber}</sub> </p>
-                    <p>TLF. TRABAJO: <sub>{data.workPhoneNumber}</sub> DIRECCION:<sub>{data.personRelation.homeMunicipio + " " + data.personRelation.homeParroquia + " " + data.personRelation.homeDir}</sub> PROFESION U OCUPACION:<sub>{data.profession}</sub></p>
-                    <p>LUGAR DE TRABAJO:<sub>{data.workPlace}</sub> INGRESO MENSUAL:<sub>{data.incomeMonth}</sub></p>
+                    <p><b>{prefix}</b>: APELLIDOS: <u>{data.personRelation.lastName}</u> NOMBRE: <u>{data.personRelation.name}</u> C.I.:<u>{data.personRelation.ciNumber}</u></p>
+                    <p>TLF. HABITACION:<u>{data.tlfnHome}</u> CELULAR: <u>{data.personRelation.phoneNumber}</u> </p>
+                    <p>TLF. TRABAJO: <u>{data.workPhoneNumber}</u> DIRECCION:<u>{data.personRelation.homeMunicipio + " " + data.personRelation.homeParroquia + " " + data.personRelation.homeDir}</u> PROFESION U OCUPACION:<u>{data.profession}</u></p>
+                    <p>LUGAR DE TRABAJO:<u>{data.workPlace}</u> INGRESO MENSUAL:<u>{data.incomeMonth}</u></p>
                 </> : <>
                     <p><b>{prefix}</b>: APELLIDOS: ________________ NOMBRE: ________________ C.I._________:</p>
                     <p>TLF. HABITACION:_________ CELULAR:___________________________ </p>
@@ -146,14 +92,14 @@ function ParentData({ data }: { data: RepresentI | undefined }) {
         <div className='w-full'>
             {
                 data ? <>
-                    <p>EL REPRESENTANTE LEGAL DEL ESTUDIANTE SERA:<sub>{data.personRelation.ciNumber}</sub> (<strong>EN CASO DE QUE NO SEA NINGUNO DE LOS PADRES
+                    <p>EL REPRESENTANTE LEGAL DEL ESTUDIANTE SERA:<u>{data.personRelation.ciNumber}</u> (<strong>EN CASO DE QUE NO SEA NINGUNO DE LOS PADRES
                         EL REPRESENTANTE LEGAL DEBE PRESENTAR AUTORIZACION SELLADA Y FIRMADA POR EL C.P.N.N.A.</strong>)
                     </p>
-                    <p>APELLIDOS:<sub>{data.personRelation.lastName}</sub> NOMBRE:<sub>{data.personRelation.name}</sub> C.I.: <sub>{data.personRelation.ciNumber}</sub></p>
-                    <p>TLF. HABITACION:<sub>{data.tlfnHome}</sub> CELULAR: <sub>{data.personRelation.phoneNumber}</sub></p>
-                    <p>TLF. TRABAJO: <sub>{data.workPhoneNumber}</sub> EMAIL: <sub>{data.personRelation.email}</sub></p>
-                    <p>LUGAR DE TRABAJO: <sub>{data.workPlace}</sub> INGRESO MENSUAL: <sub>{data.incomeMonth}</sub></p>
-                    <p>PROFESION U OCUPACION: <sub>{data.profession}</sub> OTRO:_____________________________:</p>
+                    <p>APELLIDOS:<u>{data.personRelation.lastName}</u> NOMBRE:<u>{data.personRelation.name}</u> C.I.: <u>{data.personRelation.ciNumber}</u></p>
+                    <p>TLF. HABITACION:<u>{data.tlfnHome}</u> CELULAR: <u>{data.personRelation.phoneNumber}</u></p>
+                    <p>TLF. TRABAJO: <u>{data.workPhoneNumber}</u> EMAIL: <u>{data.personRelation.email}</u></p>
+                    <p>LUGAR DE TRABAJO: <u>{data.workPlace}</u> INGRESO MENSUAL: <u>{data.incomeMonth}</u></p>
+                    <p>PROFESION U OCUPACION: <u>{data.profession}</u> OTRO:_____________________________:</p>
                 </> : <>
                     <p>EL REPRESENTANTE LEGAL DEL ESTUDIANTE SERA:____________________ (<strong>EN CASO DE QUE NO SEA NINGUNO DE LOS PADRES
                         EL REPRESENTANTE LEGAL DEBE PRESENTAR AUTORIZACION SELLADA Y FIRMADA POR EL C.P.N.N.A.</strong>)
@@ -172,15 +118,15 @@ function ParentData({ data }: { data: RepresentI | undefined }) {
 
 function StatusInfo({ data }: { data: StatusI | undefined }) {
     return (
-        <div style={{ display: "inline-block", border: "1px solid black", padding: "4px", width: "100%", textAlign: "justify" }}>
+        <div style={{ display: "inline-block", border: "1px solid black", padding: "4px", width: "100%", textAlign: "justify", paddingBottom: "6px" }}>
             {
                 data ? <>
-                    <p>EL ESTUDIANTE PRACTICA ALGUNA ACTIVIDAD EXTRACURRICULAR SI<sub>{data.preferAct ? "x" : " "}</sub> NO<sub>{data.preferAct ? " " : "x"}</sub> CUAL {data.preferAct ? <sub>{data.preferAct}</sub> : "_____________________"}:</p>
-                    <p>LUGAR DONDE LA PRACTICA{data.siteAct ? <sub>{data.siteAct}</sub> : "_____________________"}
-                        HORARIO:{data.recreTime ? <sub>{data.recreTime}</sub> : "________________________________________"}</p>
-                    <p>EL REQUIERE ALGUN TRATAMIENTO ESPECIAL: SI {data.trataEsp ? <sub>x</sub> : "___"} NO {data.trataEsp ? "___" : <sub>x</sub>} CUAL: {data.trataEsp ? <sub>{data.trataEsp}</sub> : "__________________________________________"}</p>
-                    <p>ALERGICO A: {data.typeAler ? <sub>{data.typeAler}</sub> : "_______________________________________________________"}</p>
-                    <p>PROMOVIDO A AÑO: {data.proLevel ? <sub>{data.proLevel}</sub> : "_________"} PLANTEL DE PROCEDENCIA:{data.plantProce ? <sub>{data.plantProce}</sub> : "_________________________________________________"}</p>
+                    <p>EL ESTUDIANTE PRACTICA ALGUNA ACTIVIDAD EXTRACURRICULAR SI<u>{data.preferAct === "" || data.preferAct === "NO" || data.preferAct === undefined || data.preferAct === null ? "___" : "X"}</u> NO<u>{data.preferAct === "" || data.preferAct === "NO" || data.preferAct === undefined || data.preferAct === null ? "X" : "___"}</u> &nbsp;CUAL {data.preferAct ? <u>{data.preferAct}</u> : "_____________________"}:</p>
+                    <p>LUGAR DONDE LA PRACTICA{data.siteAct ? <u>{data.siteAct}</u> : "_____________________"}
+                        HORARIO:{data.recreTime ? <u>{data.recreTime}</u> : "________________________________________"}</p>
+                    <p>EL REQUIERE ALGUN TRATAMIENTO ESPECIAL: SI {data.trataEsp ? <u>X</u> : "___"} NO {data.trataEsp ? "___" : <u>x</u>} CUAL: {data.trataEsp ? <u>{data.trataEsp}</u> : "__________________________________________"}</p>
+                    <p>ALERGICO A: {data.typeAler ? <u>{data.typeAler}</u> : "_______________________________________________________"}</p>
+                    <p>PROMOVIDO A AÑO: {data.proLevel ? <u>{data.proLevel}</u> : "_________"} PLANTEL DE PROCEDENCIA:{data.plantProce ? <u>{data.plantProce}</u> : "_________________________________________________"}</p>
                 </> : <>
                     <p>EL ESTUDIANTE PRACTICA ALGUNA ACTIVIDAD EXTRACURRICULAR SI_ NO_ CUAL_____________________:</p>
                     <p>LUGAR DONDE LA PRACTICA_____________________

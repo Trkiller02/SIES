@@ -25,18 +25,36 @@ export class RelationsTableService {
 
   async findOne(id: string) {
     const table = await this.prisma.relationTable.findFirst({
-      where: { studentId: id },
+      where: {
+        OR: [{ studentId: { equals: id } }, { fichaId: { equals: id } }],
+      },
       include: {
-        representRelation: true,
+        representRelation: {
+          include: {
+            personRelation: true,
+          },
+        },
+        motherRelation: {
+          include: {
+            personRelation: true,
+          },
+        },
+        fatherRelation: {
+          include: {
+            personRelation: true,
+          },
+        },
         fichaRelation: true,
-        motherRelation: true,
-        fatherRelation: true,
         statusRelation: true,
-        studentRelation: true,
+        studentRelation: {
+          include: {
+            studentRelation: true,
+          },
+        },
       },
     });
 
-    if (table)
+    if (!table)
       not_found_err(
         messagesEnum.not_found,
         'No existe el registro o se equivoco en la busqueda.',
@@ -50,7 +68,7 @@ export class RelationsTableService {
       where: { studentId: id },
     });
 
-    if (table)
+    if (!table)
       not_found_err(
         messagesEnum.not_found,
         'No existe el registro o se equivoco en la busqueda.',

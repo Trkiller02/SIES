@@ -11,6 +11,7 @@ import { Messages } from "@/utils/messages";
 import { regexList } from "@/utils/regexPatterns";
 import { useRouter } from 'next/navigation';
 import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md';
+import jsPDF from 'jspdf';
 
 interface DataI {
     idFicha: string,
@@ -61,6 +62,35 @@ export default function UserPageSearch() {
     const { data: session } = useSession();
     const [info, setInfo] = useState<DataI[]>();
     const router = useRouter()
+    const downloadPDF = async () => {
+        const doc = new jsPDF("p", "mm", "letter");
+        const hDoc = doc.internal.pageSize.getHeight();
+        const wDoc = doc.internal.pageSize.getWidth();
+
+        const planilla1: HTMLElement | null = document.querySelector(".planilla1");
+
+        if (planilla1) {
+            await doc.html(planilla1, {
+                x: 0,
+                y: 0,
+                autoPaging: "slice",
+                html2canvas: {
+                    windowWidth: wDoc,
+                    windowHeight: hDoc,
+                    height: hDoc,
+                    width: wDoc,
+                    scale: 0.25,
+                },
+                width: wDoc,
+                windowWidth: wDoc,
+            });
+            doc.output("dataurlnewwindow", { filename: "planilla" });
+
+        } else {
+            return;
+        }
+    };
+
     const section = [
         { label: "A", value: "A" },
         { label: "B", value: "B" },
@@ -218,7 +248,7 @@ export default function UserPageSearch() {
                     Buscar
                 </Button>
             </form>
-            <div className="flex flex-col w-full gap-4">
+            <div className="flex flex-col w-full gap-4 planilla1">
 
                 {info ? info.length !== 0 ? <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -259,6 +289,10 @@ export default function UserPageSearch() {
                     </tbody>
                 </table> : "No se encuentran usuarios" : ""}
             </div>
+
+            <Button color="primary" onPress={downloadPDF} isDisabled={!!info === false}>
+                Imprimir Busqueda.
+            </Button>
         </div>
     );
 }
