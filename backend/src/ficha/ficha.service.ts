@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { messagesEnum } from 'src/utils/handlerMsg';
 import { not_found_err } from 'src/utils/handlerErrors';
-import { Ficha as FichaModel } from '@prisma/client';
+import { Not, Repository } from 'typeorm';
+import { Ficha as FichaModel } from './entities/ficha.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class FichaService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    @InjectRepository(FichaModel)
+    private readonly fichaRepo: Repository<FichaModel>,
+  ) {}
 
   async create(createFichaDto: CreateFichaDto) {
-    return await this.prismaService.ficha.create({
-      data: {
-        ...createFichaDto,
-        personalRes: '',
-      },
-      select: { idFicha: true },
+    return await this.fichaRepo.save({
+      ...createFichaDto,
     });
   }
 
@@ -25,28 +25,17 @@ export class FichaService {
     const { level, etapa, section } = querys;
 
     if (level || etapa || section) {
-      const fichas = await this.prismaService.ficha.findMany({
+      const fichas = await this.fichaRepo.find({
         where: {
-          level: { equals: level },
-          etapa: { equals: etapa },
-          section: { equals: section },
-          relationTable: { isNot: null },
+          level: level,
+          etapa: etapa,
+          section: section,
+          relationTable: Not(null),
         },
-        include: {
+        //FIXME TRAER NOMBRE COMPLETO Y CEDULA DEL ESTUDIANTE
+        relations: {
           relationTable: {
-            include: {
-              studentRelation: {
-                include: {
-                  studentRelation: {
-                    select: {
-                      name: true,
-                      lastName: true,
-                      ciNumber: true,
-                    },
-                  },
-                },
-              },
-            },
+            studentId: true,
           },
         },
       });
@@ -56,23 +45,8 @@ export class FichaService {
 
       return fichas;
     } else {
-      const fichas = await this.prismaService.ficha.findMany({
-        include: {
-          relationTable: {
-            include: {
-              studentRelation: {
-                include: {
-                  studentRelation: {
-                    select: {
-                      name: true,
-                      lastName: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+      const fichas = await this.fichaRepo.find({
+        loadRelationIds: true,
       });
 
       if (fichas.length === 0) {
@@ -85,34 +59,17 @@ export class FichaService {
 
   //TODO: BUSCA UNA FICHA
   async findOne(id: string): Promise<FichaModel> {
-    const ficha = await this.prismaService.ficha.findFirst({
-      where: {
-        OR: [
-          {
-            relationTable: {
-              studentId: { equals: id },
-            },
-          },
-          { idFicha: id },
-        ],
-      },
-      include: {
-        relationTable: {
-          include: {
-            studentRelation: {
-              include: {
-                studentRelation: {
-                  select: {
-                    name: true,
-                    lastName: true,
-                    ciNumber: true,
-                  },
-                },
-              },
+    const ficha = await this.fichaRepo.findOne({
+      where: [
+        {
+          relationTable: {
+            studentId: {
+              ciNumber: id,
             },
           },
         },
-      },
+        { idFicha: id },
+      ],
     });
 
     if (!ficha) {
@@ -128,17 +85,12 @@ export class FichaService {
   async update(id: string, updateFichaDto: UpdateFichaDto) {
     const ficha = await this.findOne(id);
 
-    return await this.prismaService.ficha.update({
-      where: ficha,
-      data: updateFichaDto,
-    });
+    return await this.fichaRepo.update(ficha, updateFichaDto);
   }
 
   async remove(id: string) {
     const ficha = await this.findOne(id);
 
-    return await this.prismaService.ficha.delete({
-      where: ficha,
-    });
+    return await this.fichaRepo.delete(ficha);
   }
 }

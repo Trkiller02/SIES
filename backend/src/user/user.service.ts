@@ -1,28 +1,23 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User as UserModel } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcryptjs';
 import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
+import * as bcrypt from 'bcryptjs';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
-  async create(userCreateData: CreateUserDto) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          { ciNumber: { equals: userCreateData.ciNumber } },
-          { email: { equals: userCreateData.email } },
-        ],
-      },
+  async create(createData: CreateUserDto) {
+    const user = await this.userRepository.find({
+      where: [{ ciNumber: createData.ciNumber }, { email: createData.email }],
       select: {
         id: true,
       },
@@ -31,19 +26,14 @@ export class UserService {
     if (user)
       conflict_err(messagesEnum.conflict_err, 'El usuario ya está registrado.');
 
-    const passHashed = await bcrypt.hash(userCreateData.password, 10);
-    userCreateData.password = passHashed;
+    const passHashed = await bcrypt.hash(createData.password, 10);
+    createData.password = passHashed;
 
-    return await this.prisma.user.create({
-      data: {
-        ...userCreateData,
-        roleId: undefined,
-      },
-    });
+    return await this.userRepository.create(createData);
   }
 
-  async findAll(): Promise<UserModel[]> {
-    const users = await this.prisma.user.findMany();
+  async findAll(): Promise<User[]> {
+    const users = await this.userRepository.find();
 
     if (users.length === 0) {
       not_found_err(messagesEnum.not_found, 'No existen usuarios.');
@@ -52,11 +42,9 @@ export class UserService {
     return users;
   }
 
-  async findToAuth(ciNumber?: string, email?: string): Promise<UserModel> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ ciNumber: { equals: ciNumber } }, { email: { equals: email } }],
-      },
+  async findToAuth(ciNumber?: string, email?: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: [{ ciNumber: ciNumber }, { email: email }],
     });
 
     if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
@@ -64,14 +52,12 @@ export class UserService {
     return user;
   }
 
-  async findOne(id: string): Promise<UserModel> {
-    const user = await this.prisma.user.findFirst({
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({
       where: {
         ciNumber: id,
       },
-      include: {
-        role: true,
-      },
+      loadRelationIds: true,
     });
 
     if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
@@ -80,10 +66,7 @@ export class UserService {
   }
 
   // ... ...
-  async update(
-    ciNumber: string,
-    updateData: UpdateUserDto,
-  ): Promise<UserModel> {
+  async update(ciNumber: string, updateData: UpdateUserDto) {
     const user = await this.findOne(ciNumber);
 
     /* 
@@ -110,18 +93,14 @@ export class UserService {
     }
 
     // MANDAMOS EL OBJETO ACTUALIZADO
-    return await this.prisma.user.update({
-      where: user,
-      data: updateData,
-    });
+    return await this.userRepository.update(user, updateData);
   }
-  // ... ...
 
   async remove(ciNumber: string) {
     const user = await this.findOne(ciNumber);
 
-    return await this.prisma.user.delete({
-      where: user,
-    });
+    await this.userRepository.softDelete(user);
+
+    return;
   }
 }

@@ -1,23 +1,44 @@
-export class Student {
-  ciNumber: string;
-  firstName: string;
-  secondName: string;
-  firstLastName: string;
-  secondLastName: string;
-  email: string;
-  bornPlace: string;
-  bornState: string;
-  bornMunicipio: string;
-  bornParroquia: string;
-  bornPais: string;
-  bornDate: string;
+import { Person } from 'src/person/entities/person.entity';
+import { Column, Entity } from 'typeorm';
+
+@Entity('student')
+export class Student extends Person {
+  @Column()
   age;
+
+  @Column()
   sex: string;
-  weight?;
-  size?;
-  Lateralidad: string;
-  instPro: string;
-  homeDir: string;
-  homeParroquia: string;
-  homeMunicipio: string;
+
+  @Column({
+    nullable: true,
+  })
+  weight?: number;
+
+  @Column({
+    nullable: true,
+  })
+  size?: number;
+
+  @Column({
+    nullable: true,
+  })
+  Lateralidad?: string;
+
+  @Column()
+  bornPlace: string;
+
+  @Column()
+  bornState: string;
+
+  @Column()
+  bornMunicipio: string;
+
+  @Column()
+  bornParroquia: string;
+
+  @Column()
+  bornPais: string;
+
+  @Column()
+  bornDate: string;
 }

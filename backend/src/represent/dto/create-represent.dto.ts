@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsPositive } from 'class-validator';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 
 export class CreateRepresentDto extends CreatePersonDto {
@@ -20,5 +20,6 @@ export class CreateRepresentDto extends CreatePersonDto {
 
   @IsOptional()
   @IsNumber()
+  @IsPositive()
   incomeMonth?: number;
 }

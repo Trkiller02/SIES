@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsDate,
@@ -10,6 +11,9 @@ import {
 import { messagesEnum, validationMsg } from 'src/utils/handlerMsg';
 
 export class CreateUserDto {
+  @ApiProperty({
+    pattern: '^[VE]\\d+$',
+  })
   @IsString()
   @IsNotEmpty({
     message: validationMsg('El nombre', messagesEnum.not_empty),
@@ -17,6 +21,7 @@ export class CreateUserDto {
   ciNumber: string;
 
   @IsString()
+  @Transform(({ value }: { value: string }) => value.trim())
   @IsNotEmpty({
     message: validationMsg('El nombre', messagesEnum.not_empty),
   })
@@ -26,6 +31,7 @@ export class CreateUserDto {
   name: string;
 
   @IsString()
+  @Transform(({ value }: { value: string }) => value.trim())
   @IsNotEmpty({
     message: validationMsg('El apellido', messagesEnum.not_empty),
   })

@@ -117,34 +117,10 @@ model AgeAcademicos {
   periodo      String   @id
   fecha_inicio DateTime
   fecha_fin    DateTime
-  Notas        Notas[]
 
   @@map("periodo_academico")
 }
 
-model Asignatura {
-  idAsignatura    Int     @id
-  nameAsignatura  String
-  teacherRelation User    @relation(fields: [teacher], references: [email])
-  teacher         String
-  Notas           Notas[]
-
-  @@map("asignaturas")
-}
-
-model Notas {
-  id                 Int           @id
-  studentRelation    Student       @relation(fields: [idStudent], references: [studentCiNumber])
-  idStudent          String
-  asignaturaRelation Asignatura    @relation(fields: [asignatura], references: [idAsignatura])
-  asignatura         Int
-  ageRelation        AgeAcademicos @relation(fields: [ageAcademicos], references: [periodo])
-  ageAcademicos      String
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-
-  @@map("notas")
-}
 
 model Rol {
   idRol   Int    @id @default(autoincrement())

@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch {
-      unauth_err(messagesEnum.unauth_err, 'errpn.');
+      unauth_err(messagesEnum.unauth_err, 'Error verificando token.');
     }
 
     return true;

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { FichaService } from './ficha.service';
 import { FichaController } from './ficha.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Ficha } from './entities/ficha.entity';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [TypeOrmModule.forFeature([Ficha])],
   controllers: [FichaController],
   providers: [FichaService],
 })

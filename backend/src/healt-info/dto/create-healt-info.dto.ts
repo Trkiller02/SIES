@@ -7,25 +7,17 @@ export class CreateHealtInfoDto {
 
   @IsOptional()
   @IsString()
-  trataEsp: string;
+  trataEsp?: string;
 
   @IsOptional()
   @IsString()
-  preferAct: string;
+  preferAct?: string;
 
   @IsOptional()
   @IsString()
-  recreTime: string;
+  recreTime?: string;
 
   @IsOptional()
   @IsString()
-  siteAct: string;
-
-  @IsOptional()
-  @IsString()
-  proLevel: string;
-
-  @IsOptional()
-  @IsString()
-  plantProce: string;
+  siteAct?: string;
 }
