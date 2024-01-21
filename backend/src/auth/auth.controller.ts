@@ -21,7 +21,7 @@ export class AuthController {
   }
 
   @Get('profile')
-  @Auth([Role.EDITOR])
+  @Auth([Role.DOCENTES])
   profile(@Request() request) {
     return request.user;
   }

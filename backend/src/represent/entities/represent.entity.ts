@@ -1,38 +1,44 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Column, JoinColumn, OneToOne } from 'typeorm';
 import { Person } from 'src/person/entities/person.entity';
 
-export class Represent extends Person {
-  @ApiPropertyOptional({
-    minLength: 1,
+export class Represent {
+  @OneToOne(() => Person, (person) => person.ciNumber, { eager: true })
+  @JoinColumn()
+  person_id: string;
+
+  @Column({
+    type: 'text',
+    nullable: true,
   })
-  @IsOptional()
-  @IsString()
   profession?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
+  @Column({
+    name: 'tlfn_home',
+    type: 'varchar',
+    length: 14,
+    nullable: true,
+  })
   tlfnHome?: string;
 
-  @ApiPropertyOptional({
+  @Column({
+    name: 'work_place',
     type: 'text',
-    minLength: 4,
+    nullable: true,
   })
-  @IsOptional()
-  @IsString()
   workPlace?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
+  @Column({
+    name: 'work_phone_number',
+    type: 'varchar',
+    length: 14,
+    nullable: true,
+  })
   workPhoneNumber?: string;
 
-  @ApiPropertyOptional({
+  @Column({
     type: 'int',
-    minimum: 1,
+    name: 'income_month',
+    nullable: true,
   })
-  @IsOptional()
-  @IsString()
   incomeMonth?: number;
 }

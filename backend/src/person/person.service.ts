@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Person as PersonModel } from '@prisma/client';
 import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
+import { Person } from './entities/person.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PersonService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(Person)
+    private readonly personRepo: Repository<Person>,
+  ) {}
 
   async create(createPersonDto: CreatePersonDto): Promise<PersonModel> {
     const person = await this.prisma.person.findFirst({

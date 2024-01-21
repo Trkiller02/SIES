@@ -10,7 +10,13 @@ import {
 import { HealtInfoService } from './healt-info.service';
 import { CreateHealtInfoDto } from './dto/create-healt-info.dto';
 import { UpdateHealtInfoDto } from './dto/update-healt-info.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/auth/enum/roles.enum';
 
+@ApiTags('HEALTH-INFO:')
+@ApiBearerAuth() // método de autorización de Swagger para este controlador
+@Auth([Role.DOCENTES])
 @Controller('healt-info')
 export class HealtInfoController {
   constructor(private readonly healtInfoService: HealtInfoService) {}

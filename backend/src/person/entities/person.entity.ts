@@ -1,8 +1,12 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Represent } from 'src/represent/entities/represent.entity';
+import { Student } from 'src/student/entities/student.entity';
+import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('person')
 export class Person {
-  @PrimaryColumn()
+  @PrimaryColumn({
+    name: 'ci_number',
+  })
   ciNumber: string;
 
   @Column()
@@ -47,4 +51,10 @@ export class Person {
 
   @Column()
   relation: string;
+
+  @OneToOne(() => Student, (student) => student.person_id)
+  relationStudent?: Student;
+
+  @OneToOne(() => Represent, (represent) => represent.person_id)
+  relationRepresent?: Represent;
 }

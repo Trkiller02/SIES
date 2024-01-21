@@ -12,7 +12,7 @@ import {
 @Entity('academic_info')
 export class Ficha {
   @PrimaryGeneratedColumn('uuid')
-  idFicha: string;
+  id: string;
 
   @Column({
     type: 'int',
@@ -38,22 +38,22 @@ export class Ficha {
   turno: string;
 
   @Column({
-    type: 'text',
-  })
-  procePlant: string;
-
-  @Column({
     type: 'varchar',
     length: 50,
   })
   escolarPeriod: string;
 
+  @Column({
+    type: 'text',
+  })
+  proce_plant: string;
+
   @CreateDateColumn()
-  insDate: Date;
+  ins_date: Date;
 
   @ManyToOne(() => User, (user) => user.id, { eager: true })
-  personalRes: User;
+  personal_res: User;
 
-  @OneToOne((type) => RelationsTable, { eager: true })
+  @OneToOne(() => RelationsTable, (relationTable) => relationTable.id)
   relationTable: RelationsTable;
 }

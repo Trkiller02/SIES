@@ -1,27 +1,26 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RestorePasswordDto } from './dto/restore-password.dto';
-import { User as UserModel } from '@prisma/client';
 import { conflict_err, unauth_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly UserService: UserService,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registerData: RegisterAuthDto) {
-    return this.UserService.create(registerData);
+    return this.userService.create(registerData);
   }
 
   async signIn({ email, ciNumber, password }: LoginAuthDto) {
-    const user = await this.UserService.findToAuth(ciNumber, email);
+    const user = await this.userService.findToAuth(ciNumber, email);
     let rolePatcher: string;
 
     if (!user) {
@@ -41,16 +40,16 @@ export class AuthService {
 
     switch (user.roleId) {
       case 1:
-        rolePatcher = 'ADMINISTRADOR';
+        rolePatcher = 'EVALUACION';
         break;
       case 2:
-        rolePatcher = 'EDITOR';
+        rolePatcher = 'DOCENTES';
         break;
-      case 1:
-        rolePatcher = 'USUARIO';
+      case 3:
+        rolePatcher = 'ADMINISTRACION';
         break;
       default:
-        rolePatcher = 'USUARIO';
+        rolePatcher = 'INVALIDO';
         break;
     }
 
@@ -67,7 +66,7 @@ export class AuthService {
   }
 
   async restorePassword(updatePassword: RestorePasswordDto) {
-    const user = await this.UserService.findOne(updatePassword.ciNumber);
+    const user = await this.userService.findOne(updatePassword.ciNumber);
 
     const { password, repeatPassword, restoreToken } = updatePassword;
 
@@ -99,6 +98,6 @@ export class AuthService {
     delete updatePassword.ciNumber;
     delete updatePassword.restoreToken;
 
-    return await this.UserService.update(id, updatePassword);
+    return await this.userService.update(id, updatePassword);
   }
 }

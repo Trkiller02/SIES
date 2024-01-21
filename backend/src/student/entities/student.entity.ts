@@ -1,13 +1,17 @@
 import { Person } from 'src/person/entities/person.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity('student')
-export class Student extends Person {
-  @Column()
-  age;
+export class Student {
+  @OneToOne(() => Person, (person) => person.ciNumber)
+  @JoinColumn()
+  person_id: string;
 
   @Column()
-  sex: string;
+  age?: number;
+
+  @Column()
+  sex?: string;
 
   @Column({
     nullable: true,

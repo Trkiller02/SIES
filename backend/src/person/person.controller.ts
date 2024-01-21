@@ -12,25 +12,25 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
-import { Person as PersonModel } from '@prisma/client';
+import { Person } from './entities/person.entity';
 
-@Auth([Role.EDITOR])
+@Auth([Role.DOCENTES])
 @Controller('person')
 export class PersonController {
   constructor(private readonly personService: PersonService) {}
 
   @Post()
-  create(@Body() createPersonDto: CreatePersonDto): Promise<PersonModel> {
+  create(@Body() createPersonDto: CreatePersonDto): Promise<Person> {
     return this.personService.create(createPersonDto);
   }
 
   @Get()
-  findAll(): Promise<PersonModel[]> {
+  findAll(): Promise<Person[]> {
     return this.personService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<PersonModel> {
+  findOne(@Param('id') id: string): Promise<Person> {
     return this.personService.findOne(id);
   }
 
@@ -38,12 +38,12 @@ export class PersonController {
   update(
     @Param('id') id: string,
     @Body() updatePersonDto: UpdatePersonDto,
-  ): Promise<PersonModel> {
+  ): Promise<Person> {
     return this.personService.update(id, updatePersonDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<PersonModel> {
+  remove(@Param('id') id: string): Promise<Person> {
     return this.personService.remove(id);
   }
 }

@@ -1,7 +1,11 @@
-import { Column, Entity } from 'typeorm';
+import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('health_info')
 export class HealtInfo {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @Column({
     nullable: true,
     type: 'text',
@@ -30,4 +34,7 @@ export class HealtInfo {
     type: 'text',
   })
   siteAct: string;
+
+  @OneToOne(() => RelationsTable, (relationTable) => relationTable.id)
+  relationTable: RelationsTable;
 }

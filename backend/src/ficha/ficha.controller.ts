@@ -17,7 +17,7 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('FICHA:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador
-@Auth([Role.EDITOR])
+@Auth([Role.DOCENTES])
 @Controller('ficha') // definiendo el nombre del controlador como 'ficha'
 export class FichaController {
   constructor(private readonly fichaService: FichaService) {}
