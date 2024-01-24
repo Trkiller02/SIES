@@ -8,5 +8,6 @@ import { Ficha } from './entities/ficha.entity';
   imports: [TypeOrmModule.forFeature([Ficha])],
   controllers: [FichaController],
   providers: [FichaService],
+  exports: [FichaService],
 })
 export class FichaModule {}

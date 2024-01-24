@@ -1,11 +1,24 @@
 import { Person } from 'src/person/entities/person.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('student')
 export class Student {
-  @OneToOne(() => Person, (person) => person.ciNumber)
-  @JoinColumn()
-  person_id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @OneToOne(() => Person, (person) => person.ciNumber, {
+    nullable: false,
+    eager: true,
+  })
+  @JoinColumn({ name: 'person_id' })
+  person_id: Person;
 
   @Column()
   age?: number;
@@ -45,4 +58,7 @@ export class Student {
 
   @Column()
   bornDate: string;
+
+  @OneToOne(() => RelationsTable, (relationTable) => relationTable.student_id)
+  relation_table_id?: RelationsTable;
 }

@@ -5,7 +5,7 @@ import { Student } from 'src/student/entities/student.entity';
 import {
   Entity,
   JoinColumn,
-  ManyToOne,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,41 +15,37 @@ export class RelationsTable {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Represent, (represent: Represent) => represent.ciNumber, {
-    eager: true,
+  @ManyToMany(() => Represent, (represent: Represent) => represent.person_id, {
+    nullable: false,
   })
-  @JoinColumn()
-  represent_id?: Represent;
+  @JoinColumn({ name: 'represent_id' })
+  represent_id: Represent;
 
   @OneToOne(() => Ficha, (fichaTable) => fichaTable.id, {
     eager: true,
   })
-  @JoinColumn()
-  ficha_id: string;
+  @JoinColumn({ name: 'academic_data_id' })
+  ficha_id: Ficha;
 
-  @ManyToOne(() => Represent, (represent: Represent) => represent.ciNumber, {
+  @ManyToMany(() => Represent, (represent: Represent) => represent.person_id, {
     nullable: true,
-    eager: true,
   })
-  @JoinColumn()
-  mother_id?: string;
+  @JoinColumn({ name: 'mother_id' })
+  mother_id?: Represent;
 
-  @ManyToOne(() => Represent, (represent: Represent) => represent.ciNumber, {
+  @ManyToMany(() => Represent, (represent: Represent) => represent.person_id, {
     nullable: true,
-    eager: true,
   })
-  @JoinColumn()
-  father_id?: string;
+  @JoinColumn({ name: 'father_id' })
+  father_id?: Represent;
 
   @OneToOne(() => HealtInfo, (healthTable) => healthTable.id, {
     eager: true,
   })
-  @JoinColumn()
-  healt_info_id: string;
+  @JoinColumn({ name: 'healt_info_id' })
+  healt_info_id: HealtInfo;
 
-  @OneToOne(() => Student, {
-    eager: true,
-  })
-  @JoinColumn()
+  @OneToOne(() => Student)
+  @JoinColumn({ name: 'student_id' })
   student_id: Student;
 }

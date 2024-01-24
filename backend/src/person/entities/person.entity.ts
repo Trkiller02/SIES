@@ -18,14 +18,16 @@ export class Person {
   lastName: string;
 
   @Column({
-    type: 'text',
+    type: 'varchar',
+    length: '100',
     nullable: true,
     unique: true,
   })
   email?: string;
 
   @Column({
-    type: 'text',
+    type: 'varchar',
+    length: '100',
     nullable: true,
     name: 'phone_number',
   })

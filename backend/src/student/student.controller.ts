@@ -15,7 +15,7 @@ import { Role } from 'src/auth/enum/roles.enum';
 
 // CONTROLADOR DEL RECURSO PROTEGIDO
 // ACCESO RESTRINGIDO PARA USUARIO COMÚN
-@Auth([Role.EDITOR])
+@Auth([Role.DOCENTES])
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}

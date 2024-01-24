@@ -3,26 +3,22 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
-import { Person } from './entities/person.entity';
-import { Repository } from 'typeorm';
+import { Person as PersonModel } from './entities/person.entity';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PersonService {
   constructor(
-    @InjectRepository(Person)
-    private readonly personRepo: Repository<Person>,
+    @InjectRepository(PersonModel)
+    private readonly personRepo: Repository<PersonModel>,
   ) {}
 
   async create(createPersonDto: CreatePersonDto): Promise<PersonModel> {
-    const person = await this.prisma.person.findFirst({
-      where: {
-        OR: [
-          { ciNumber: { equals: createPersonDto.ciNumber } },
-          { email: { equals: createPersonDto.email } },
-        ],
-      },
-    });
+    const person = await this.findOne(
+      createPersonDto.ciNumber,
+      createPersonDto.email,
+    );
 
     if (person)
       conflict_err(
@@ -30,13 +26,11 @@ export class PersonService {
         'La persona ya existe o los datos están ingresados en otra persona.',
       );
 
-    return await this.prisma.person.create({
-      data: createPersonDto,
-    });
+    return await this.personRepo.save(createPersonDto);
   }
 
   async findAll(): Promise<PersonModel[]> {
-    const persons = await this.prisma.person.findMany();
+    const persons = await this.personRepo.find();
 
     if (persons.length === 0) {
       not_found_err(messagesEnum.not_found, 'No existen personas registradas');
@@ -45,11 +39,13 @@ export class PersonService {
     return persons;
   }
 
-  async findOne(id: string, pass?: boolean): Promise<PersonModel> {
-    const person = await this.prisma.person.findFirst({
-      where: {
-        ciNumber: id,
-      },
+  async findOne(
+    id: string,
+    email?: string,
+    pass?: boolean,
+  ): Promise<PersonModel> {
+    const person = await this.personRepo.findOne({
+      where: [{ ciNumber: id }, { email: email }],
     });
 
     if (!person && !pass)
@@ -58,48 +54,18 @@ export class PersonService {
     return person;
   }
 
-  async findOneForRelation(id: string, pass?: boolean): Promise<PersonModel> {
-    const person = await this.prisma.person.findFirst({
-      where: {
-        ciNumber: id,
-        Represent: null,
-      },
-    });
-
-    if (!person && !pass)
-      not_found_err(messagesEnum.not_found, 'Persona no encontrado.');
-
-    return person;
-  }
-
   async update(
     id: string,
     updatePersonDto: UpdatePersonDto,
-  ): Promise<PersonModel> {
-    const ciNumber = await this.findOne(id);
-
-    return await this.prisma.person.update({
-      where: ciNumber,
-      data: updatePersonDto,
-    });
-  }
-
-  async updateRelation(id: string): Promise<PersonModel> {
+  ): Promise<UpdateResult> {
     const person = await this.findOne(id);
 
-    return await this.prisma.person.update({
-      where: person,
-      data: {
-        relation: person.relation + ',RL',
-      },
-    });
+    return await this.personRepo.update(person, updatePersonDto);
   }
 
-  async remove(id: string): Promise<PersonModel> {
+  async remove(id: string): Promise<DeleteResult> {
     const person = await this.findOne(id);
 
-    return await this.prisma.person.delete({
-      where: person,
-    });
+    return await this.personRepo.delete(person);
   }
 }

@@ -1,31 +1,31 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { CreateFichaDto } from 'src/ficha/dto/create-ficha.dto';
+import { CreateHealtInfoDto } from 'src/healt-info/dto/create-healt-info.dto';
+import { CreateRepresentDto } from 'src/represent/dto/create-represent.dto';
+import { CreateStudentDto } from 'src/student/dto/create-student.dto';
 
 export class CreateRelationsTableDto {
   @IsNotEmpty()
   @IsString()
-  representCiNumbers: string;
+  represent_id: CreateRepresentDto;
 
   @IsNotEmpty()
   @IsString()
-  fichaId: string;
+  ficha_id: CreateFichaDto;
 
   @IsOptional()
   @IsString()
-  motherPersonCiNumbers?: string;
+  mother_id?: CreateRepresentDto;
 
   @IsOptional()
   @IsString()
-  fatherPersonCiNumbers?: string;
-
-  @IsOptional()
-  @IsString()
-  thirdPersonCiNumbers?: string;
+  father_id?: CreateRepresentDto;
 
   @IsNotEmpty()
   @IsString()
-  statusId: string;
+  healt_info_id: CreateHealtInfoDto;
 
   @IsNotEmpty()
   @IsString()
-  studentId: string;
+  student_id: CreateStudentDto;
 }

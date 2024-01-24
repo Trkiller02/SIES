@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { RepresentService } from './represent.service';
 import { RepresentController } from './represent.controller';
-import { PrismaModule } from '../../src/prisma/prisma.module';
 import { PersonModule } from '../../src/person/person.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Represent } from './entities/represent.entity';
 
 @Module({
-  imports: [PrismaModule, PersonModule],
+  imports: [TypeOrmModule.forFeature([Represent]), PersonModule],
   controllers: [RepresentController],
   providers: [RepresentService],
+  exports: [RepresentService],
 })
 export class RepresentModule {}

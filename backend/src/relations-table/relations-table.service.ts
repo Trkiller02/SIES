@@ -1,22 +1,54 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+//ENTITY
+import { RelationsTable } from './entities/relations-table.entity';
+//DTOs
 import { CreateRelationsTableDto } from './dto/create-relations-table.dto';
 import { UpdateRelationsTableDto } from './dto/update-relations-table.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+//ERROR HANDLERS
 import { not_found_err } from 'src/utils/handlerErrors';
+//MESSAGES ENUM
 import { messagesEnum } from 'src/utils/handlerMsg';
+//SERVICE
+import { FichaService } from 'src/ficha/ficha.service';
+import { HealtInfoService } from 'src/healt-info/healt-info.service';
+import { StudentService } from 'src/student/student.service';
+import { RepresentService } from 'src/represent/represent.service';
 
 @Injectable()
 export class RelationsTableService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(RelationsTable)
+    private readonly relationRepo: Repository<RelationsTable>,
+    private readonly fichaService: FichaService,
+    private readonly hInfoService: HealtInfoService,
+    private readonly studentService: StudentService,
+    private readonly representService: RepresentService,
+  ) {}
 
   async create(createDto: CreateRelationsTableDto) {
-    return await this.prisma.relationTable.create({
-      data: createDto,
+    const represent = await this.representService.create(
+      createDto.represent_id,
+    );
+
+    const mother_id = createDto.mother_id
+      ? await this.representService.create(createDto.mother_id)
+      : null;
+
+    const father_id = createDto.father_id
+      ? await this.representService.create(createDto.father_id)
+      : null;
+
+    return await this.relationRepo.create({
+      represent_id: represent,
+      mother_id: mother_id,
+      father_id: father_id,
     });
   }
 
   async findAll() {
-    const tables = await this.prisma.relationTable.findMany();
+    const tables = await this.relationRepo.find();
     if (tables.length === 0) {
       not_found_err(messagesEnum.not_found, 'No se encontraron registros');
     }
@@ -24,48 +56,21 @@ export class RelationsTableService {
   }
 
   async findOne(id: string) {
-    const table = await this.prisma.relationTable.findFirst({
-      where: {
-        OR: [{ studentId: { equals: id } }, { fichaId: { equals: id } }],
-      },
-      include: {
-        representRelation: {
-          include: {
-            personRelation: true,
+    const table = await this.relationRepo.findOne({
+      where: [
+        {
+          student_id: {
+            person_id: {
+              ciNumber: id,
+            },
           },
         },
-        motherRelation: {
-          include: {
-            personRelation: true,
+        {
+          ficha_id: {
+            id: id,
           },
         },
-        fatherRelation: {
-          include: {
-            personRelation: true,
-          },
-        },
-        fichaRelation: true,
-        statusRelation: true,
-        studentRelation: {
-          include: {
-            studentRelation: true,
-          },
-        },
-      },
-    });
-
-    if (!table)
-      not_found_err(
-        messagesEnum.not_found,
-        'No existe el registro o se equivoco en la busqueda.',
-      );
-
-    return table;
-  }
-
-  async findOneToMethods(id: string) {
-    const table = await this.prisma.relationTable.findFirst({
-      where: { studentId: id },
+      ],
     });
 
     if (!table)
@@ -78,19 +83,14 @@ export class RelationsTableService {
   }
 
   async update(id: string, updateRelationsTableDto: UpdateRelationsTableDto) {
-    const table = await this.findOneToMethods(id);
+    const table = await this.findOne(id);
 
-    return this.prisma.relationTable.update({
-      where: table,
-      data: updateRelationsTableDto,
-    });
+    return this.relationRepo.update(table, updateRelationsTableDto);
   }
 
   async remove(id: string) {
-    const table = await this.findOneToMethods(id);
+    const table = await this.findOne(id);
 
-    return this.prisma.relationTable.delete({
-      where: table,
-    });
+    return this.relationRepo.delete(table);
   }
 }

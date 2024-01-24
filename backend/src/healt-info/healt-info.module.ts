@@ -8,5 +8,6 @@ import { HealtInfo } from './entities/healt-info.entity';
   imports: [TypeOrmModule.forFeature([HealtInfo])],
   controllers: [HealtInfoController],
   providers: [HealtInfoService],
+  exports: [HealtInfoService],
 })
 export class HealtInfoModule {}

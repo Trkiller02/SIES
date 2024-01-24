@@ -35,7 +35,7 @@ export class FichaService {
         //FIXME TRAER NOMBRE COMPLETO Y CEDULA DEL ESTUDIANTE
         relations: {
           relationTable: {
-            studentId: true,
+            student_id: true,
           },
         },
       });
@@ -63,12 +63,16 @@ export class FichaService {
       where: [
         {
           relationTable: {
-            studentId: {
-              ciNumber: id,
+            student_id: {
+              person_id: {
+                ciNumber: id,
+              },
             },
           },
         },
-        { idFicha: id },
+        {
+          id: id,
+        },
       ],
     });
 

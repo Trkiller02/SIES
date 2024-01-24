@@ -1,10 +1,22 @@
-import { Column, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Person } from 'src/person/entities/person.entity';
+import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
 
+@Entity('represent')
 export class Represent {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @OneToOne(() => Person, (person) => person.ciNumber, { eager: true })
-  @JoinColumn()
-  person_id: string;
+  @JoinColumn({ name: 'person_id' })
+  person_id: Person;
 
   @Column({
     type: 'text',
@@ -41,4 +53,7 @@ export class Represent {
     nullable: true,
   })
   incomeMonth?: number;
+
+  @ManyToMany(() => RelationsTable)
+  relation_table_id?: RelationsTable;
 }

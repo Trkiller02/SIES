@@ -1,68 +1,37 @@
+import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+//DTOs
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+//SERVICE
 import { PersonService } from 'src/person/person.service';
-import { Student as StudentModel } from '@prisma/client';
-import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
+//ERROR HANDLER
+import { not_found_err } from 'src/utils/handlerErrors';
+//MESSAGES
 import { messagesEnum } from 'src/utils/handlerMsg';
+//ENTITY
+import { Student } from './entities/student.entity';
 
-// ... ...
 @Injectable()
 export class StudentService {
   constructor(
-    private readonly prisma: PrismaService,
+    @InjectRepository(Student)
+    private readonly studentRepo: Repository<Student>,
     private readonly personService: PersonService,
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
-    const person = await this.personService.findOne(
-      createStudentDto.ciNumber,
-      true,
-    );
+    const person = await this.personService.create({ ...createStudentDto });
 
-    if (person) {
-      conflict_err(
-        messagesEnum.conflict_err,
-        'Ya existe un registro con los datos suministrados.',
-      );
-    }
-
-    return await this.prisma.student.create({
-      data: {
-        studentRelation: {
-          create: {
-            ciNumber: createStudentDto.ciNumber,
-            name: createStudentDto.name,
-            lastName: createStudentDto.lastName,
-            email: createStudentDto.email,
-            phoneNumber: createStudentDto.phoneNumber,
-            homeDir: createStudentDto.homeDir,
-            homeParroquia: createStudentDto.homeParroquia,
-            homeMunicipio: createStudentDto.homeMunicipio,
-            relation: 'E',
-          },
-        },
-        bornState: createStudentDto.bornState,
-        bornPais: createStudentDto.bornPais,
-        bornDate: new Date(createStudentDto.bornDate),
-        liveWith: createStudentDto.liveWith,
-        age: createStudentDto.age,
-        sex: createStudentDto.sex,
-        weight: createStudentDto.weight,
-        size: createStudentDto.size,
-        Lateralidad: createStudentDto.Lateralidad,
-        instPro: createStudentDto.instPro,
-      },
-      include: {
-        studentRelation: true,
-      },
+    return await this.studentRepo.save({
+      person_id: person,
+      ...createStudentDto,
     });
   }
-  // ...  ...
 
   async findAll() {
-    const students = await this.prisma.student.findMany();
+    const students = await this.studentRepo.find();
 
     if (students.length === 0)
       not_found_err(messagesEnum.not_found, 'No se encontraron registros.');
@@ -70,51 +39,11 @@ export class StudentService {
     return students;
   }
 
-  // ... ...
-
-  async findOne(id: string, pass?: boolean): Promise<StudentModel> {
-    const student = await this.prisma.student.findUnique({
-      where: { studentCiNumber: id },
-      include: {
-        studentRelation: true,
-        relationTable: {
-          select: {
-            representRelation: {
-              select: {
-                personRelation: {
-                  select: {
-                    name: true,
-                    lastName: true,
-                    ciNumber: true,
-                  },
-                },
-              },
-            },
-            motherRelation: {
-              select: {
-                personRelation: {
-                  select: {
-                    name: true,
-                    lastName: true,
-                    ciNumber: true,
-                  },
-                },
-              },
-            },
-            fatherRelation: {
-              select: {
-                personRelation: {
-                  select: {
-                    name: true,
-                    lastName: true,
-                    ciNumber: true,
-                  },
-                },
-              },
-            },
-            statusRelation: true,
-            fichaRelation: true,
-          },
+  async findOne(id: string, pass?: boolean): Promise<Student> {
+    const student = await this.studentRepo.findOne({
+      where: {
+        person_id: {
+          ciNumber: id,
         },
       },
     });
@@ -125,20 +54,15 @@ export class StudentService {
     return student;
   }
 
-  // ... ...
-
   async update(id: string, updateStudentDto: UpdateStudentDto) {
     const student = await this.findOne(id);
 
-    return await this.prisma.student.update({
-      where: student,
-      data: updateStudentDto,
-    });
+    return await this.studentRepo.update(student, updateStudentDto);
   }
 
   async remove(id: string) {
     const student = await this.findOne(id);
 
-    return this.prisma.student.delete({ where: student });
+    return this.studentRepo.delete(student);
   }
 }

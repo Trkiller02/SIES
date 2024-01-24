@@ -13,7 +13,7 @@ import { UpdateRepresentDto } from './dto/update-represent.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/auth/enum/roles.enum';
 
-@Auth([Role.EDITOR])
+@Auth([Role.DOCENTES])
 @Controller('represent')
 export class RepresentController {
   constructor(private readonly representService: RepresentService) {}

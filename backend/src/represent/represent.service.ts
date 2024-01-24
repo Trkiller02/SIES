@@ -1,77 +1,39 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+//SERVICIOS
+import { PersonService } from 'src/person/person.service';
+//ENTITY
+import { Represent } from './entities/represent.entity';
+//DTOs
 import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
-import { PersonService } from 'src/person/person.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+//ERROR HANDLER
 import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
+//MESSAGES
 import { messagesEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class RepresentService {
   constructor(
-    private readonly prisma: PrismaService,
+    @InjectRepository(Represent)
+    private readonly representRepo: Repository<Represent>,
     private readonly personService: PersonService,
   ) {}
 
   async create(createRepresentDto: CreateRepresentDto) {
-    await this.findOne(createRepresentDto.ciNumber, true);
+    const person = await this.personService.create(createRepresentDto);
 
-    const person = await this.personService.findOneForRelation(
-      createRepresentDto.ciNumber,
-      true,
-    );
-
-    if (person) {
-      await this.prisma.represent.create({
-        data: {
-          personRelation: {
-            connect: { ciNumber: person.ciNumber },
-          },
-          tlfnHome: createRepresentDto.tlfnHome,
-          profession: createRepresentDto.profession,
-          workPlace: createRepresentDto.workPlace,
-          workPhoneNumber: createRepresentDto.workPhoneNumber,
-          incomeMonth: createRepresentDto.incomeMonth,
-        },
-        include: {
-          personRelation: true,
-        },
-      });
-      await this.personService.updateRelation(person.ciNumber);
-
-      return person.ciNumber;
-    }
-
-    return this.prisma.represent.create({
-      data: {
-        personRelation: {
-          create: {
-            ciNumber: createRepresentDto.ciNumber,
-            name: createRepresentDto.name,
-            lastName: createRepresentDto.lastName,
-            homeDir: createRepresentDto.homeDir,
-            homeParroquia: createRepresentDto.homeParroquia,
-            homeMunicipio: createRepresentDto.homeMunicipio,
-            relation: createRepresentDto.relation,
-          },
-        },
-        profession: createRepresentDto.profession,
-        workPlace: createRepresentDto.workPlace,
-        workPhoneNumber: createRepresentDto.workPhoneNumber,
-        incomeMonth: createRepresentDto.incomeMonth,
-      },
-      include: {
-        personRelation: true,
-      },
+    const represent = await this.representRepo.save({
+      person_id: person,
+      ...createRepresentDto,
     });
+
+    return represent;
   }
 
   async findAll() {
-    const represent = await this.prisma.represent.findMany({
-      include: {
-        personRelation: true,
-      },
-    });
+    const represent = await this.representRepo.find();
 
     if (represent.length === 0)
       not_found_err(messagesEnum.not_found, 'No se encontraron registros.');
@@ -80,10 +42,11 @@ export class RepresentService {
   }
 
   async findOne(id: string, pass?: boolean) {
-    const represent = await this.prisma.represent.findUnique({
-      where: { representCiNumber: id },
-      include: {
-        personRelation: true,
+    const represent = await this.representRepo.findOne({
+      where: {
+        person_id: {
+          ciNumber: id,
+        },
       },
     });
 
@@ -102,15 +65,12 @@ export class RepresentService {
   async update(id: string, updateRepresentDto: UpdateRepresentDto) {
     const represent = await this.findOne(id);
 
-    return await this.prisma.represent.update({
-      where: represent,
-      data: updateRepresentDto,
-    });
+    return await this.representRepo.update(represent, updateRepresentDto);
   }
 
   async remove(id: string) {
     const represent = await this.findOne(id);
 
-    return this.prisma.represent.delete({ where: represent });
+    return this.representRepo.softDelete(represent);
   }
 }
