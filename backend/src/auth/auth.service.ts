@@ -7,6 +7,7 @@ import { RestorePasswordDto } from './dto/restore-password.dto';
 import { conflict_err, unauth_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
 import { UserService } from 'src/user/user.service';
+import { Role } from 'src/role/entities/role.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,9 +20,8 @@ export class AuthService {
     return this.userService.create(registerData);
   }
 
-  async signIn({ email, ciNumber, password }: LoginAuthDto) {
-    const user = await this.userService.findToAuth(ciNumber, email);
-    let rolePatcher: string;
+  async signIn({ query, password }: LoginAuthDto) {
+    const user = await this.userService.findToAuth(query);
 
     if (!user) {
       throw new UnauthorizedException('Crendenciales invalidas');
@@ -35,23 +35,8 @@ export class AuthService {
 
     const payload = {
       sub: user.id,
-      role: user.roleId,
+      role: user.role_id instanceof Role ? user.role_id.id : user.role_id,
     };
-
-    switch (user.roleId) {
-      case 1:
-        rolePatcher = 'EVALUACION';
-        break;
-      case 2:
-        rolePatcher = 'DOCENTES';
-        break;
-      case 3:
-        rolePatcher = 'ADMINISTRACION';
-        break;
-      default:
-        rolePatcher = 'INVALIDO';
-        break;
-    }
 
     const token = await this.jwtService.signAsync(payload);
 
@@ -60,7 +45,7 @@ export class AuthService {
       lastName: user.lastName,
       ciNumber: user.ciNumber,
       email: user.email,
-      role: rolePatcher,
+      role: user.role_id instanceof Role ? user.role_id.name : user.role_id,
       token: token,
     };
   }

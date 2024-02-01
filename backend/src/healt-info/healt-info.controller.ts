@@ -12,7 +12,7 @@ import { CreateHealtInfoDto } from './dto/create-healt-info.dto';
 import { UpdateHealtInfoDto } from './dto/update-healt-info.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { Role } from 'src/auth/enum/roles.enum';
+import { Role } from 'src/role/enum/roles.enum';
 
 @ApiTags('HEALTH-INFO:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador

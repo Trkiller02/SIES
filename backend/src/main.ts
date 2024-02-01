@@ -8,8 +8,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  app.useGlobalPipes(new ValidationPipe());
-
   app.enableCors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
@@ -28,6 +26,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('/', app, document);
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(8000, () =>
     console.log('🚀 Server ready at: http://localhost:8000/api'),

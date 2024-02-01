@@ -28,10 +28,10 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/",
+    /*     "/",
     "/dashboard/:path*",
     "/register/:path*",
-    "/search/:path*",
+    "/search/:path*", */
     "/settings",
   ],
 };

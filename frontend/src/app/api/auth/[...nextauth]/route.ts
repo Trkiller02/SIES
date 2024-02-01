@@ -7,28 +7,30 @@ export const authOptions: AuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "email", type: "email", placeholder: "user@user.com" },
-        ciNumber: {
-          label: "ciNumber",
+        query: {
+          label: "C.I. || Email:",
           type: "text",
-          placeholder: "V2123",
+          placeholder: "V2123 || E1234 || johndoe@user.com",
         },
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        try {
+          const res = await fetch(
+            process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/login",
+            {
+              method: "POST",
+              body: JSON.stringify(credentials),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-        const res = await fetch(backendUrl + "/auth/login", {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        });
+          const user = await res.json();
 
-        const user = await res.json();
-
-        if (!res.ok) throw user;
-
-        if (res.ok && user) return user;
+          if (res.ok && user) return user;
+        } catch (error) {
+          throw error;
+        }
       },
     }),
   ],

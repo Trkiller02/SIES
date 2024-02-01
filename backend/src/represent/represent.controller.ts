@@ -11,8 +11,10 @@ import { RepresentService } from './represent.service';
 import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { Role } from 'src/auth/enum/roles.enum';
+import { Role } from 'src/role/enum/roles.enum';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('REPRESENT:')
 @Auth([Role.DOCENTES])
 @Controller('represent')
 export class RepresentController {

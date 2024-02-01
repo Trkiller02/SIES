@@ -1,3 +1,4 @@
+import { Role } from 'src/role/entities/role.entity';
 import {
   Column,
   Entity,
@@ -5,6 +6,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -12,23 +15,24 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ name: 'restore_token' })
   restoreToken: string;
 
   @Column()
   name: string;
 
-  @Column()
+  @Column({ name: 'lastname' })
   lastName: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, name: 'ci_number' })
   ciNumber: string;
 
   @Column({ unique: true })
   email: string;
 
-  // role         Rol          @relation(fields: [roleId], references: [idRol])
-  roleId: number;
+  @ManyToOne(() => Role, (role) => role.id, { eager: true })
+  @JoinColumn({ name: 'role_id' })
+  role_id: number | Role;
 
   @Column({ select: false })
   password: string;
@@ -36,14 +40,19 @@ export class User {
   @CreateDateColumn({
     insert: false,
     update: false,
+    name: 'created_at',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     insert: false,
+    name: 'updated_at',
   })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({
+    insert: false,
+    name: 'deleted_at',
+  })
   deletedAt: Date;
 }

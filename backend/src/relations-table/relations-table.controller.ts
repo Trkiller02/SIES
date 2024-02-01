@@ -10,7 +10,9 @@ import {
 import { RelationsTableService } from './relations-table.service';
 import { CreateRelationsTableDto } from './dto/create-relations-table.dto';
 import { UpdateRelationsTableDto } from './dto/update-relations-table.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('RELATION-TABLE:')
 @Controller('relations-table')
 export class RelationsTableController {
   constructor(private readonly relationsTableService: RelationsTableService) {}

@@ -12,10 +12,10 @@ import { FichaService } from './ficha.service';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { Role } from 'src/auth/enum/roles.enum';
+import { Role } from 'src/role/enum/roles.enum';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('FICHA:')
+@ApiTags('ACADEMIC-INFO:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador
 @Auth([Role.DOCENTES])
 @Controller('ficha') // definiendo el nombre del controlador como 'ficha'

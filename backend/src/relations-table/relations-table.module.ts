@@ -7,10 +7,12 @@ import { RepresentModule } from 'src/represent/represent.module';
 import { StudentModule } from 'src/student/student.module';
 import { HealtInfoModule } from 'src/healt-info/healt-info.module';
 import { FichaModule } from 'src/ficha/ficha.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([RelationsTable]),
+    AuthModule,
     RepresentModule,
     StudentModule,
     HealtInfoModule,

@@ -7,33 +7,48 @@ import { messagesEnum } from 'src/utils/handlerMsg';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepo: Repository<User>,
+    private readonly roleService: RoleService,
   ) {}
 
   async create(createData: CreateUserDto) {
-    const user = await this.userRepository.find({
+    const userSearch = await this.userRepo.findOne({
       where: [{ ciNumber: createData.ciNumber }, { email: createData.email }],
       select: {
         id: true,
       },
     });
 
-    if (user)
+    if (userSearch) {
       conflict_err(messagesEnum.conflict_err, 'El usuario ya está registrado.');
+    }
 
-    const passHashed = await bcrypt.hash(createData.password, 10);
-    createData.password = passHashed;
+    const restoreToken =
+      createData.name.slice(0, 2) +
+      createData.lastName.slice(0, 2) +
+      createData.ciNumber.slice(-2) +
+      createData.email.slice(0, 2) +
+      createData.ciNumber.slice(0, 2);
 
-    return await this.userRepository.create(createData);
+    const user = await this.userRepo.save({
+      ...createData,
+      password: await bcrypt.hash(createData.password, 10),
+      restoreToken: await bcrypt.hash(restoreToken, 10),
+    });
+
+    delete user.password;
+
+    return { ...user, restoreToken: restoreToken };
   }
 
   async findAll(): Promise<User[]> {
-    const users = await this.userRepository.find();
+    const users = await this.userRepo.find();
 
     if (users.length === 0) {
       not_found_err(messagesEnum.not_found, 'No existen usuarios.');
@@ -42,22 +57,17 @@ export class UserService {
     return users;
   }
 
-  async findToAuth(ciNumber?: string, email?: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: [{ ciNumber: ciNumber }, { email: email }],
-    });
-
-    if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
-
-    return user;
-  }
-
-  async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: {
-        ciNumber: id,
+  async findToAuth(query: string): Promise<User> {
+    const user = await this.userRepo.findOne({
+      where: [{ ciNumber: query }, { email: query }],
+      select: {
+        id: true,
+        ciNumber: true,
+        name: true,
+        lastName: true,
+        password: true,
+        email: true,
       },
-      loadRelationIds: true,
     });
 
     if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
@@ -65,7 +75,18 @@ export class UserService {
     return user;
   }
 
-  // ... ...
+  async findOne(query: string): Promise<User> {
+    const user = await this.userRepo.findOne({
+      where: [{ ciNumber: query }, { email: query }, { id: query }],
+    });
+
+    console.log(user);
+
+    if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
+
+    return user;
+  }
+
   async update(ciNumber: string, updateData: UpdateUserDto) {
     const user = await this.findOne(ciNumber);
 
@@ -93,13 +114,13 @@ export class UserService {
     }
 
     // MANDAMOS EL OBJETO ACTUALIZADO
-    return await this.userRepository.update(user, updateData);
+    return await this.userRepo.update(user, updateData);
   }
 
   async remove(ciNumber: string) {
     const user = await this.findOne(ciNumber);
 
-    await this.userRepository.softDelete(user);
+    await this.userRepo.softDelete(user);
 
     return;
   }

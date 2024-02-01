@@ -1,5 +1,4 @@
 export interface LoginI {
-  ciNumber?: string | undefined;
+  query: string;
   password: string;
-  email?: string | undefined;
 }

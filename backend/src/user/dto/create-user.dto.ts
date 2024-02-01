@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
-  IsDate,
   IsEmail,
   IsNotEmpty,
-  IsOptional,
+  IsNumber,
+  IsPositive,
   IsString,
   MinLength,
 } from 'class-validator';
@@ -20,6 +20,7 @@ export class CreateUserDto {
   })
   ciNumber: string;
 
+  @ApiProperty()
   @IsString()
   @Transform(({ value }: { value: string }) => value.trim())
   @IsNotEmpty({
@@ -30,6 +31,7 @@ export class CreateUserDto {
   })
   name: string;
 
+  @ApiProperty()
   @IsString()
   @Transform(({ value }: { value: string }) => value.trim())
   @IsNotEmpty({
@@ -40,12 +42,14 @@ export class CreateUserDto {
   })
   lastName: string;
 
+  @ApiProperty()
   @IsEmail()
   @IsNotEmpty({
     message: validationMsg('La email', messagesEnum.not_empty),
   })
   email: string;
 
+  @ApiProperty()
   @Transform(({ value }) => value.trim())
   @IsNotEmpty({
     message: validationMsg('La contraseña', messagesEnum.not_empty),
@@ -53,18 +57,10 @@ export class CreateUserDto {
   @MinLength(4)
   password: string;
 
-  @Transform(({ value }) => value.trim().toUpperCase())
-  @IsNotEmpty({
-    message: validationMsg('El token de recuperación', messagesEnum.not_empty),
+  @ApiProperty({
+    enumName: 'Role',
   })
-  @MinLength(4)
-  restoreToken: string;
-
-  @IsDate()
-  @IsOptional()
-  createdAt?: Date | string;
-
-  @IsDate()
-  @IsOptional()
-  updatedAt?: Date | string;
+  @IsNumber()
+  @IsPositive()
+  role_id: number;
 }

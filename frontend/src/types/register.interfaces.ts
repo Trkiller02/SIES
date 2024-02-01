@@ -23,7 +23,7 @@ export interface RepresentI {
 }
 
 export interface FichaI {
-  idFicha: string;
+  id: string;
   level: string;
   section: string;
   etapa: string;

@@ -11,9 +11,11 @@ import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { Role } from 'src/auth/enum/roles.enum';
+import { Role } from 'src/role/enum/roles.enum';
 import { Person } from './entities/person.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('PERSON:')
 @Auth([Role.DOCENTES])
 @Controller('person')
 export class PersonController {

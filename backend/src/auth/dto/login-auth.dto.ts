@@ -1,31 +1,24 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginAuthDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @IsEmail()
-  email?: string;
-
   @ApiPropertyOptional({
-    pattern: '^[VE]\\d+$',
+    pattern: '^[VE]\\d+$' || '^[a-z]\\d+@[.com]$)',
+    examples: ['V8712765', 'E298712342', 'johndoe23@user.com'],
+    type: String,
   })
-  @IsOptional()
   @IsString()
-  ciNumber?: string;
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsNotEmpty()
+  query: string;
 
   @ApiProperty({
     minLength: 4,
+    type: String,
   })
-  @Transform(({ value }) => value.trim())
+  @IsString()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsNotEmpty()
   @MinLength(4)
   password: string;

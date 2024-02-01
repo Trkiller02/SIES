@@ -5,8 +5,7 @@ import { regexList } from "../regexPatterns";
 // VALORES INICIALES AUTH
 
 const LoginValues = {
-  ciNumber: "",
-  email: "",
+  query: "",
   password: "",
 };
 
@@ -43,10 +42,9 @@ const UpdatePassSchema = Yup.object({
 });
 
 const LoginSchema = Yup.object({
-  ciNumber: Yup.string()
-    .matches(regexList.forDNI, Messages.dni_match)
-    .optional(),
-  email: Yup.string().email(Messages.email_err).optional(),
+  query: Yup.string()
+    .matches(regexList.forDNI || regexList.forEmail, Messages.match_err)
+    .required(Messages.required),
   password: Yup.string().required(Messages.required),
 });
 
