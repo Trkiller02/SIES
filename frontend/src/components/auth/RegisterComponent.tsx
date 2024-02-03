@@ -1,244 +1,197 @@
 "use client";
 
 // hooks
-import { useFormik } from "formik";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import NextLink from "next/link";
-import { toast } from "sonner";
 
 // utilidades
 import { RegisterSchema, RegisterValues } from "@/utils/schemas/AuthSchema";
+import { fetchData } from "@/utils/fetchHandler";
+import { toast } from "sonner";
 
 // componentes
-import { Button, Input, Link } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
+import { Field, Form, Formik } from "formik";
 
 // MATERIAL DESIGN ICONS GOOGLE APACHE LICENSE 2.0
 import {
   MdAccountCircle,
   MdAlternateEmail,
-  MdCancel,
-  MdCheckCircle,
   MdFeaturedPlayList,
   MdOutlineRemoveRedEye,
   MdRemoveRedEye,
 } from "react-icons/md";
-import { fetchData } from "@/utils/fetchHandler";
 
 export default function RegisterComponent() {
-  const router = useRouter();
-
   const [Loading, setLoading] = useState(false);
   const [isVisible, setVisible] = useState(false);
 
   const sendInfo = async (values: any) => {
     setLoading(true);
 
-    const res = await fetchData(
-      `/auth/register`,
-      "POST",
-      {
-        ciNumber: values.ciNumber,
-        email: values.email,
-        lastName: values.lastName,
-        name: values.name,
-        password: values.password,
-        restoreToken: values.restoreToken,
-      });
+    const res = await fetchData(`/auth/register`, "POST", values);
 
     if (res) {
-      return "Usuario registrado con exito."
+      return "Usuario registrado con exito.";
     }
-  }
+  };
 
   const toggleVisibility = () => setVisible(!isVisible);
 
-  const formik = useFormik({
-    initialValues: RegisterValues,
-    validationSchema: RegisterSchema,
-    onSubmit: async (values) => {
-      toast.promise(sendInfo(values), {
-        loading: "Procesando...",
-        success: (data) => {
-          router.push('/auth/login')
-          return data;
-        },
-        error: (error: Error) => {
-          return error.message;
-        },
-        finally: () => {
-          setLoading(false)
-        }
-      })
-    },
-  });
-
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      className="grid place-items-center h-2/4 w-2/4 border border-gray-300 rounded-xl px-7 py-8 shadow-xl"
+    <Formik
+      initialValues={RegisterValues}
+      validationSchema={RegisterSchema}
+      onSubmit={async (values) => {
+        toast.promise(sendInfo(values), {
+          loading: "Procesando...",
+          success: (data) => {
+            return data;
+          },
+          error: (error: Error) => {
+            return error.message === "Failed to fetch"
+              ? "Error en conexion"
+              : error.message;
+          },
+          finally: () => {
+            setLoading(false);
+          },
+        });
+      }}
     >
-      <div>
-        <h1>Registro | SINSES</h1>
-      </div>
-      <div className="flex flex-col gap-5 w-full">
-        <Input
-          endContent={<MdAccountCircle className="text-2xl" />}
-          label="Nombre:"
-          name="name"
-          description="Ingrese su nombre"
-          variant="bordered"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          color={
-            formik.errors.name && formik.touched.name ? "danger" : "primary"
-          }
-          errorMessage={
-            formik.errors.name && formik.touched.name && formik.errors.name
-          }
-          value={formik.values.name.toUpperCase()}
-        />
-        <Input
-          endContent={<MdAccountCircle className="text-2xl" />}
-          label="Apellido:"
-          name="lastName"
-          description="Ingrese su nombre"
-          variant="bordered"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          color={
-            formik.errors.lastName && formik.touched.lastName
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.lastName &&
-            formik.touched.lastName &&
-            formik.errors.lastName
-          }
-          value={formik.values.lastName.toUpperCase()}
-        />
-        <Input
-          endContent={<MdAlternateEmail className="text-2xl" />}
-          label="Correo electronico:"
-          type="email"
-          name="email"
-          description="Ingrese su correo electronico"
-          variant="bordered"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          color={
-            formik.errors.email && formik.touched.email ? "danger" : "primary"
-          }
-          errorMessage={
-            formik.errors.email && formik.touched.email && formik.errors.email
-          }
-        />
-        <Input
-          endContent={<MdFeaturedPlayList className="text-2xl self-center" />}
-          label="Cedula de identidad:"
-          type="text"
-          color={
-            formik.errors.ciNumber && formik.touched.ciNumber
-              ? "danger"
-              : "primary"
-          }
-          name="ciNumber"
-          description="Ingrese su cedula de identidad"
-          variant="bordered"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          errorMessage={
-            formik.errors.ciNumber &&
-            formik.touched.ciNumber &&
-            formik.errors.ciNumber
-          }
-          value={formik.values.ciNumber.toUpperCase()}
-        />
-        <Input
-          label="Contraseña:"
-          type={isVisible ? "text" : "password"}
-          name="password"
-          description="Ingrese su contraseña"
-          variant="bordered"
-          color={
-            formik.errors.password && formik.touched.password
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.password &&
-            formik.touched.password &&
-            formik.errors.password
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          endContent={
-            <button
-              onClick={() => toggleVisibility()}
-              className="focus:outline-none"
-              type="button"
+      {({ errors, touched, values }) => (
+        <Form className="grid place-items-center h-2/4 w-2/4 border border-gray-300 rounded-xl px-7 py-8 shadow-xl">
+          <div>
+            <h1>Registro | SINSES</h1>
+          </div>
+          <div className="flex flex-col gap-5 w-full">
+            <Field
+              endContent={<MdAccountCircle className="text-2xl" />}
+              label="Nombre:"
+              name="name"
+              description="Ingrese su nombre"
+              variant="bordered"
+              color={errors.name && touched.name ? "danger" : "primary"}
+              errorMessage={errors.name && touched.name && errors.name}
+              as={Input}
+            />
+            <Field
+              endContent={<MdAccountCircle className="text-2xl" />}
+              label="Apellido:"
+              name="lastName"
+              description="Ingrese su nombre"
+              variant="bordered"
+              color={errors.lastName && touched.lastName ? "danger" : "primary"}
+              errorMessage={
+                errors.lastName && touched.lastName && errors.lastName
+              }
+              as={Input}
+            />
+            <Field
+              endContent={<MdAlternateEmail className="text-2xl" />}
+              label="Correo electronico:"
+              type="email"
+              name="email"
+              description="Ingrese su correo electronico"
+              variant="bordered"
+              color={errors.email && touched.email ? "danger" : "primary"}
+              errorMessage={errors.email && touched.email && errors.email}
+              as={Input}
+            />
+            <Field
+              endContent={
+                <MdFeaturedPlayList className="text-2xl self-center" />
+              }
+              label="Cedula de identidad:"
+              type="text"
+              color={errors.ciNumber && touched.ciNumber ? "danger" : "primary"}
+              name="ciNumber"
+              description="Ingrese su cedula de identidad"
+              variant="bordered"
+              errorMessage={
+                errors.ciNumber && touched.ciNumber && errors.ciNumber
+              }
+              value={values.ciNumber.toUpperCase()}
+              as={Input}
+            />
+            <Field
+              label="Contraseña:"
+              type={isVisible ? "text" : "password"}
+              name="password"
+              description="Ingrese su contraseña"
+              variant="bordered"
+              color={errors.password && touched.password ? "danger" : "primary"}
+              errorMessage={
+                errors.password && touched.password && errors.password
+              }
+              endContent={
+                <button
+                  onClick={() => toggleVisibility()}
+                  className="focus:outline-none"
+                  type="button"
+                >
+                  {isVisible ? (
+                    <MdOutlineRemoveRedEye className="text-2xl" />
+                  ) : (
+                    <MdRemoveRedEye className="text-2xl" />
+                  )}
+                </button>
+              }
+              as={Input}
+            />
+            <Field
+              label="Repetir contraseña:"
+              type={isVisible ? "text" : "password"}
+              name="repeatPassword"
+              description="Ingrese su contraseña"
+              variant="bordered"
+              color={
+                errors.repeatPassword && touched.repeatPassword
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.repeatPassword &&
+                touched.repeatPassword &&
+                (errors.repeatPassword.split(", ")[1] || errors.repeatPassword)
+              }
+              endContent={
+                <button
+                  onClick={() => toggleVisibility()}
+                  className="focus:outline-none"
+                  type="button"
+                >
+                  {isVisible ? (
+                    <MdOutlineRemoveRedEye className="text-2xl" />
+                  ) : (
+                    <MdRemoveRedEye className="text-2xl" />
+                  )}
+                </button>
+              }
+              as={Input}
+            />
+          </div>
+          <div className="w-full mt-6 flex flex-row justify-between">
+            <Button
+              variant="ghost"
+              isLoading={Loading}
+              size="lg"
+              color="danger"
+              type="reset"
             >
-              {isVisible ? (
-                <MdOutlineRemoveRedEye className="text-2xl" />
-              ) : (
-                <MdRemoveRedEye className="text-2xl" />
-              )}
-            </button>
-          }
-        />
-        <Input
-          label="Repetir contraseña:"
-          type={isVisible ? "text" : "password"}
-          name="repeatPassword"
-          description="Ingrese su contraseña"
-          variant="bordered"
-          color={
-            formik.errors.repeatPassword && formik.touched.repeatPassword
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.repeatPassword &&
-            formik.touched.repeatPassword &&
-            formik.errors.repeatPassword.split(", ")[1]
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          endContent={
-            <button
-              onClick={() => toggleVisibility()}
-              className="focus:outline-none"
-              type="button"
+              Cancelar
+            </Button>
+            <Button
+              variant="solid"
+              isLoading={Loading}
+              size="lg"
+              color="primary"
+              type="submit"
             >
-              {isVisible ? (
-                <MdOutlineRemoveRedEye className="text-2xl" />
-              ) : (
-                <MdRemoveRedEye className="text-2xl" />
-              )}
-            </button>
-          }
-        />
-
-        <Link
-          showAnchorIcon
-          as={NextLink}
-          href="/auth/login"
-          color="primary"
-          underline="hover"
-        >
-          ¿Ya tienes una cuenta?
-        </Link>
-      </div>
-      <Button
-        variant="ghost"
-        isLoading={Loading}
-        className="w-2/4 mt-6"
-        color="primary"
-        type="submit"
-      >
-        Registrarse
-      </Button>
-    </form>
+              Registrar
+            </Button>
+          </div>
+        </Form>
+      )}
+    </Formik>
   );
 }

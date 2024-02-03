@@ -15,22 +15,22 @@ export const authOptions: AuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
-        try {
-          const res = await fetch(
-            process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/login",
-            {
-              method: "POST",
-              body: JSON.stringify(credentials),
-              headers: { "Content-Type": "application/json" },
-            }
-          );
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/login",
+          {
+            method: "POST",
+            body: JSON.stringify(credentials),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
-          const user = await res.json();
+        const user = await res.json();
 
-          if (res.ok && user) return user;
-        } catch (error) {
-          throw error;
+        if (!res.ok) {
+          throw user;
         }
+
+        if (res.ok && user) return user;
       },
     }),
   ],

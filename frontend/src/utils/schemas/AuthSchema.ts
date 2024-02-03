@@ -43,7 +43,7 @@ const UpdatePassSchema = Yup.object({
 
 const LoginSchema = Yup.object({
   query: Yup.string()
-    .matches(regexList.forDNI || regexList.forEmail, Messages.match_err)
+    .matches(regexList.forAuth, Messages.match_err)
     .required(Messages.required),
   password: Yup.string().required(Messages.required),
 });

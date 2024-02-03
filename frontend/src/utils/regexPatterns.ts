@@ -1,5 +1,5 @@
 export const regexList = {
-  forEmail: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  forAuth: /^([^\s@]+@[^\s@]+\.[^\s@]+|[VEve]\d+)$/,
   onlyString: /^\D+$/,
   forDir: /^[A-Za-z0-9\s\\.\\-]+$/,
   forDNI: /^[VE]\d+$/,

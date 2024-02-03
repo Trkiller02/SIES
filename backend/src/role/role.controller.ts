@@ -35,11 +35,13 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @ApiParam({ name: 'id' })
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(+id, updateRoleDto);
   }
 
   @Delete(':id')
+  @ApiParam({ name: 'id' })
   remove(@Param('id') id: string) {
     return this.roleService.remove(+id);
   }

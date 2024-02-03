@@ -4,12 +4,18 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginAuthDto {
   @ApiPropertyOptional({
-    pattern: '^[VE]\\d+$' || '^[a-z]\\d+@[.com]$)',
+    pattern: '/^([^s@]+@[^s@]+.[^s@]+|[VEve]d+)$/',
     examples: ['V8712765', 'E298712342', 'johndoe23@user.com'],
     type: String,
   })
   @IsString()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }) =>
+    typeof value === 'string'
+      ? value.match(/^[VE]\d+$/)
+        ? value.toUpperCase().trim()
+        : value.trim()
+      : value,
+  )
   @IsNotEmpty()
   query: string;
 

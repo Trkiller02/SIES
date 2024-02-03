@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginSchema, LoginValues } from "@/utils/schemas/AuthSchema";
-import { Button, Input, Link } from "@nextui-org/react";
+import { Button, Divider, Input, Link } from "@nextui-org/react";
 import Image from "next/image";
 import { Field, Form, Formik, useFormik } from "formik";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { SignInResponse, signIn } from "next-auth/react";
 import { LoginI } from "@/types/auth.interfaces";
+import { regexList } from "@/utils/regexPatterns";
 
 export default function LoginComponent() {
   const [Loading, setLoading] = useState(false);
@@ -32,26 +33,6 @@ export default function LoginComponent() {
       throw sendAuth;
     }
   };
-
-  /*   const formik = useFormik({
-    initialValues: LoginValues,
-    validationSchema: LoginSchema,
-    onSubmit: async (values: LoginI) => {
-      toast.promise(sendInfo(values), {
-        loading: "Procesando...",
-        success: (data) => {
-          router.push("/");
-          return data;
-        },
-        error: (error: SignInResponse) => {
-          return error.error;
-        },
-        finally: () => {
-          setLoading(false);
-        },
-      });
-    },
-  }); */
 
   return (
     <Formik
@@ -75,25 +56,22 @@ export default function LoginComponent() {
       }}
     >
       {({ errors, touched }) => (
-        <Form className="grid place-items-center h-2/4 w-2/4 border border-gray-300 rounded-xl p-16 shadow-xl">
-          <div>
-            <Image
-              src="/img/image1.svg"
-              alt="logo"
-              width={164}
-              height={164}
-              priority
-            />
-            <h1>Iniciar Sesion | SIES</h1>
+        <Form className="w-3/6 flex justify-center items-center flex-col max-lg:w-full max-lg:p-0 px-7">
+          <div className="flex items-center justify-center mb-3">
+            <h1 className="text-2xl max-md:text-xl text-primary">
+              Iniciar Sesión
+            </h1>
           </div>
           <div className="flex flex-col gap-5 w-full">
             <Field
               label="Correo electronico o cedula de identidad:"
-              color="primary"
+              color={errors.query && touched.query ? "danger" : "primary"}
               name="query"
               description="Ingrese su correo electronico o cedula de identidad"
               variant="bordered"
               errorMessage={errors.query && touched.query && errors.query}
+              labelPlacement="outside"
+              placeholder="johndoe@user.com"
               as={Input}
             />
             <Field
@@ -128,6 +106,7 @@ export default function LoginComponent() {
                 href="/auth/forgot-password"
                 color="warning"
                 underline="hover"
+                className="text-lg"
               >
                 Olvide mi contraseña
               </Link>
@@ -136,7 +115,8 @@ export default function LoginComponent() {
           <Button
             variant="ghost"
             isLoading={Loading}
-            className="w-2/4 mt-6"
+            size="lg"
+            className="w-4/5 mt-6"
             color="primary"
             type="submit"
           >
