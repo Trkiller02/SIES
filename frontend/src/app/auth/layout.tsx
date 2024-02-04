@@ -13,7 +13,7 @@ export default function AuthLayout({
   const router = useRouter();
 
   if (session) {
-    router.push("/settings");
+    router.push("/");
   }
 
   return (

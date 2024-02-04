@@ -5,7 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {
         query: {
           label: "C.I. || Email:",
@@ -15,22 +15,21 @@ export const authOptions: AuthOptions = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials, req) {
-        const res = await fetch(
-          process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/login",
-          {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-        const user = await res.json();
+        const res = await fetch(backendUrl + "/auth/login", {
+          method: "POST",
+          body: JSON.stringify(credentials),
+          headers: { "Content-Type": "application/json" },
+        });
 
-        if (!res.ok) {
-          throw user;
-        }
+        const user: User = await res.json();
+
+        if (!res.ok) throw user;
 
         if (res.ok && user) return user;
+
+        return null;
       },
     }),
   ],
@@ -54,12 +53,12 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    signOut: "/auth/login",
     signIn: "/auth/login",
     error: "/auth/login",
+    signOut: "/auth/login",
   },
-  session: { strategy: "jwt", maxAge: 43200000 },
   jwt: { maxAge: 43200000 },
+  session: { strategy: "jwt", maxAge: 43200000 },
 };
 
 const handler = NextAuth(authOptions);

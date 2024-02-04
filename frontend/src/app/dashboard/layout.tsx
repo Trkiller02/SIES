@@ -8,7 +8,7 @@ export default function DashboardLayout({
   return (
     <>
       <NavBar />
-      <main className="flex flex-col justify-center items-center p-4">
+      <main className="flex flex-col justify-center items-center p-4 min-h-[90vh]">
         {children}
       </main>
     </>

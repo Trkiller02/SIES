@@ -13,7 +13,9 @@ export default function Providers({
 }) {
   return (
     <SessionProvider session={session}>
-      <NextUIProvider>{children}</NextUIProvider>
+      <NextUIProvider className="w-full min-h-screen">
+        {children}
+      </NextUIProvider>
     </SessionProvider>
   );
 }
