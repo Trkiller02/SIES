@@ -107,11 +107,9 @@ function StudentData({
               ? "PADRE"
               : "OTRO"}{" "}
             En caso de otro especifique:{" "}
-            {dataHealth.live_with === "MADRE"
-              ? "MADRE"
-              : dataHealth.live_with === "PADRE"
-              ? "PADRE"
-              : dataHealth.live_with}{" "}
+            {dataHealth.live_with === "OTRO"
+              ? dataHealth.live_with
+              : "___________"}{" "}
           </>
           <p>
             Dirección de Habitación:{" "}
@@ -414,7 +412,7 @@ export default function PlanillaMedia({
   data: RelationTableI | undefined;
 }) {
   return (
-    <section className="w-full planilla1 flex flex-col p-9 gap-2">
+    <section className="w-full planilla1 flex flex-col p-9 gap-2" id="planilla">
       <Header />
       <div className="title-container">
         <TitleBox title="ESTUDIANTE" />
@@ -428,7 +426,7 @@ export default function PlanillaMedia({
 
       <StudentData
         dataStudent={data?.student_id}
-        dataHealth={data?.healt_info_id}
+        dataHealth={data?.health_info_id}
       />
 
       <h4 className="text-md">
@@ -447,7 +445,7 @@ export default function PlanillaMedia({
 
       <HealthInfo
         dataAcademic={data?.ficha_id}
-        dataHealth={data?.healt_info_id}
+        dataHealth={data?.health_info_id}
       />
 
       <p>

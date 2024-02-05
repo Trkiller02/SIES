@@ -13,9 +13,16 @@ export interface PersonIforCards {
   };
 }
 
-export default function EntityCards({ item }: { item: any }) {
+export default function EntityCards({
+  item,
+  title,
+}: {
+  item: any;
+  title: string | null;
+}) {
   return (
     <div className="inline-flex self-center border p-2 rounded-xl w-full justify-around items-center">
+      {title && <h1 className="text-xl">{title}</h1>}
       <div className="flex flex-col w-full px-2">
         <p className="text-lg font-medium">
           <span className="text-primary">Nombre:</span> &nbsp;

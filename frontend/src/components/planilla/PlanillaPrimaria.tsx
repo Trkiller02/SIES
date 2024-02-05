@@ -106,11 +106,9 @@ function StudentData({
               ? "PADRE"
               : "OTRO"}{" "}
             En caso de otro especifique:{" "}
-            {dataHealth.live_with === "MADRE"
-              ? "MADRE"
-              : dataHealth.live_with === "PADRE"
-              ? "PADRE"
-              : dataHealth.live_with}{" "}
+            {dataHealth.live_with === "OTRO"
+              ? dataHealth.live_with
+              : "___________"}{" "}
           </>
           <p>
             Dirección de Habitación:{" "}
@@ -427,7 +425,7 @@ export default function PlanillaMedia({
 
       <StudentData
         dataStudent={data?.student_id}
-        dataHealth={data?.healt_info_id}
+        dataHealth={data?.health_info_id}
       />
 
       <h4 className="text-md">
@@ -446,7 +444,7 @@ export default function PlanillaMedia({
 
       <HealthInfo
         dataAcademic={data?.ficha_id}
-        dataHealth={data?.healt_info_id}
+        dataHealth={data?.health_info_id}
       />
 
       <p>

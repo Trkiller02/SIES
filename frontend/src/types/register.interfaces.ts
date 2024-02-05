@@ -21,15 +21,15 @@ export interface RepresentI {
 }
 
 export interface FichaI {
-  id: string;
+  id?: string;
   level: number;
   section: string;
   etapa: string;
   turno: string;
   proce_plant: string;
   escolar_period: string;
-  ins_date: Date;
-  personal_res: string;
+  ins_date?: Date;
+  personal_res?: string;
 }
 
 export interface HealthInfoI {
@@ -64,7 +64,7 @@ export interface RelationTableI {
   ficha_id: FichaI;
   mother_id?: RepresentI;
   father_id?: RepresentI;
-  healt_info_id: HealthInfoI;
+  health_info_id: HealthInfoI;
   student_id: StudentI;
 }
 

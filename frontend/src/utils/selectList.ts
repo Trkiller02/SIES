@@ -19,12 +19,12 @@ export const entitySelect = [
 export const etapaSelect = [
   {
     label: "Educacion Primaria",
-    value: "EP",
+    value: "EDUCACION PRIMARIA",
     description: "Comprende de 1er Grado a 6to Grado.",
   },
   {
     label: "Educacion Media General",
-    value: "EM",
+    value: "EDUCACION MEDIA GENERAL",
     description: "Comprende de 1er Año a 5to Año.",
   },
 ];
@@ -82,14 +82,47 @@ export const seccionSelect = [
 export const relationSelect = [
   {
     label: "Madre",
-    value: "M",
+    value: "MADRE",
   },
   {
     label: "Representante Legal",
-    value: "RL",
+    value: "REPRESENTANTE LEGAL",
   },
   {
     label: "Padre",
-    value: "P",
+    value: "PADRE",
+  },
+];
+
+export const turnoSelect = [
+  {
+    label: "Mañana",
+    value: "MAÑANA",
+  },
+  {
+    label: "Tarde",
+    value: "TARDE",
+  },
+];
+
+export const sexSelect = [
+  {
+    label: "MASCULINO",
+    value: "MASCULINO",
+  },
+  {
+    label: "FEMENINO",
+    value: "FEMENINO",
+  },
+];
+
+export const latSelect = [
+  {
+    label: "ZURDO",
+    value: "ZURDO",
+  },
+  {
+    label: "DIESTRO",
+    value: "DIESTRO",
   },
 ];

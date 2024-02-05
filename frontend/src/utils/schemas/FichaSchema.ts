@@ -1,21 +1,26 @@
 import * as Yup from "yup";
 import { Messages } from "../messages";
 import { regexList } from "../regexPatterns";
+import { FichaI } from "@/types/register.interfaces";
 
-export const initValFicha = {
-  level: "",
+export const initValFicha: FichaI = {
+  level: 0,
+  etapa: "",
+  turno: "",
   section: "",
-  procePlant: "",
-  escolarPeriod: "",
+  proce_plant: "",
+  escolar_period: "",
 };
 
 export const fichaSchema = Yup.object({
-  level: Yup.string().required(Messages.required).matches(regexList.forDir),
+  level: Yup.number().required(Messages.required),
+  etapa: Yup.string().matches(regexList.onlyString).required(Messages.required),
+  turno: Yup.string().matches(regexList.onlyString).required(Messages.required),
   section: Yup.string()
-    .required(Messages.required)
-    .matches(regexList.onlyString),
-  procePlant: Yup.string()
-    .required(Messages.required)
-    .matches(regexList.onlyString),
-  escolarPeriod: Yup.string().required(Messages.required),
+    .matches(regexList.onlyString)
+    .required(Messages.required),
+  proce_plant: Yup.string()
+    .matches(regexList.onlyString)
+    .required(Messages.required),
+  escolar_period: Yup.string().required(Messages.required),
 });
