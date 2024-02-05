@@ -39,25 +39,25 @@ export class Student {
   @Column({
     nullable: true,
   })
-  Lateralidad?: string;
+  lateralidad?: string;
 
   @Column()
-  bornPlace: string;
+  born_place: string;
 
   @Column()
-  bornState: string;
+  born_state: string;
 
   @Column()
-  bornMunicipio: string;
+  born_municipio: string;
 
   @Column()
-  bornParroquia: string;
+  born_parroquia: string;
 
   @Column()
-  bornPais: string;
+  born_pais: string;
 
   @Column()
-  bornDate: string;
+  born_date: string;
 
   @OneToOne(() => RelationsTable, (relationTable) => relationTable.student_id)
   relation_table_id?: RelationsTable;

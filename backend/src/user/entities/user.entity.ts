@@ -16,16 +16,16 @@ export class User {
   id: string;
 
   @Column({ name: 'restore_token' })
-  restoreToken: string;
+  restore_token: string;
 
   @Column()
   name: string;
 
   @Column({ name: 'lastname' })
-  lastName: string;
+  lastname: string;
 
-  @Column({ unique: true, name: 'ci_number' })
-  ciNumber: string;
+  @Column({ unique: true })
+  ci_number: string;
 
   @Column({ unique: true })
   email: string;
@@ -40,19 +40,16 @@ export class User {
   @CreateDateColumn({
     insert: false,
     update: false,
-    name: 'created_at',
   })
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn({
     insert: false,
-    name: 'updated_at',
   })
-  updatedAt: Date;
+  updated_at: Date;
 
   @DeleteDateColumn({
     insert: false,
-    name: 'deleted_at',
   })
-  deletedAt: Date;
+  deleted_at: Date;
 }

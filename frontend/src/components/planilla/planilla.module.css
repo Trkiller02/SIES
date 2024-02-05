@@ -1,0 +1,56 @@
+@page {
+  size: letter;
+  margin: 20px;
+}
+
+body {
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+h2,
+h3 {
+  text-align: center;
+}
+
+.header-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.header-image {
+  width: 50;
+  height: 93px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.title-box {
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 12px;
+  height: 100px;
+  width: 90px;
+  text-align: center;
+}
+
+.pre-title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}

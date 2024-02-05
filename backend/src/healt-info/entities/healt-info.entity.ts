@@ -10,30 +10,33 @@ export class HealtInfo {
     nullable: true,
     type: 'text',
   })
-  typeAler?: string;
+  type_aler?: string;
+
+  @Column()
+  live_with: string;
 
   @Column({
     type: 'text',
   })
-  trataEsp: string;
-
-  @Column({
-    nullable: true,
-    type: 'text',
-  })
-  preferAct: string;
+  trata_especial: string;
 
   @Column({
     nullable: true,
     type: 'text',
   })
-  recreTime: string;
+  prefer_act: string;
 
   @Column({
     nullable: true,
     type: 'text',
   })
-  siteAct: string;
+  recre_time: string;
+
+  @Column({
+    nullable: true,
+    type: 'text',
+  })
+  site_act: string;
 
   @OneToOne(() => RelationsTable, (relationTable) => relationTable.id)
   relationTable: RelationsTable;

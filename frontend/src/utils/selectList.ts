@@ -16,7 +16,7 @@ export const entitySelect = [
   },
 ];
 
-export const etapaSelect = Object.freeze([
+export const etapaSelect = [
   {
     label: "Educacion Primaria",
     value: "EP",
@@ -27,7 +27,7 @@ export const etapaSelect = Object.freeze([
     value: "EM",
     description: "Comprende de 1er Año a 5to Año.",
   },
-]);
+];
 
 export const levelSelect = [
   {

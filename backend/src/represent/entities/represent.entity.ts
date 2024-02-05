@@ -25,34 +25,30 @@ export class Represent {
   profession?: string;
 
   @Column({
-    name: 'tlfn_home',
     type: 'varchar',
     length: 14,
     nullable: true,
   })
-  tlfnHome?: string;
+  tlfn_home?: string;
 
   @Column({
-    name: 'work_place',
     type: 'text',
     nullable: true,
   })
-  workPlace?: string;
+  work_place?: string;
 
   @Column({
-    name: 'work_phone_number',
     type: 'varchar',
     length: 14,
     nullable: true,
   })
-  workPhoneNumber?: string;
+  work_phone_number?: string;
 
   @Column({
     type: 'int',
-    name: 'income_month',
     nullable: true,
   })
-  incomeMonth?: number;
+  income_month?: number;
 
   @ManyToMany(() => RelationsTable)
   relation_table_id?: RelationsTable;

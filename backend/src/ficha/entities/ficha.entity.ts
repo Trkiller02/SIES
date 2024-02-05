@@ -41,7 +41,7 @@ export class Ficha {
     type: 'varchar',
     length: 50,
   })
-  escolarPeriod: string;
+  escolar_period: string;
 
   @Column({
     type: 'text',

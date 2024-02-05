@@ -4,18 +4,14 @@ import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('person')
 export class Person {
-  @PrimaryColumn({
-    name: 'ci_number',
-  })
-  ciNumber: string;
+  @PrimaryColumn()
+  ci_number: string;
 
   @Column()
   name: string;
 
-  @Column({
-    name: 'lastname',
-  })
-  lastName: string;
+  @Column()
+  lastname: string;
 
   @Column({
     type: 'varchar',
@@ -29,27 +25,23 @@ export class Person {
     type: 'varchar',
     length: '100',
     nullable: true,
-    name: 'phone_number',
   })
-  phoneNumber?: string;
+  phone_number?: string;
 
   @Column({
     type: 'text',
-    name: 'home_dir',
   })
-  homeDir: string;
+  home_dir: string;
 
   @Column({
     type: 'text',
-    name: 'home_parroquia',
   })
-  homeParroquia: string;
+  home_parroquia: string;
 
   @Column({
     type: 'text',
-    name: 'home_municipio',
   })
-  homeMunicipio: string;
+  home_municipio: string;
 
   @Column()
   relation: string;
