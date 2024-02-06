@@ -15,7 +15,14 @@ import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/role/enum/roles.enum';
-import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ActiveUser } from 'src/auth/decorators/active_user.decorator';
 
 @ApiTags('ACADEMIC-INFO:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador
@@ -26,27 +33,23 @@ export class FichaController {
 
   @ApiBody({ type: CreateFichaDto })
   @Post()
-  create(@Body() createFichaDto: CreateFichaDto) {
+  create(
+    @Body() createFichaDto: CreateFichaDto,
+    @ActiveUser() user: { id: string; role: number },
+  ) {
     // creando una nueva ficha con los datos enviados en el cuerpo de la solicitud
-    return this.fichaService.create(createFichaDto);
+    return this.fichaService.create(createFichaDto, user);
   }
 
   @ApiQuery({
     name: 'section',
     required: false,
     type: String,
-    schema: {
-      maxLength: 1,
-    },
   })
   @ApiQuery({
     name: 'level',
     required: false,
     type: Number,
-    schema: {
-      maximum: 6,
-      minimum: 1,
-    },
   })
   @ApiQuery({
     name: 'deleted',
@@ -56,11 +59,10 @@ export class FichaController {
   @ApiQuery({
     name: 'etapa',
     required: false,
-    isArray: true,
-    enum: ['EDUCACION MEDIA GENERAL', 'EDUCACION PRIMARIA'],
+    enum: ['EM', 'EP'],
   })
   @Get()
-  findAll(
+  async findAll(
     @Query('etapa')
     etapa?: string | null,
     @Query('deleted', new ParseBoolPipe({ optional: true }))
@@ -70,21 +72,28 @@ export class FichaController {
     @Query('level', new ParseIntPipe({ optional: true }))
     level?: number | null,
   ) {
-    return this.fichaService.findAll(etapa, deleted, section, level); // obteniendo todas las fichas con los parámetros de consulta enviados en la solicitud
+    return await this.fichaService.findAll(etapa, deleted, section, level); // obteniendo todas las fichas con los parámetros de consulta enviados en la solicitud
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fichaService.findOne(id); // obteniendo una ficha individual por id
+  async findOne(@Param('id') id: string) {
+    return await this.fichaService.findOne(id); // obteniendo una ficha individual por id
   }
 
+  @ApiParam({ name: 'id', type: String })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFichaDto: UpdateFichaDto) {
     return this.fichaService.update(id, updateFichaDto);
   }
 
+  @ApiParam({ name: 'id', type: String })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.fichaService.remove(id);
+  }
+
+  @Patch('egresar')
+  updateStatus(@Body() listEntity: string[]) {
+    return this.fichaService.egresar(listEntity);
   }
 }

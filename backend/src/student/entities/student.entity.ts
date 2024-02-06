@@ -13,7 +13,7 @@ export class Student {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Person, (person) => person.ci_number, {
+  @OneToOne(() => Person, (person) => person.relationStudent, {
     nullable: false,
     eager: true,
   })
@@ -22,24 +22,6 @@ export class Student {
 
   @Column()
   age?: number;
-
-  @Column()
-  sex?: string;
-
-  @Column({
-    nullable: true,
-  })
-  weight?: number;
-
-  @Column({
-    nullable: true,
-  })
-  size?: number;
-
-  @Column({
-    nullable: true,
-  })
-  lateralidad?: string;
 
   @Column()
   born_place: string;

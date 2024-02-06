@@ -2,7 +2,7 @@ import { RelationsTable } from 'src/relations-table/entities/relations-table.ent
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('health_info')
-export class HealtInfo {
+export class HealthInfo {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -16,9 +16,10 @@ export class HealtInfo {
   live_with: string;
 
   @Column({
+    nullable: true,
     type: 'text',
   })
-  trata_esp: string;
+  trata_esp?: string;
 
   @Column({
     nullable: true,

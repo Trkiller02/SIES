@@ -22,7 +22,9 @@ export class RepresentService {
   ) {}
 
   async create(createRepresentDto: CreateRepresentDto) {
-    const person = await this.personService.create(createRepresentDto);
+    const person = await this.personService.create(
+      createRepresentDto.person_id,
+    );
 
     const represent = await this.representRepo.save({
       person_id: person,
@@ -45,11 +47,14 @@ export class RepresentService {
 
   async findOne(id: string, deleted: boolean = false, pass?: boolean) {
     const represent = await this.representRepo.findOne({
-      where: {
-        person_id: {
-          ci_number: id,
+      where: [
+        { id: id },
+        {
+          person_id: {
+            ci_number: id,
+          },
         },
-      },
+      ],
       withDeleted: deleted,
     });
 

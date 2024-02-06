@@ -9,7 +9,7 @@ export default withAuth(
       (request.nextauth.token?.user.role as string) === ROLE_LIST.USER &&
       request.nextauth.token?.user.role !== undefined
     ) {
-      return NextResponse.rewrite(new URL("/settings", request.url));
+      return NextResponse.rewrite(new URL("/", request.url));
     }
 
     if (
@@ -28,10 +28,10 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    /*     "/",
+    "/",
     "/dashboard/:path*",
     "/register/:path*",
-    "/search/:path*", */
+    "/search/:path*",
     "/settings",
   ],
 };

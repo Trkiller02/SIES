@@ -11,7 +11,7 @@ export interface PersonI {
 }
 
 export interface RepresentI {
-  id: string;
+  id?: string;
   person_id: PersonI;
   profession?: string;
   tlfn_home?: string;
@@ -33,23 +33,23 @@ export interface FichaI {
 }
 
 export interface HealthInfoI {
-  id: string;
+  id?: string;
   live_with: string;
   type_aler: string;
   trata_esp: string;
   prefer_act: string;
   recre_time: string;
   site_act: string;
+  sex: string;
+  weight: number;
+  size: number;
+  lateralidad: string;
 }
 
 export interface StudentI {
-  id: string;
+  id?: string;
   person_id: PersonI;
   age?: number;
-  sex?: string;
-  weight?: number;
-  size?: number;
-  lateralidad?: string;
   born_place: string;
   born_state: string;
   born_municipio: string;
@@ -59,7 +59,7 @@ export interface StudentI {
 }
 
 export interface RelationTableI {
-  id: string;
+  id?: string;
   represent_id: RepresentI;
   ficha_id: FichaI;
   mother_id?: RepresentI;
@@ -69,13 +69,13 @@ export interface RelationTableI {
 }
 
 export interface RoleI {
-  id: number;
+  id?: number;
   name: string;
 }
 
 export interface UserI {
   id: string;
-  restore_token: string;
+  restore_token?: string;
   name: string;
   lastname: string;
   ci_number: string;

@@ -1,11 +1,11 @@
 import { Ficha } from 'src/ficha/entities/ficha.entity';
-import { HealtInfo } from 'src/healt-info/entities/healt-info.entity';
+import { HealthInfo } from 'src/health-info/entities/health-info.entity';
 import { Represent } from 'src/represent/entities/represent.entity';
 import { Student } from 'src/student/entities/student.entity';
 import {
   Entity,
   JoinColumn,
-  ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,37 +15,39 @@ export class RelationsTable {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => Represent, (represent: Represent) => represent.person_id, {
-    nullable: false,
-  })
+  @ManyToOne(
+    () => Represent,
+    (represent: Represent) => represent.relation_table_represent,
+  )
   @JoinColumn({ name: 'represent_id' })
-  represent_id: Represent;
+  represent_id: string | Represent;
 
-  @OneToOne(() => Ficha, (fichaTable) => fichaTable.id, {
-    eager: true,
-  })
+  @OneToOne(() => Ficha, (fichaTable) => fichaTable.relationTable)
   @JoinColumn({ name: 'academic_data_id' })
-  ficha_id: Ficha;
+  ficha_id: string | Ficha;
 
-  @ManyToMany(() => Represent, (represent: Represent) => represent.person_id, {
-    nullable: true,
-  })
+  @ManyToOne(
+    () => Represent,
+    (represent: Represent) => represent.relation_table_mother,
+    {
+      nullable: true,
+    },
+  )
   @JoinColumn({ name: 'mother_id' })
-  mother_id?: Represent;
+  mother_id?: string | Represent;
 
-  @ManyToMany(() => Represent, (represent: Represent) => represent.person_id, {
-    nullable: true,
-  })
+  @ManyToOne(
+    () => Represent,
+    (represent: Represent) => represent.relation_table_father,
+  )
   @JoinColumn({ name: 'father_id' })
-  father_id?: Represent;
+  father_id?: string | Represent;
 
-  @OneToOne(() => HealtInfo, (healthTable) => healthTable.id, {
-    eager: true,
-  })
+  @OneToOne(() => HealthInfo, (healthTable) => healthTable.relationTable)
   @JoinColumn({ name: 'healt_info_id' })
-  healt_info_id: HealtInfo;
+  healt_info_id: string | HealthInfo;
 
-  @OneToOne(() => Student)
+  @OneToOne(() => Student, (student) => student.relation_table_id)
   @JoinColumn({ name: 'student_id' })
-  student_id: Student;
+  student_id: string | Student;
 }

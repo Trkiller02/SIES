@@ -22,7 +22,7 @@ export class StudentService {
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
-    const person = await this.personService.create({ ...createStudentDto });
+    const person = await this.personService.create(createStudentDto.person_id);
 
     return await this.studentRepo.save({
       person_id: person,
@@ -45,11 +45,14 @@ export class StudentService {
     pass?: boolean,
   ): Promise<Student> {
     const student = await this.studentRepo.findOne({
-      where: {
-        person_id: {
-          ci_number: id,
+      where: [
+        { id: id },
+        {
+          person_id: {
+            ci_number: id,
+          },
         },
-      },
+      ],
       withDeleted: deleted,
     });
 

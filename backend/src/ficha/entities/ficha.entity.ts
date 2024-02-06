@@ -26,8 +26,7 @@ export class Ficha {
   section: string;
 
   @Column({
-    length: 1,
-    type: 'varchar',
+    type: 'text',
   })
   etapa: string;
 
@@ -56,9 +55,9 @@ export class Ficha {
   })
   egresado?: boolean;
 
-  @ManyToOne(() => User, (user) => user.id, { eager: true })
+  @ManyToOne(() => User, (user) => user.ficha_id, { eager: true })
   personal_res: User;
 
-  @OneToOne(() => RelationsTable, (relationTable) => relationTable.id)
-  relationTable: RelationsTable;
+  @OneToOne(() => RelationsTable, (relationTable) => relationTable.ficha_id)
+  relationTable?: RelationsTable;
 }

@@ -95,8 +95,8 @@ function StudentData({
           {dataStudent.age + " años."}
           <p>
             País: {dataStudent.born_pais} Estado: {dataStudent.born_state}{" "}
-            Genero:{dataStudent.sex} Estatura:{dataStudent.size} Peso:{" "}
-            {dataStudent.weight}
+            Genero:{dataHealth.sex} Estatura:{dataHealth.size} Peso:{" "}
+            {dataHealth.weight}
           </p>
           <br />
           <>

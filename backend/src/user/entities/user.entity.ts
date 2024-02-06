@@ -1,3 +1,4 @@
+import { Ficha } from 'src/ficha/entities/ficha.entity';
 import { Role } from 'src/role/entities/role.entity';
 import {
   Column,
@@ -8,6 +9,7 @@ import {
   DeleteDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -15,7 +17,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'restore_token' })
+  @Column({ name: 'restore_token', select: false })
   restore_token: string;
 
   @Column()
@@ -52,4 +54,8 @@ export class User {
     insert: false,
   })
   deleted_at: Date;
+
+  @OneToMany(() => Ficha, (ficha) => ficha.personal_res)
+  @JoinColumn({ name: 'ficha_id' })
+  ficha_id?: number | Ficha;
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
+import { not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
 import { Person as PersonModel } from './entities/person.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
@@ -15,17 +15,6 @@ export class PersonService {
   ) {}
 
   async create(createPersonDto: CreatePersonDto): Promise<PersonModel> {
-    const person = await this.findOne(
-      createPersonDto.ci_number,
-      createPersonDto.email,
-    );
-
-    if (person)
-      conflict_err(
-        messagesEnum.conflict_err,
-        'La persona ya existe o los datos están ingresados en otra persona.',
-      );
-
     return await this.personRepo.save(createPersonDto);
   }
 
@@ -42,7 +31,7 @@ export class PersonService {
   async findOne(
     id: string,
     email?: string,
-    pass?: boolean,
+    pass: boolean = false,
   ): Promise<PersonModel> {
     const person = await this.personRepo.findOne({
       where: [{ ci_number: id }, { email: email }],
@@ -66,6 +55,6 @@ export class PersonService {
   async remove(id: string): Promise<DeleteResult> {
     const person = await this.findOne(id);
 
-    return await this.personRepo.delete(person);
+    return await this.personRepo.delete({ ci_number: person.ci_number });
   }
 }

@@ -19,29 +19,19 @@ export class CreateFichaDto {
   @IsPositive()
   level: number;
 
-  @ApiProperty({
-    minLength: 1,
-    maxLength: 1,
-    type: 'varchar',
-    enum: ['M', 'S'],
-  })
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   etapa: string;
 
   @ApiProperty({
-    minLength: 1,
-    maxLength: 1,
     type: 'varchar',
-    enum: ['M', 'T'],
   })
   @IsNotEmpty()
   @IsString()
   turno: string;
 
   @ApiProperty({
-    minLength: 1,
-    maxLength: 1,
     type: 'varchar',
   })
   @IsNotEmpty()
@@ -49,15 +39,13 @@ export class CreateFichaDto {
   section: string;
 
   @ApiProperty({
-    minLength: 1,
-    type: 'varchar',
+    type: 'text',
   })
   @IsNotEmpty()
   @IsString()
   proce_plant: string;
 
   @ApiPropertyOptional({
-    minLength: 4,
     type: 'varchar',
   })
   @IsOptional()

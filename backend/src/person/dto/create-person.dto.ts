@@ -43,4 +43,9 @@ export class CreatePersonDto {
   @IsString()
   @IsNotEmpty()
   home_municipio: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  relation: string;
 }

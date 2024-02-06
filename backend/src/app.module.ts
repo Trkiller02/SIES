@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 //TYPEORM
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 //MODULOS DE LA API
 import { RelationsTableModule } from './relations-table/relations-table.module';
-import { HealtInfoModule } from './healt-info/healt-info.module';
 import { RepresentModule } from './represent/represent.module';
 import { StudentModule } from './student/student.module';
 import { PersonModule } from './person/person.module';
@@ -12,6 +10,7 @@ import { FichaModule } from './ficha/ficha.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
+import { HealthInfoModule } from './health-info/health-info.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -32,8 +31,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           password: config.get<string>('DB_PASSWORD', { infer: true }),
           autoLoadEntities: true,
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize:
-            config.get<string>('NODE_ENV') === 'production' ? false : true,
+          synchronize: true,
+          //config.get<string>('NODE_ENV') === 'production' ? false : true
         };
       },
     }),
@@ -43,11 +42,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     PersonModule,
     AuthModule,
     FichaModule,
-    HealtInfoModule,
+    HealthInfoModule,
     RelationsTableModule,
     RoleModule,
   ],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class AppModule {}

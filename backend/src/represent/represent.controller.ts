@@ -14,9 +14,10 @@ import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/role/enum/roles.enum';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('REPRESENT:')
+@ApiBearerAuth()
 @Auth([Role.DOCENTES])
 @Controller('represent')
 export class RepresentController {
@@ -40,6 +41,7 @@ export class RepresentController {
     return this.representService.findAll(deleted);
   }
 
+  @ApiParam({ name: 'id', type: String })
   @ApiQuery({
     name: 'deleted',
     required: false,
@@ -54,6 +56,7 @@ export class RepresentController {
     return this.representService.findOne(id, deleted);
   }
 
+  @ApiParam({ name: 'id', type: String })
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -62,6 +65,7 @@ export class RepresentController {
     return this.representService.update(id, updateRepresentDto);
   }
 
+  @ApiParam({ name: 'id', type: String })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.representService.remove(id);

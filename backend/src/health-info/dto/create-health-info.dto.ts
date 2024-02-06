@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateHealtInfoDto {
+export class CreateHealthInfoDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -30,7 +30,7 @@ export class CreateHealtInfoDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  live_with;
+  live_with: string;
 
   @ApiProperty()
   @IsString()

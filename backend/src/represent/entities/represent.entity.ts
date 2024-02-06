@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -14,7 +14,7 @@ export class Represent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Person, (person) => person.ci_number, { eager: true })
+  @OneToOne(() => Person, (person) => person.relationRepresent, { eager: true })
   @JoinColumn({ name: 'person_id' })
   person_id: Person;
 
@@ -50,6 +50,23 @@ export class Represent {
   })
   income_month?: number;
 
-  @ManyToMany(() => RelationsTable)
-  relation_table_id?: RelationsTable;
+  @OneToMany(
+    () => RelationsTable,
+    (relation_table) => relation_table.represent_id,
+  )
+  relation_table_represent: RelationsTable;
+
+  @OneToMany(
+    () => RelationsTable,
+    (relation_table) => relation_table.mother_id,
+    { nullable: true },
+  )
+  relation_table_mother?: RelationsTable;
+
+  @OneToMany(
+    () => RelationsTable,
+    (relation_table) => relation_table.father_id,
+    { nullable: true },
+  )
+  relation_table_father?: RelationsTable;
 }

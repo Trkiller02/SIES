@@ -152,21 +152,21 @@ export default function pageDetailsStudent({
                 <p className="font-semibold">
                   Peso:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.weight}&nbsp;kg
+                    {info.health_info_id.weight}&nbsp;kg
                   </span>
                 </p>
                 <p className="font-semibold">
                   Estatura:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.size}&nbsp;m
+                    {info.health_info_id.size}&nbsp;m
                   </span>
                 </p>
                 <p className="font-semibold">
                   Sexo:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.sex === "M"
+                    {info.health_info_id.sex === "M"
                       ? "Masculino"
-                      : info.student_id.sex === "F"
+                      : info.health_info_id.sex === "F"
                       ? "Femenino"
                       : "Indefinido."}
                   </span>

@@ -17,10 +17,6 @@ export const initValStudent = {
   born_pais: "",
   born_date: "2006-01-01",
   age: 0,
-  sex: "",
-  weight: 0,
-  size: 0,
-  lateralidad: "",
   relation: "E",
 };
 
@@ -62,16 +58,4 @@ export const studentSchema = Yup.object().shape({
     .required(Messages.required)
     .min(3, Messages.min_err)
     .max(19, Messages.max_err),
-  weight: Yup.number()
-    .positive(Messages.min_err)
-    .required(Messages.required)
-    .min(10, Messages.min_err)
-    .max(120, Messages.max_err),
-  size: Yup.number()
-    .positive(Messages.min_err)
-    .required(Messages.required)
-    .min(0.2, Messages.min_err)
-    .max(2.5, Messages.max_err),
-  sex: Yup.string().required(Messages.required),
-  lateralidad: Yup.string().required(Messages.required),
 });

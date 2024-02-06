@@ -151,25 +151,6 @@ export default function StudentForm() {
 
             <div className="col-span-2"></div>
 
-            <Select
-              items={sexSelect}
-              isRequired
-              label="Genero:"
-              name="sex"
-              className="col-span-3"
-              description={"Ingrese el genero del estudiante."}
-              errorMessage={errors.sex && touched.sex && errors.sex}
-              color={errors.sex && touched.sex ? "danger" : "primary"}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            >
-              {(item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              )}
-            </Select>
-
             <Field
               as={Input}
               isRequired
@@ -211,29 +192,6 @@ export default function StudentForm() {
             />
 
             <div className="col-span-1"></div>
-
-            <Select
-              items={latSelect}
-              isRequired
-              label="lateralidad:"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              name="lateralidad"
-              className="col-span-3"
-              description={"Ingrese la  del estudiante."}
-              errorMessage={
-                errors.lateralidad && touched.lateralidad && errors.lateralidad
-              }
-              color={
-                errors.lateralidad && touched.lateralidad ? "danger" : "primary"
-              }
-            >
-              {(item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              )}
-            </Select>
 
             <Field
               as={Input}
@@ -277,37 +235,6 @@ export default function StudentForm() {
               className="col-span-3"
             />
             <div className="col-span-1"></div>
-
-            <Field
-              as={Input}
-              label="Peso:"
-              type="number"
-              name="weight"
-              description="Ingrese el peso del Estudiante."
-              variant="bordered"
-              color={errors.weight && touched.weight ? "danger" : "primary"}
-              errorMessage={errors.weight && touched.weight && errors.weight}
-              className="col-span-3"
-              value={`${values.weight}`}
-              endContent={
-                <p className="text-gray-400 font-medium text-base">kg</p>
-              }
-            />
-            <Field
-              as={Input}
-              label="Estatura:"
-              type="number"
-              name="size"
-              description="Ingrese el peso del Estudiante."
-              variant="bordered"
-              color={errors.size && touched.size ? "danger" : "primary"}
-              errorMessage={errors.size && touched.size && errors.size}
-              className="col-span-2"
-              value={`${values.size}`}
-              endContent={
-                <p className="text-gray-400 font-medium text-base">m</p>
-              }
-            />
 
             <h1 className="col-span-8 font-semibold text-lg">
               Datos de Nacimiento:

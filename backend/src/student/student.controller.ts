@@ -14,11 +14,12 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/role/enum/roles.enum';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // CONTROLADOR DEL RECURSO PROTEGIDO
 // ACCESO RESTRINGIDO PARA USUARIO COMÚN
 @ApiTags('STUDENT:')
+@ApiBearerAuth()
 @Auth([Role.DOCENTES])
 @Controller('student')
 export class StudentController {
@@ -38,6 +39,7 @@ export class StudentController {
   }
 
   // RUTA PARA OBTENER UN REGISTRO ESPECIFICO
+  @ApiParam({ name: 'id', type: String })
   @ApiQuery({
     name: 'deleted',
     required: false,
@@ -53,12 +55,14 @@ export class StudentController {
   }
 
   // RUTA PARA ACTUALIZAR UN REGISTRO ESPECIFICO
+  @ApiParam({ name: 'id', type: String })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
     return this.studentService.update(id, updateStudentDto);
   }
 
   // RUTA PARA ELIMINAR UN REGISTRO ESPECIFICO
+  @ApiParam({ name: 'id', type: String })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.studentService.remove(id);
