@@ -13,7 +13,7 @@ export class Student {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Person, (person) => person.ciNumber, {
+  @OneToOne(() => Person, (person) => person.ci_number, {
     nullable: false,
     eager: true,
   })

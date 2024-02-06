@@ -18,7 +18,7 @@ export default function EntityCards({
   title,
 }: {
   item: any;
-  title: string | null;
+  title: string | undefined;
 }) {
   return (
     <div className="inline-flex self-center border p-2 rounded-xl w-full justify-around items-center">

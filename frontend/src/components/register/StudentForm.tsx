@@ -12,11 +12,12 @@ import { useRouter } from "next/navigation";
 import { Field, Form, Formik, useFormik } from "formik";
 import { toast } from "sonner";
 import { latSelect, sexSelect } from "@/utils/selectList";
+import { StudentI } from "@/types/register.interfaces";
 
 export default function StudentForm() {
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const { data: session } = useSession();
-  const [caseOther, setCaseOther] = useState(false);
+  const [info, setInfo] = useState<StudentI>();
 
   const router = useRouter();
 
@@ -46,19 +47,8 @@ export default function StudentForm() {
       session?.user.token
     );
 
-    if (data) {
-      setDataRelations({
-        ...dataRelations,
-        student_id: data.person_id?.ci_number,
-      });
-      return "Registro existente. Redirigiendo...";
-    }
+    return "Usuario encontrado.";
   };
-
-  /*   useEffect(() => {
-    const age = dateHandler(values.born_date);
-    setFieldValue("age", age);
-  }, [values.born_date]);
 
   useEffect(() => {
     if (
@@ -70,25 +60,9 @@ export default function StudentForm() {
     }
   }, [dataRelations]);
 
-  useEffect(() => {
-    if (
-      (values.liveWith as string) === "OTRO" &&
-      (values.liveWith as string) !== ""
-    ) {
-      setCaseOther(true);
-    }
-    if (
-      values.liveWith === "MADRE" ||
-      values.liveWith === "PADRE"
-    ) {
-      setCaseOther(false);
-    }
-  }, [values.liveWith]);
- */
-
   return (
     <Formik
-      initialValues={initValStudent}
+      initialValues={info ? info : initValStudent}
       validationSchema={studentSchema}
       onSubmit={async (values) => {
         setLoading(true);
@@ -109,7 +83,14 @@ export default function StudentForm() {
         });
       }}
     >
-      {({ values, touched, errors }) => (
+      {({
+        values,
+        touched,
+        errors,
+        handleChange,
+        handleBlur,
+        setFieldValue,
+      }) => (
         <Form className="h-2/4 w-3/4 border border-gray-300 rounded-xl shadow-xl p-8">
           <div className="flex items-center justify-center mb-7 w-full">
             <h1 className="text-2xl font-medium">
@@ -121,9 +102,9 @@ export default function StudentForm() {
             <Field
               as={Input}
               isRequired
-              label="Cédula de _identidad:"
-              name="person_id?.ci_number"
-              description="Ingrese su Cédula de _identidad"
+              label="Cédula de identidad:"
+              name="person_id.ci_number"
+              description="Ingrese su Cédula de identidad"
               variant="bordered"
               color={
                 errors.person_id?.ci_number && touched.person_id?.ci_number
@@ -179,6 +160,8 @@ export default function StudentForm() {
               description={"Ingrese el genero del estudiante."}
               errorMessage={errors.sex && touched.sex && errors.sex}
               color={errors.sex && touched.sex ? "danger" : "primary"}
+              onChange={handleChange}
+              onBlur={handleBlur}
             >
               {(item) => (
                 <SelectItem key={item.value} value={item.value}>
@@ -191,7 +174,7 @@ export default function StudentForm() {
               as={Input}
               isRequired
               label="Nombres:"
-              name="name"
+              name="person_id.name"
               description="Ingrese sus Nombres"
               variant="bordered"
               color={
@@ -211,7 +194,7 @@ export default function StudentForm() {
               as={Input}
               isRequired
               label="Apellidos:"
-              name="lastName"
+              name="person_id.lastname"
               description="Ingrese sus Apellidos"
               variant="bordered"
               color={
@@ -233,6 +216,8 @@ export default function StudentForm() {
               items={latSelect}
               isRequired
               label="lateralidad:"
+              onChange={handleChange}
+              onBlur={handleBlur}
               name="lateralidad"
               className="col-span-3"
               description={"Ingrese la  del estudiante."}
@@ -255,7 +240,7 @@ export default function StudentForm() {
               isRequired
               label="Correo electrónico:"
               type="email"
-              name="email"
+              name="person_id.email"
               description="Ingrese su correo electrónico"
               variant="bordered"
               color={
@@ -275,7 +260,7 @@ export default function StudentForm() {
               as={Input}
               isRequired
               label="Número telefónico:"
-              name="phoneNumber"
+              name="person_id.phone_number"
               description="Ingrese su número de teléfono"
               variant="bordered"
               color={
@@ -336,6 +321,9 @@ export default function StudentForm() {
               label="Fecha de nacimiento"
               description="Ingrese la fecha de nacimiento"
               className="col-span-3"
+              onFocusChange={() =>
+                setFieldValue("age", dateHandler(values.born_date))
+              }
               color={
                 errors.born_date && touched.born_date ? "danger" : "primary"
               }
@@ -356,7 +344,6 @@ export default function StudentForm() {
               color={errors.age && touched.born_date ? "danger" : "primary"}
               errorMessage={errors.age && touched.born_date && errors.age}
               className="col-span-2"
-              value={`${values.age}`}
               endContent={
                 <p className="text-gray-400 font-medium text-base">años</p>
               }
@@ -401,7 +388,7 @@ export default function StudentForm() {
               as={Input}
               isRequired
               label="Parroquia:"
-              name="home_parroquia"
+              name="person_id.home_parroquia"
               description="Ingrese su Parroquia"
               variant="bordered"
               color={
@@ -422,7 +409,7 @@ export default function StudentForm() {
               as={Input}
               isRequired
               label="Municipio:"
-              name="home_municipio"
+              name="person_id.home_municipio"
               description="Ingrese su Municipio"
               variant="bordered"
               color={
@@ -443,7 +430,7 @@ export default function StudentForm() {
               as={Input}
               isRequired
               label="Dirección de habitación:"
-              name="home_dir"
+              name="person_id.home_dir"
               description="Ingrese su Dirección"
               variant="bordered"
               color={

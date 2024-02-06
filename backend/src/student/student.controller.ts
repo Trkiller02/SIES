@@ -6,13 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/role/enum/roles.enum';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
 // CONTROLADOR DEL RECURSO PROTEGIDO
 // ACCESO RESTRINGIDO PARA USUARIO COMÚN
@@ -29,15 +31,25 @@ export class StudentController {
   }
 
   // RUTA PARA OBTENER TODOS LOS REGISTROS
+
   @Get()
   findAll() {
     return this.studentService.findAll();
   }
 
   // RUTA PARA OBTENER UN REGISTRO ESPECIFICO
+  @ApiQuery({
+    name: 'deleted',
+    required: false,
+    type: Boolean,
+  })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.studentService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Query('deleted', new ParseBoolPipe({ optional: true }))
+    deleted?: boolean | null,
+  ) {
+    return this.studentService.findOne(id, deleted);
   }
 
   // RUTA PARA ACTUALIZAR UN REGISTRO ESPECIFICO

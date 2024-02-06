@@ -39,13 +39,18 @@ export class StudentService {
     return students;
   }
 
-  async findOne(id: string, pass?: boolean): Promise<Student> {
+  async findOne(
+    id: string,
+    deleted: boolean = false,
+    pass?: boolean,
+  ): Promise<Student> {
     const student = await this.studentRepo.findOne({
       where: {
         person_id: {
-          ciNumber: id,
+          ci_number: id,
         },
       },
+      withDeleted: deleted,
     });
 
     if (!student && !pass)

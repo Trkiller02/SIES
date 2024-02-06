@@ -23,8 +23,6 @@ export function NavBar() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  console.log(session);
-
   return (
     <Navbar maxWidth="full" isBordered className="font-semibold">
       <NavbarBrand>
@@ -179,7 +177,7 @@ export function NavBar() {
               <p className="font-semibold text-xl">
                 {(session ? session?.user.name : "User") +
                   " " +
-                  (session ? session?.user.lastName : "Profile")}
+                  (session ? session?.user.lastname : "Profile")}
               </p>
               <p className=" font-light text-gray-400 text-sm">
                 {session ? session?.user.role : "Role"}

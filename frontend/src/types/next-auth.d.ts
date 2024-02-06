@@ -5,14 +5,14 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       role: string;
-      ciNumber: string;
-      lastName?: string | null;
+      ci_number: string;
+      lastname?: string | null;
       token: string;
     } & DefaultSession["user"];
   }
   interface User extends DefaultUser {
-    lastName?: string | null;
-    ciNumber: string;
+    lastname?: string | null;
+    ci_number: string;
     role: string;
     token: string;
   }

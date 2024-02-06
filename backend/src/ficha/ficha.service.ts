@@ -21,23 +21,22 @@ export class FichaService {
   }
 
   //TODO: BUSCA TODAS LAS FICHAS
-  async findAll(querys: any | undefined): Promise<FichaModel[]> {
-    const { level, etapa, section } = querys;
-
+  async findAll(etapa, deleted = false, section, level): Promise<FichaModel[]> {
     if (level || etapa || section) {
       const fichas = await this.fichaRepo.find({
-        where: {
-          level: level,
-          etapa: etapa,
-          section: section,
-          relationTable: Not(null),
-        },
+        where: [
+          { etapa: etapa },
+          { level: level },
+          { section: section },
+          { relationTable: Not(null) },
+        ],
         //FIXME TRAER NOMBRE COMPLETO Y CEDULA DEL ESTUDIANTE
         relations: {
           relationTable: {
             student_id: true,
           },
         },
+        withDeleted: deleted,
       });
       if (fichas.length === 0) {
         not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
@@ -65,7 +64,7 @@ export class FichaService {
           relationTable: {
             student_id: {
               person_id: {
-                ciNumber: id,
+                ci_number: id,
               },
             },
           },

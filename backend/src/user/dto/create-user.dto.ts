@@ -18,7 +18,7 @@ export class CreateUserDto {
   @IsNotEmpty({
     message: validationMsg('El nombre', messagesEnum.not_empty),
   })
-  ciNumber: string;
+  ci_number: string;
 
   @ApiProperty()
   @IsString()
@@ -40,7 +40,7 @@ export class CreateUserDto {
   @MinLength(2, {
     message: validationMsg('El apellido', messagesEnum.not_min),
   })
-  lastName: string;
+  lastname: string;
 
   @ApiProperty()
   @IsEmail()

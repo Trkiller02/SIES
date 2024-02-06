@@ -1,7 +1,14 @@
 "use client";
 
 import { ROLE_LIST } from "@/utils/roleList";
-import { Button, Input, Select, SelectItem, Tooltip } from "@nextui-org/react";
+import {
+  Button,
+  Checkbox,
+  Input,
+  Select,
+  SelectItem,
+  Tooltip,
+} from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "./dashboard/layout";
@@ -199,7 +206,24 @@ export default function indexSearchPage() {
                     </SelectItem>
                   )}
                 </Select>
+                <Tooltip
+                  content="Incluir entidades eliminadas."
+                  className="border border-primary-500"
+                >
+                  <Field
+                    as={Checkbox}
+                    type="checkbox"
+                    color="primary"
+                    size="lg"
+                    name="deleted"
+                    onValueChange={handleChange}
+                    onBlur={handleBlur}
+                  >
+                    Eliminados
+                  </Field>
+                </Tooltip>
               </div>
+
               <div className="flex flex-row gap-3 w-full">
                 <Field
                   name="id"
@@ -238,7 +262,7 @@ export default function indexSearchPage() {
               entity !== "user" ? (
                 <UserCards item={item} key={item.id} />
               ) : (
-                <EntityCards item={item} key={item.id} />
+                <EntityCards item={item} key={item.id} title={undefined} />
               )
             )
           : "No hubo coincidencias."}

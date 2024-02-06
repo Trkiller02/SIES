@@ -16,7 +16,7 @@ export class PersonService {
 
   async create(createPersonDto: CreatePersonDto): Promise<PersonModel> {
     const person = await this.findOne(
-      createPersonDto.ciNumber,
+      createPersonDto.ci_number,
       createPersonDto.email,
     );
 
@@ -45,7 +45,7 @@ export class PersonService {
     pass?: boolean,
   ): Promise<PersonModel> {
     const person = await this.personRepo.findOne({
-      where: [{ ciNumber: id }, { email: email }],
+      where: [{ ci_number: id }, { email: email }],
     });
 
     if (!person && !pass)

@@ -38,8 +38,8 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.user = {
           name: user.name,
-          lastName: user.lastName,
-          ciNumber: user.ciNumber,
+          lastName: user.lastname,
+          ciNumber: user.ci_number,
           email: user.email,
           role: user.role,
           token: user.token,

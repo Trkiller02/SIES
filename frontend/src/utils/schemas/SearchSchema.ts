@@ -8,6 +8,7 @@ export const searchInitVal = {
   seccion: "",
   level: 0,
   id: "",
+  deleted: false,
 };
 
 export const searchSchema = Yup.object({
@@ -16,4 +17,5 @@ export const searchSchema = Yup.object({
   seccion: Yup.string().max(1, Messages.max_err).optional(),
   level: Yup.number().optional().max(6, Messages.max_err),
   id: Yup.string().optional().matches(regexList.forAuth, Messages.match_err),
+  deleted: Yup.boolean().optional(),
 });

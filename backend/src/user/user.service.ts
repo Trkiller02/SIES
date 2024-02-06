@@ -19,7 +19,7 @@ export class UserService {
 
   async create(createData: CreateUserDto) {
     const userSearch = await this.userRepo.findOne({
-      where: [{ ciNumber: createData.ciNumber }, { email: createData.email }],
+      where: [{ ci_number: createData.ci_number }, { email: createData.email }],
       select: {
         id: true,
       },
@@ -31,10 +31,10 @@ export class UserService {
 
     const restoreToken =
       createData.name.slice(0, 2) +
-      createData.lastName.slice(0, 2) +
-      createData.ciNumber.slice(-2) +
+      createData.lastname.slice(0, 2) +
+      createData.ci_number.slice(-2) +
       createData.email.slice(0, 2) +
-      createData.ciNumber.slice(0, 2);
+      createData.ci_number.slice(0, 2);
 
     const user = await this.userRepo.save({
       ...createData,
@@ -47,8 +47,10 @@ export class UserService {
     return { ...user, restoreToken: restoreToken };
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await this.userRepo.find();
+  async findAll(deleted = false) {
+    const users = await this.userRepo.find({
+      withDeleted: deleted,
+    });
 
     if (users.length === 0) {
       not_found_err(messagesEnum.not_found, 'No existen usuarios.');
@@ -59,12 +61,12 @@ export class UserService {
 
   async findToAuth(query: string): Promise<User> {
     const user = await this.userRepo.findOne({
-      where: [{ ciNumber: query }, { email: query }],
+      where: [{ ci_number: query }, { email: query }],
       select: {
         id: true,
-        ciNumber: true,
+        ci_number: true,
         name: true,
-        lastName: true,
+        lastname: true,
         password: true,
         email: true,
       },
@@ -77,7 +79,7 @@ export class UserService {
 
   async findOne(query: string): Promise<User> {
     const user = await this.userRepo.findOne({
-      where: [{ ciNumber: query }, { email: query }, { id: query }],
+      where: [{ ci_number: query }, { email: query }, { id: query }],
     });
 
     console.log(user);
@@ -87,8 +89,8 @@ export class UserService {
     return user;
   }
 
-  async update(ciNumber: string, updateData: UpdateUserDto) {
-    const user = await this.findOne(ciNumber);
+  async update(ci_number: string, updateData: UpdateUserDto) {
+    const user = await this.findOne(ci_number);
 
     /* 
     DESESTRUCTURAMOS EL OBJETO PARA ACTUALIZAR
@@ -117,8 +119,8 @@ export class UserService {
     return await this.userRepo.update(user, updateData);
   }
 
-  async remove(ciNumber: string) {
-    const user = await this.findOne(ciNumber);
+  async remove(ci_number: string) {
+    const user = await this.findOne(ci_number);
 
     await this.userRepo.softDelete(user);
 

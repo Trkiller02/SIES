@@ -51,6 +51,11 @@ export class Ficha {
   @CreateDateColumn()
   ins_date: Date;
 
+  @Column({
+    type: 'boolean',
+  })
+  egresado?: boolean;
+
   @ManyToOne(() => User, (user) => user.id, { eager: true })
   personal_res: User;
 

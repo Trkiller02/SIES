@@ -1,10 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { CreateStudentDto } from './create-student.dto';
 import {
   IsString,
   IsEmail,
   IsDateString,
-  IsNumberString,
   IsNumber,
   IsDecimal,
   IsOptional,

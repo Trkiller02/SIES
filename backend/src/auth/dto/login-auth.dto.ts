@@ -1,11 +1,13 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginAuthDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     pattern: '/^([^s@]+@[^s@]+.[^s@]+|[VEve]d+)$/',
     examples: ['V8712765', 'E298712342', 'johndoe23@user.com'],
+    example: 'johndoe23@user.com',
+    description: 'johndoe23@user.com',
     type: String,
   })
   @IsString()

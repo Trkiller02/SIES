@@ -42,8 +42,8 @@ export class AuthService {
 
     return {
       name: user.name,
-      lastName: user.lastName,
-      ciNumber: user.ciNumber,
+      lastName: user.lastname,
+      ci_number: user.ci_number,
       email: user.email,
       role: user.role_id instanceof Role ? user.role_id.name : user.role_id,
       token: token,
@@ -51,18 +51,18 @@ export class AuthService {
   }
 
   async restorePassword(updatePassword: RestorePasswordDto) {
-    const user = await this.userService.findOne(updatePassword.ciNumber);
+    const user = await this.userService.findOne(updatePassword.ci_number);
 
-    const { password, repeatPassword, restoreToken } = updatePassword;
+    const { password, repeatPassword, restore_token } = updatePassword;
 
-    if (!restoreToken) {
+    if (!restore_token) {
       return unauth_err(
         messagesEnum.unauth_err,
         'Credenciales incorrectas. (Token)',
       );
     }
 
-    const HashToken = await bcrypt.compare(restoreToken, user.restoreToken);
+    const HashToken = await bcrypt.compare(restore_token, user.restore_token);
 
     if (!HashToken) {
       return unauth_err(
@@ -77,11 +77,11 @@ export class AuthService {
         'Las contraseñas no coinciden.',
       );
     }
-    const id = updatePassword.ciNumber;
+    const id = updatePassword.ci_number;
 
     delete updatePassword.repeatPassword;
-    delete updatePassword.ciNumber;
-    delete updatePassword.restoreToken;
+    delete updatePassword.ci_number;
+    delete updatePassword.restore_token;
 
     return await this.userService.update(id, updatePassword);
   }

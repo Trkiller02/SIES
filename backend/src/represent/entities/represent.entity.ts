@@ -14,7 +14,7 @@ export class Represent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Person, (person) => person.ciNumber, { eager: true })
+  @OneToOne(() => Person, (person) => person.ci_number, { eager: true })
   @JoinColumn({ name: 'person_id' })
   person_id: Person;
 

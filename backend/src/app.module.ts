@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 //TYPEORM
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 //MODULOS DE LA API
 import { RelationsTableModule } from './relations-table/relations-table.module';
@@ -32,8 +32,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           password: config.get<string>('DB_PASSWORD', { infer: true }),
           autoLoadEntities: true,
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: true,
-        } as TypeOrmModuleOptions;
+          synchronize:
+            config.get<string>('NODE_ENV') === 'production' ? false : true,
+        };
       },
     }),
     StudentModule,

@@ -13,7 +13,7 @@ export class CreateRepresentDto extends CreatePersonDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  tlfnHome?: string;
+  tlfn_home?: string;
 
   @ApiPropertyOptional({
     type: 'text',
@@ -21,12 +21,12 @@ export class CreateRepresentDto extends CreatePersonDto {
   })
   @IsOptional()
   @IsString()
-  workPlace?: string;
+  work_place?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  workPhoneNumber?: string;
+  work_phone_number?: string;
 
   @ApiPropertyOptional({
     type: 'int',
@@ -35,5 +35,5 @@ export class CreateRepresentDto extends CreatePersonDto {
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  incomeMonth?: number;
+  income_month?: number;
 }

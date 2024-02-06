@@ -1,15 +1,18 @@
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { messagesEnum, validationMsg } from 'src/utils/handlerMsg';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RestorePasswordDto {
-  @ApiPropertyOptional({
-    pattern: '^[VE]\\d+$',
+  @ApiProperty({
+    pattern: '^[VEve]\\d+$',
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  ciNumber: string;
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toUpperCase() : value,
+  )
+  ci_number: string;
 
   @ApiProperty()
   @Transform(({ value }) => value.trim().toUpperCase())
@@ -17,7 +20,7 @@ export class RestorePasswordDto {
     message: validationMsg('El token de recuperación', messagesEnum.not_empty),
   })
   @MinLength(4)
-  restoreToken: string;
+  restore_token: string;
 
   @ApiProperty()
   @Transform(({ value }) => value.trim())

@@ -1,18 +1,16 @@
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
 
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    preflightContinue: false,
-  });
+  app.enableCors();
+
+  app.useGlobalPipes(new ValidationPipe());
 
   // CONFIG SWAGGER DOC
 
@@ -26,8 +24,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('/', app, document);
-
-  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(8000, () =>
     console.log('🚀 Server ready at: http://localhost:8000/api'),

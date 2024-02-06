@@ -7,13 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  ParseBoolPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FichaService } from './ficha.service';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/role/enum/roles.enum';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('ACADEMIC-INFO:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador
@@ -29,9 +31,46 @@ export class FichaController {
     return this.fichaService.create(createFichaDto);
   }
 
+  @ApiQuery({
+    name: 'section',
+    required: false,
+    type: String,
+    schema: {
+      maxLength: 1,
+    },
+  })
+  @ApiQuery({
+    name: 'level',
+    required: false,
+    type: Number,
+    schema: {
+      maximum: 6,
+      minimum: 1,
+    },
+  })
+  @ApiQuery({
+    name: 'deleted',
+    required: false,
+    type: Boolean,
+  })
+  @ApiQuery({
+    name: 'etapa',
+    required: false,
+    isArray: true,
+    enum: ['EDUCACION MEDIA GENERAL', 'EDUCACION PRIMARIA'],
+  })
   @Get()
-  findAll(@Query() querys) {
-    return this.fichaService.findAll(querys); // obteniendo todas las fichas con los parámetros de consulta enviados en la solicitud
+  findAll(
+    @Query('etapa')
+    etapa?: string | null,
+    @Query('deleted', new ParseBoolPipe({ optional: true }))
+    deleted?: boolean | null,
+    @Query('section')
+    section?: string | null,
+    @Query('level', new ParseIntPipe({ optional: true }))
+    level?: number | null,
+  ) {
+    return this.fichaService.findAll(etapa, deleted, section, level); // obteniendo todas las fichas con los parámetros de consulta enviados en la solicitud
   }
 
   @Get(':id')

@@ -61,7 +61,7 @@ export class RelationsTableService {
         {
           student_id: {
             person_id: {
-              ciNumber: id,
+              ci_number: id,
             },
           },
         },
@@ -71,6 +71,14 @@ export class RelationsTableService {
           },
         },
       ],
+      relations: {
+        father_id: true,
+        mother_id: true,
+        ficha_id: true,
+        healt_info_id: true,
+        represent_id: true,
+        student_id: true,
+      },
     });
 
     if (!table)

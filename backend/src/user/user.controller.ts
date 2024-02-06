@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,13 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/role/enum/roles.enum';
 import { User } from './entities/user.entity';
-import {
-  ApiBearerAuth,
-  ApiParam,
-  ApiParamOptions,
-  ApiTags,
-} from '@nestjs/swagger';
-import { query } from 'express';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('USER:')
 @ApiBearerAuth()
@@ -34,9 +30,17 @@ export class UserController {
   }
 
   @Auth([Role.EVALUACION])
+  @ApiQuery({
+    name: 'deleted',
+    required: false,
+    type: Boolean,
+  })
   @Get()
-  findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  findAll(
+    @Query('deleted', new ParseBoolPipe({ optional: true }))
+    deleted?: boolean | null,
+  ): Promise<User[]> {
+    return this.userService.findAll(deleted);
   }
 
   @Auth()

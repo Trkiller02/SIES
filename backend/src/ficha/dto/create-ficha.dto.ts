@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsNumber,
   IsPositive,
+  IsBoolean,
 } from 'class-validator';
-import { User } from 'src/user/entities/user.entity';
 
 export class CreateFichaDto {
   @ApiProperty({
@@ -54,7 +54,7 @@ export class CreateFichaDto {
   })
   @IsNotEmpty()
   @IsString()
-  procePlant: string;
+  proce_plant: string;
 
   @ApiPropertyOptional({
     minLength: 4,
@@ -62,5 +62,12 @@ export class CreateFichaDto {
   })
   @IsOptional()
   @IsString()
-  escolarPeriod: string;
+  escolar_period: string;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @IsOptional()
+  @IsBoolean()
+  egresado?: boolean;
 }

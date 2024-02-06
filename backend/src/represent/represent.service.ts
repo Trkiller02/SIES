@@ -32,8 +32,10 @@ export class RepresentService {
     return represent;
   }
 
-  async findAll() {
-    const represent = await this.representRepo.find();
+  async findAll(deleted: boolean = false) {
+    const represent = await this.representRepo.find({
+      withDeleted: deleted,
+    });
 
     if (represent.length === 0)
       not_found_err(messagesEnum.not_found, 'No se encontraron registros.');
@@ -41,13 +43,14 @@ export class RepresentService {
     return represent;
   }
 
-  async findOne(id: string, pass?: boolean) {
+  async findOne(id: string, deleted: boolean = false, pass?: boolean) {
     const represent = await this.representRepo.findOne({
       where: {
         person_id: {
-          ciNumber: id,
+          ci_number: id,
         },
       },
+      withDeleted: deleted,
     });
 
     if (represent && pass)
