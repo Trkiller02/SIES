@@ -25,13 +25,13 @@ export default function RepresentForm() {
   const [Loading, setLoading] = useState(false);
 
   const routeHandler = () => {
-    if (dataRelations.motherPersonCiNumbers === "") {
+    if (dataRelations.mother_id === "") {
       return formik.resetForm();
     } else {
-      if (dataRelations.fatherPersonCiNumbers === "") {
+      if (dataRelations.father_id === "") {
         return formik.resetForm();
       } else {
-        if (dataRelations.representCiNumbers === "") {
+        if (dataRelations.represent_id === "") {
           return formik.resetForm();
         } else {
           router.push("/register/relations");
@@ -48,36 +48,33 @@ export default function RepresentForm() {
       session?.user.token
     );
 
-
-
     if (res) {
-
       switch (values.relation) {
         case "M":
           setDataRelations({
             ...dataRelations,
-            motherPersonCiNumbers: values.ciNumber,
+            mother_id: values.ciNumber,
           });
           break;
         case "P":
           setDataRelations({
             ...dataRelations,
-            fatherPersonCiNumbers: values.ciNumber,
+            father_id: values.ciNumber,
           });
           break;
         case "RL":
           setDataRelations({
             ...dataRelations,
-            representCiNumbers: values.ciNumber,
+            represent_id: values.ciNumber,
           });
           break;
         default:
           break;
       }
 
-      return "Registro exitoso."
+      return "Registro exitoso.";
     }
-  }
+  };
 
   const formik = useFormik({
     initialValues: initValRepresent,
@@ -96,22 +93,22 @@ export default function RepresentForm() {
         },
         finally: () => {
           setLoading(false);
-        }
-      })
+        },
+      });
     },
   });
 
   const disabledKeys = () => {
-    if (dataRelations.motherPersonCiNumbers !== "") {
-      setDisKeys((disKeys) => [...disKeys, "M"])
+    if (dataRelations.mother_id !== "") {
+      setDisKeys((disKeys) => [...disKeys, "M"]);
     }
-    if (dataRelations.fatherPersonCiNumbers !== "") {
-      setDisKeys((disKeys) => [...disKeys, "P"])
+    if (dataRelations.father_id !== "") {
+      setDisKeys((disKeys) => [...disKeys, "P"]);
     }
-    if (dataRelations.representCiNumbers !== "") {
-      setDisKeys((disKeys) => [...disKeys, "RL"])
+    if (dataRelations.represent_id !== "") {
+      setDisKeys((disKeys) => [...disKeys, "RL"]);
     }
-  }
+  };
 
   const searchRepresent = async () => {
     const data = await fetchDataWithoutBody(
@@ -119,24 +116,23 @@ export default function RepresentForm() {
       session?.user.token
     );
     if (data) {
-
       switch (data.relation) {
         case "M":
           setDataRelations({
             ...dataRelations,
-            motherPersonCiNumbers: data.ciNumber,
+            mother_id: data.ciNumber,
           });
           break;
         case "P":
           setDataRelations({
             ...dataRelations,
-            fatherPersonCiNumbers: data.ciNumber,
+            father_id: data.ciNumber,
           });
           break;
         case "RL":
           setDataRelations({
             ...dataRelations,
-            representCiNumbers: data.ciNumber,
+            represent_id: data.ciNumber,
           });
           break;
         default:
@@ -148,12 +144,12 @@ export default function RepresentForm() {
   };
 
   useEffect(() => {
-    routeHandler()
-  }, [])
+    routeHandler();
+  }, []);
 
   useEffect(() => {
-    disabledKeys()
-  }, [dataRelations])
+    disabledKeys();
+  }, [dataRelations]);
 
   return (
     <form
@@ -218,10 +214,7 @@ export default function RepresentForm() {
           </Button>
         </Tooltip>
 
-        <Tooltip
-          content="Omitir Relación"
-          className="border border-danger-500"
-        >
+        <Tooltip content="Omitir Relación" className="border border-danger-500">
           <Button
             isDisabled={formik.values.relation ? false : true}
             isIconOnly
@@ -234,21 +227,20 @@ export default function RepresentForm() {
                 case "M":
                   setDataRelations({
                     ...dataRelations,
-                    motherPersonCiNumbers: "omit",
+                    mother_id: "omit",
                   });
                   break;
                 case "P":
                   setDataRelations({
                     ...dataRelations,
-                    fatherPersonCiNumbers: "omit",
+                    father_id: "omit",
                   });
                   break;
                 default:
                   break;
               }
-              routeHandler()
-            }
-            }
+              routeHandler();
+            }}
           >
             <MdCancel className="text-2xl text-danger" />
           </Button>
@@ -540,8 +532,6 @@ export default function RepresentForm() {
           className="col-span-8"
           value={formik.values.homeDir.toUpperCase()}
         />
-
-
       </div>
 
       <div className="flex flex-row justify-around mt-7">

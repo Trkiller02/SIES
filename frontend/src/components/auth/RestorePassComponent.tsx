@@ -4,13 +4,7 @@ import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { Input, Button, Tooltip, Link } from "@nextui-org/react";
 import { Field, Form, Formik, useFormik } from "formik";
 import { useState } from "react";
-import {
-  MdCancel,
-  MdCheckCircle,
-  MdOutlineRemoveRedEye,
-  MdRemoveRedEye,
-  MdSearch,
-} from "react-icons/md";
+import { MdOutlineRemoveRedEye, MdRemoveRedEye } from "react-icons/md";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -77,34 +71,36 @@ export default function RestorePassComponent() {
           <div className="flex flex-col gap-3 justify-center items-center w-full">
             <Field
               label="Cedula de Identidad:"
-              name="ciNumber"
+              name="ci_number"
               description="Ingrese su Cedula de Identidad"
               variant="bordered"
-              color={errors.ciNumber && touched.ciNumber ? "danger" : "primary"}
-              errorMessage={
-                errors.ciNumber && touched.ciNumber && errors.ciNumber
+              color={
+                errors.ci_number && touched.ci_number ? "danger" : "primary"
               }
-              value={values.ciNumber.toUpperCase()}
+              errorMessage={
+                errors.ci_number && touched.ci_number && errors.ci_number
+              }
+              value={values.ci_number.toUpperCase()}
               as={Input}
             />
 
             <Field
               label="Token de recuperación:"
-              name="restoreToken"
+              name="restore_token"
               type={isVisibleToken ? "text" : "password"}
               description="Ingrese token de restauración"
               variant="bordered"
               color={
-                errors.restoreToken && touched.restoreToken
+                errors.restore_token && touched.restore_token
                   ? "danger"
                   : "primary"
               }
               errorMessage={
-                errors.restoreToken &&
-                touched.restoreToken &&
-                errors.restoreToken
+                errors.restore_token &&
+                touched.restore_token &&
+                errors.restore_token
               }
-              value={values.restoreToken}
+              value={values.restore_token}
               endContent={
                 <button
                   onClick={() => toggleVisibilityToken()}

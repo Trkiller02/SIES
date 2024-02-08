@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { RegisterAuthDto } from './dto/register-auth.dto';
@@ -21,16 +21,16 @@ export class AuthService {
   }
 
   async signIn({ query, password }: LoginAuthDto) {
-    const user = await this.userService.findToAuth(query);
+    const user = await this.userService.findToAuth(query, true);
 
     if (!user) {
-      throw new UnauthorizedException('Crendenciales invalidas');
+      unauth_err(messagesEnum.credential_err, 'Crendenciales invalidas');
     }
 
     const isPassValid = await bcrypt.compare(password, user.password);
 
     if (!isPassValid) {
-      throw new UnauthorizedException('Contraseña invalida');
+      unauth_err(messagesEnum.credential_err, 'Crendenciales invalidas');
     }
 
     const payload = {
@@ -51,23 +51,13 @@ export class AuthService {
   }
 
   async restorePassword(updatePassword: RestorePasswordDto) {
-    const user = await this.userService.findOne(updatePassword.ci_number);
-
-    const { password, repeatPassword, restore_token } = updatePassword;
+    const { password, repeatPassword, restore_token, ci_number } =
+      updatePassword;
 
     if (!restore_token) {
       return unauth_err(
-        messagesEnum.unauth_err,
-        'Credenciales incorrectas. (Token)',
-      );
-    }
-
-    const HashToken = await bcrypt.compare(restore_token, user.restore_token);
-
-    if (!HashToken) {
-      return unauth_err(
-        messagesEnum.unauth_err,
-        'Credenciales incorrectas. (Token compa)',
+        messagesEnum.credential_err,
+        'Credenciales incorrectas.',
       );
     }
 
@@ -77,12 +67,18 @@ export class AuthService {
         'Las contraseñas no coinciden.',
       );
     }
-    const id = updatePassword.ci_number;
 
-    delete updatePassword.repeatPassword;
-    delete updatePassword.ci_number;
-    delete updatePassword.restore_token;
+    const user = await this.userService.findToAuth(ci_number);
 
-    return await this.userService.update(id, updatePassword);
+    const isValidToken = await bcrypt.compare(
+      restore_token,
+      user.restore_token,
+    );
+
+    if (!isValidToken) {
+      return unauth_err(messagesEnum.unauth_err, 'Credenciales incorrectas.');
+    }
+
+    return await this.userService.update(ci_number, { password });
   }
 }

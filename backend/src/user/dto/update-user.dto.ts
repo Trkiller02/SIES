@@ -6,5 +6,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  restoreToken?: string;
+  restore_token?: string;
 }

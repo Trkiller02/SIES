@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { messagesEnum } from 'src/utils/handlerMsg';
-import { bad_req_err, not_found_err } from 'src/utils/handlerErrors';
-import { Not, Repository } from 'typeorm';
+import { not_found_err } from 'src/utils/handlerErrors';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Ficha as FichaModel } from './entities/ficha.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
@@ -36,10 +36,9 @@ export class FichaService {
           etapa: etapa,
           level: level,
           section: section,
-          relationTable: Not(null),
+          relationTable: Not(IsNull()),
         },
 
-        //FIXME TRAER NOMBRE COMPLETO Y CEDULA DEL ESTUDIANTE
         withDeleted: deleted,
       });
       if (fichas.length === 0) {

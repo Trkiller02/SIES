@@ -59,7 +59,7 @@ export class UserService {
     return users;
   }
 
-  async findToAuth(query: string): Promise<User> {
+  async findToAuth(query: string, pass: boolean = false): Promise<User> {
     const user = await this.userRepo.findOne({
       where: [{ ci_number: query }, { email: query }],
       select: {
@@ -69,10 +69,12 @@ export class UserService {
         lastname: true,
         password: true,
         email: true,
+        restore_token: true,
       },
     });
 
-    if (!user) not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
+    if (!user && !pass)
+      not_found_err(messagesEnum.not_found, 'Usuario no encontrado.');
 
     return user;
   }
@@ -89,15 +91,15 @@ export class UserService {
     return user;
   }
 
-  async update(ci_number: string, updateData: UpdateUserDto) {
-    const user = await this.findOne(ci_number);
+  async update(query: string, updateData: UpdateUserDto) {
+    const user = await this.findOne(query);
 
     /* 
     DESESTRUCTURAMOS EL OBJETO PARA ACTUALIZAR
     EN ESTE CASO NOS INTERESA POR SI HAY UNA CONTRASEÑA
     O UN TOKEN DE RESTAURACION
     */
-    const { password, restoreToken } = updateData;
+    const { password, restore_token } = updateData;
 
     // SI EXITEN VALORES PARA ESTAS VARIABLES
     // SE REALIZA LA ENCRIPTACION
@@ -110,8 +112,8 @@ export class UserService {
       updateData.password = passHashed;
     }
 
-    if (restoreToken) {
-      const rTokenHashed = await bcrypt.hash(restoreToken, 10);
+    if (restore_token) {
+      const rTokenHashed = await bcrypt.hash(restore_token, 10);
       updateData.password = rTokenHashed;
     }
 

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React from "react";
 
 export interface dataRelationsI {
   represent_id: string;
@@ -19,10 +13,20 @@ export interface dataRelationsI {
 
 interface ContextType {
   dataRelations: dataRelationsI;
-  setDataRelations: Dispatch<SetStateAction<dataRelationsI>>;
+  setDataRelations: React.Dispatch<React.SetStateAction<dataRelationsI>>;
 }
 
-export const ctxDataRelation = createContext<ContextType | any>({});
+export const ctxDataRelation = React.createContext<ContextType>({
+  dataRelations: {
+    represent_id: "",
+    ficha_id: "",
+    mother_id: "",
+    father_id: "",
+    health_info_id: "",
+    student_id: "",
+  },
+  setDataRelations: () => {},
+});
 
 export function ProviderCtx({ children }: { children: React.ReactNode }) {
   const data =
@@ -31,7 +35,7 @@ export function ProviderCtx({ children }: { children: React.ReactNode }) {
       : null;
   const relations: dataRelationsI = data ? JSON.parse(data) : null;
 
-  const [dataRelations, setDataRelations] = useState<dataRelationsI>({
+  const [dataRelations, setDataRelations] = React.useState<dataRelationsI>({
     mother_id: relations?.mother_id ?? "",
     father_id: relations?.father_id ?? "",
     represent_id: relations?.represent_id ?? "",
@@ -40,7 +44,7 @@ export function ProviderCtx({ children }: { children: React.ReactNode }) {
     ficha_id: relations?.ficha_id ?? "",
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     localStorage.setItem("dataRelations", JSON.stringify(dataRelations));
   }, [dataRelations]);
 

@@ -77,12 +77,12 @@ export default function RegisterComponent() {
             <Field
               endContent={<MdAccountCircle className="text-2xl" />}
               label="Apellido:"
-              name="lastName"
+              name="lastname"
               description="Ingrese su nombre"
               variant="bordered"
-              color={errors.lastName && touched.lastName ? "danger" : "primary"}
+              color={errors.lastname && touched.lastname ? "danger" : "primary"}
               errorMessage={
-                errors.lastName && touched.lastName && errors.lastName
+                errors.lastname && touched.lastname && errors.lastname
               }
               as={Input}
             />
@@ -103,14 +103,16 @@ export default function RegisterComponent() {
               }
               label="Cedula de identidad:"
               type="text"
-              color={errors.ciNumber && touched.ciNumber ? "danger" : "primary"}
-              name="ciNumber"
+              color={
+                errors.ci_number && touched.ci_number ? "danger" : "primary"
+              }
+              name="ci_number"
               description="Ingrese su cedula de identidad"
               variant="bordered"
               errorMessage={
-                errors.ciNumber && touched.ciNumber && errors.ciNumber
+                errors.ci_number && touched.ci_number && errors.ci_number
               }
-              value={values.ciNumber.toUpperCase()}
+              value={values.ci_number.toUpperCase()}
               as={Input}
             />
             <Field

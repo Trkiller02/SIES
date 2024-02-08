@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 //DTOs
@@ -46,11 +46,12 @@ export class StudentService {
   ): Promise<Student> {
     const student = await this.studentRepo.findOne({
       where: [
-        { id: id },
+        { id: id, relation_table_id: Not(IsNull()) },
         {
           person_id: {
             ci_number: id,
           },
+          relation_table_id: Not(IsNull()),
         },
       ],
       withDeleted: deleted,

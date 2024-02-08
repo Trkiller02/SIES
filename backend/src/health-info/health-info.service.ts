@@ -19,11 +19,7 @@ export class HealthInfoService {
   }
 
   async findAll(): Promise<HealthInfo[]> {
-    const health_info = await this.HealthInfoRepo.find({
-      relations: {
-        relationTable: true,
-      },
-    });
+    const health_info = await this.HealthInfoRepo.find();
 
     if (health_info.length === 0) {
       not_found_err(messagesEnum.not_found, 'No se encuentran registros.');

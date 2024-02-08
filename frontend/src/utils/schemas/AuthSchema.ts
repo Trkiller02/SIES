@@ -11,17 +11,17 @@ const LoginValues = {
 
 const RegisterValues = {
   name: "",
-  lastName: "",
-  ciNumber: "",
+  lastname: "",
+  ci_number: "",
   email: "",
   password: "",
   repeatPassword: "",
-  restoreToken: "ADMIN1",
+  restore_token: "ADMIN1",
 };
 
 const initValUpdatePass = {
-  ciNumber: "",
-  restoreToken: "",
+  ci_number: "",
+  restore_token: "",
   password: "",
   repeatPassword: "",
 };
@@ -29,10 +29,10 @@ const initValUpdatePass = {
 // ESQUEMAS DE VALIDACION AUTH
 
 const UpdatePassSchema = Yup.object({
-  ciNumber: Yup.string()
+  ci_number: Yup.string()
     .matches(regexList.forDNI, Messages.dni_match)
     .required(Messages.required),
-  restoreToken: Yup.string()
+  restore_token: Yup.string()
     .matches(regexList.forToken, Messages.match_err)
     .required(Messages.required),
   password: Yup.string().required(Messages.required).min(4, Messages.min_pass),
@@ -52,10 +52,10 @@ const RegisterSchema = Yup.object({
   name: Yup.string()
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
-  lastName: Yup.string()
+  lastname: Yup.string()
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),
-  ciNumber: Yup.string()
+  ci_number: Yup.string()
     .matches(regexList.forDNI, Messages.dni_match)
     .required(Messages.required),
   email: Yup.string().email(Messages.email_err).required(Messages.required),
