@@ -19,12 +19,12 @@ export const entitySelect = [
 export const etapaSelect = [
   {
     label: "Educacion Primaria",
-    value: "EDUCACION PRIMARIA",
+    value: "EP",
     description: "Comprende de 1er Grado a 6to Grado.",
   },
   {
     label: "Educacion Media General",
-    value: "EDUCACION MEDIA GENERAL",
+    value: "EM",
     description: "Comprende de 1er Año a 5to Año.",
   },
 ];

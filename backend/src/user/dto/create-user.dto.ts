@@ -15,6 +15,7 @@ export class CreateUserDto {
     pattern: '^[VE]\\d+$',
   })
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty({
     message: validationMsg('El nombre', messagesEnum.not_empty),
   })
@@ -22,7 +23,7 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsString()
-  @Transform(({ value }: { value: string }) => value.trim())
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty({
     message: validationMsg('El nombre', messagesEnum.not_empty),
   })
@@ -33,7 +34,7 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsString()
-  @Transform(({ value }: { value: string }) => value.trim())
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty({
     message: validationMsg('El apellido', messagesEnum.not_empty),
   })
@@ -43,13 +44,16 @@ export class CreateUserDto {
   lastname: string;
 
   @ApiProperty()
+  @IsString()
   @IsEmail()
+  @Transform(({ value }: { value: string }) => value.toLowerCase().trim())
   @IsNotEmpty({
     message: validationMsg('La email', messagesEnum.not_empty),
   })
   email: string;
 
   @ApiProperty()
+  @IsString()
   @Transform(({ value }) => value.trim())
   @IsNotEmpty({
     message: validationMsg('La contraseña', messagesEnum.not_empty),
@@ -57,9 +61,7 @@ export class CreateUserDto {
   @MinLength(4)
   password: string;
 
-  @ApiProperty({
-    enumName: 'Role',
-  })
+  @ApiProperty()
   @IsNumber()
   @IsPositive()
   role_id: number;

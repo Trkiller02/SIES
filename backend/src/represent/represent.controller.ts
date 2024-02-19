@@ -47,13 +47,20 @@ export class RepresentController {
     required: false,
     type: Boolean,
   })
+  @ApiQuery({
+    name: 'tofielter',
+    required: false,
+    type: Boolean,
+  })
   @Get(':id')
   findOne(
     @Param('id') id: string,
     @Query('deleted', new ParseBoolPipe({ optional: true }))
     deleted?: boolean | null,
+    @Query('tofielter', new ParseBoolPipe({ optional: true }))
+    toFielter?: boolean | null,
   ) {
-    return this.representService.findOne(id, deleted);
+    return this.representService.findOne(id, deleted, false, toFielter);
   }
 
   @ApiParam({ name: 'id', type: String })

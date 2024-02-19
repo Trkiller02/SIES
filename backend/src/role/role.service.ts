@@ -19,7 +19,12 @@ export class RoleService {
   }
 
   async findAll() {
-    return `This action returns all role`;
+    const roles = await this.roleRepo.find();
+
+    if (!roles)
+      not_found_err(messagesEnum.not_found, 'No se encontraron registros');
+
+    return roles;
   }
 
   async findOne(id: number) {
@@ -33,10 +38,14 @@ export class RoleService {
   }
 
   async update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+    const role = await this.findOne(id);
+
+    return await this.roleRepo.update(role.id, updateRoleDto);
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} role`;
+    const role = await this.findOne(id);
+
+    return await this.roleRepo.softDelete(role.id);
   }
 }

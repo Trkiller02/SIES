@@ -3,6 +3,7 @@ import { HealthInfo } from 'src/health-info/entities/health-info.entity';
 import { Represent } from 'src/represent/entities/represent.entity';
 import { Student } from 'src/student/entities/student.entity';
 import {
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -44,10 +45,13 @@ export class RelationsTable {
   father_id?: string | Represent;
 
   @OneToOne(() => HealthInfo, (healthTable) => healthTable.relationTable)
-  @JoinColumn({ name: 'healt_info_id' })
-  healt_info_id: string | HealthInfo;
+  @JoinColumn({ name: 'health_info_id' })
+  health_info_id: string | HealthInfo;
 
   @OneToOne(() => Student, (student) => student.relation_table_id)
   @JoinColumn({ name: 'student_id' })
   student_id: string | Student;
+
+  @DeleteDateColumn()
+  deleted_at: Date | null;
 }

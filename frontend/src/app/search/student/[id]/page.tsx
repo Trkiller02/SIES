@@ -29,7 +29,6 @@ export default function pageDetailsStudent({
   params: { id: string };
 }) {
   const { data: session } = useSession();
-  const [info, setInfo] = useState<RelationTableI | null>();
   const [data, setData] = useState<RelationTableI>();
   const router = useRouter();
 
@@ -64,17 +63,16 @@ export default function pageDetailsStudent({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const getStudent = async () => {
-    const res = await fetchDataWithoutBody(
+    const res: RelationTableI = await fetchDataWithoutBody(
       `/relations-table/${id}`,
       session?.user.token
     );
 
-    if (res) {
-      setInfo(res);
-    }
+    if (res) setData(res);
 
     return "Carga completa.";
   };
+
   useEffect(() => {
     toast.promise(getStudent(), {
       loading: "Procesando...",
@@ -89,7 +87,7 @@ export default function pageDetailsStudent({
 
   return (
     <section className="w-3/4">
-      {info ? (
+      {data && typeof data !== "undefined" ? (
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-2 shadow-lg rounded-xl border border-gray-300 p-6">
             <div className="flex justify-between">
@@ -114,37 +112,35 @@ export default function pageDetailsStudent({
                 <p className="font-semibold">
                   Nombres:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.person_id.name}
+                    {data?.student_id.person_id.name}
                   </span>
                 </p>
                 <p className="font-semibold">
                   Apellidos:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.person_id.lastname}
+                    {data?.student_id.person_id.lastname}
                   </span>
                 </p>
                 <p className="font-semibold">
                   Cedula de identidad:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.person_id.ci_number}
+                    {data?.student_id.person_id.ci_number}
                   </span>
                 </p>
                 <p className="font-semibold">
                   Correo electronico:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.person_id.email === "" ||
-                    info.student_id.person_id.email === null
+                    {!data?.student_id.person_id.email
                       ? "NO POSEE"
-                      : info.student_id.person_id.email}
+                      : data?.student_id.person_id.email}
                   </span>
                 </p>
                 <p className="font-semibold">
                   Numero telefonico:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.person_id.phone_number === "" ||
-                    info.student_id.person_id.phone_number === null
+                    {!data?.student_id.person_id.phone_number
                       ? "NO POSEE"
-                      : info.student_id.person_id.phone_number}
+                      : data?.student_id.person_id.phone_number}
                   </span>
                 </p>
               </div>
@@ -152,21 +148,25 @@ export default function pageDetailsStudent({
                 <p className="font-semibold">
                   Peso:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.weight}&nbsp;kg
+                    {data?.healt_info_id.weight ??
+                      "No se proporciono información."}
+                    &nbsp;kg
                   </span>
                 </p>
                 <p className="font-semibold">
                   Estatura:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.size}&nbsp;m
+                    {data?.healt_info_id.size ??
+                      "No se proporciono información."}
+                    &nbsp;m
                   </span>
                 </p>
                 <p className="font-semibold">
                   Sexo:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.sex === "M"
+                    {data?.healt_info_id.sex === "M"
                       ? "Masculino"
-                      : info.health_info_id.sex === "F"
+                      : data?.healt_info_id.sex === "F"
                       ? "Femenino"
                       : "Indefinido."}
                   </span>
@@ -174,13 +174,14 @@ export default function pageDetailsStudent({
                 <p className="font-semibold">
                   Vive con:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.live_with}
+                    {data?.healt_info_id.live_with ??
+                      "No se proporciono información."}
                   </span>
                 </p>
                 <p className="font-semibold">
                   Direccion de habitacion:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.student_id.person_id.home_dir}
+                    {data?.student_id.person_id.home_dir}
                   </span>
                 </p>
               </div>
@@ -213,34 +214,34 @@ export default function pageDetailsStudent({
               <tbody className="bg-white divide-y divide-gray-200">
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {info.ficha_id.level}
+                    {data?.ficha_id.level}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {info.ficha_id.section}
+                    {data?.ficha_id.section}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {info.ficha_id.etapa === "M"
+                    {data?.ficha_id.etapa === "EM"
                       ? "Educación Media General"
-                      : info.ficha_id.etapa === "P"
+                      : data?.ficha_id.etapa === "EP"
                       ? "Educación Primaria"
                       : ""}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    {info.ficha_id.turno === "D"
+                    {data?.ficha_id.turno === "M"
                       ? "Mañana"
-                      : info.ficha_id.turno === "T"
+                      : data?.ficha_id.turno === "T"
                       ? "Tarde"
                       : ""}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {info.ficha_id.escolar_period}
+                    {data?.ficha_id.escolar_period}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
                     <Tooltip content="Editar.">
                       <span
                         className="text-lg text-default-400 cursor-pointer active:opacity-50"
                         onClick={() =>
-                          router.push("/edit/ficha/" + info.ficha_id.id)
+                          router.push("/edit/ficha/" + data?.ficha_id.id)
                         }
                       >
                         <MdOutlineEdit className="text-warning text-2xl" />
@@ -257,28 +258,28 @@ export default function pageDetailsStudent({
                 <p className="font-semibold">
                   ALERGICO A:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.type_aler === "" ||
-                    info.health_info_id.type_aler === null
+                    {data?.healt_info_id.type_aler === "" ||
+                    data?.healt_info_id.type_aler === null
                       ? "NO ES ALERGICO."
-                      : info.health_info_id.type_aler}
+                      : data?.healt_info_id.type_aler}
                   </span>
                 </p>
                 <p className="font-semibold">
                   EL REQUIERE ALGUN TRATAMIENTO ESPECIAL:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.trata_esp === "" ||
-                    info.health_info_id.trata_esp === null
+                    {data?.healt_info_id.trata_esp === "" ||
+                    data?.healt_info_id.trata_esp === null
                       ? "NO"
-                      : info.health_info_id.trata_esp}
+                      : data?.healt_info_id.trata_esp}
                   </span>
                 </p>
                 <p className="font-semibold">
                   PRACTICA ALGUNA ACTIVIDAD EXTRACURRICULAR:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.prefer_act === "" ||
-                    info.health_info_id.prefer_act === null
+                    {data?.healt_info_id.prefer_act === "" ||
+                    data?.healt_info_id.prefer_act === null
                       ? "NO"
-                      : info.health_info_id.prefer_act}
+                      : data?.healt_info_id.prefer_act}
                   </span>
                 </p>
               </div>
@@ -286,28 +287,28 @@ export default function pageDetailsStudent({
                 <p className="font-semibold">
                   LUGAR DONDE LA PRACTICA:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.site_act === "" ||
-                    info.health_info_id.site_act === null
+                    {data?.healt_info_id.site_act === "" ||
+                    data?.healt_info_id.site_act === null
                       ? "NINGUNO"
-                      : info.health_info_id.site_act}
+                      : data?.healt_info_id.site_act}
                   </span>
                 </p>
                 <p className="font-semibold">
                   HORARIO EN QUE LA PRACTICA:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.health_info_id.recre_time === "" ||
-                    info.health_info_id.recre_time === null
+                    {data?.healt_info_id.recre_time === "" ||
+                    data?.healt_info_id.recre_time === null
                       ? "NINGUNO"
-                      : info.health_info_id.recre_time}
+                      : data?.healt_info_id.recre_time}
                   </span>
                 </p>
                 <p className="font-semibold">
                   PLANTEL DE PROCEDENCIA:&nbsp;&nbsp;
                   <span className="font-normal">
-                    {info.ficha_id.proce_plant === "" ||
-                    info.ficha_id.proce_plant === null
+                    {data?.ficha_id.proce_plant === "" ||
+                    data?.ficha_id.proce_plant === null
                       ? "NINGUNO"
-                      : info.ficha_id.proce_plant}
+                      : data?.ficha_id.proce_plant}
                   </span>
                 </p>
               </div>
@@ -343,22 +344,22 @@ export default function pageDetailsStudent({
                 <tbody className="bg-white divide-y divide-gray-200">
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {info.represent_id.person_id.ci_number}
+                      {data?.represent_id.person_id.ci_number}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {info.represent_id.person_id.name}
+                      {data?.represent_id.person_id.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {info.represent_id.person_id.lastname}
+                      {data?.represent_id.person_id.lastname}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
-                      {info.represent_id.person_id.email !== null
-                        ? info.represent_id.person_id.email
+                      {data?.represent_id.person_id.email !== null
+                        ? data?.represent_id.person_id.email
                         : "NO POSEE"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {info.represent_id.person_id.phone_number !== null
-                        ? info.represent_id.person_id.phone_number
+                      {data?.represent_id.person_id.phone_number !== null
+                        ? data?.represent_id.person_id.phone_number
                         : "NO POSEE"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
@@ -368,7 +369,7 @@ export default function pageDetailsStudent({
                           onClick={() =>
                             router.push(
                               "/search/represent/" +
-                                info.represent_id.person_id.ci_number
+                                data?.represent_id.person_id.ci_number
                             )
                           }
                         >
@@ -381,7 +382,7 @@ export default function pageDetailsStudent({
                           onClick={() =>
                             router.push(
                               "/edit/represent/" +
-                                info.represent_id.person_id.ci_number
+                                data?.represent_id.person_id.ci_number
                             )
                           }
                         >
@@ -393,7 +394,7 @@ export default function pageDetailsStudent({
                 </tbody>
               </table>
             </div>
-            {info.mother_id !== null && (
+            {data?.mother_id && (
               <div className="flex flex-col gap-2 p-3 mb-2 border border-gray-300 rounded-xl shadow-inner">
                 <h1 className="text-xl text-primary">Madre:</h1>
                 <table className="min-w-full divide-y divide-gray-200">
@@ -422,22 +423,22 @@ export default function pageDetailsStudent({
                   <tbody className="bg-white divide-y divide-gray-200">
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.mother_id?.person_id.ci_number}
+                        {data?.mother_id?.person_id.ci_number}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.mother_id?.person_id.name}
+                        {data?.mother_id?.person_id.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.mother_id?.person_id.lastname}
+                        {data?.mother_id?.person_id.lastname}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        {info.mother_id?.person_id.email !== null
-                          ? info.represent_id.person_id.email
+                        {data?.mother_id?.person_id.email !== null
+                          ? data?.represent_id.person_id.email
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.mother_id?.person_id.phone_number !== null
-                          ? info.represent_id.person_id.phone_number
+                        {data?.mother_id?.person_id.phone_number !== null
+                          ? data?.represent_id.person_id.phone_number
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
@@ -447,7 +448,7 @@ export default function pageDetailsStudent({
                             onClick={() =>
                               router.push(
                                 "/search/represent/" +
-                                  info.mother_id?.person_id.ci_number
+                                  data?.mother_id?.person_id.ci_number
                               )
                             }
                           >
@@ -460,7 +461,7 @@ export default function pageDetailsStudent({
                             onClick={() =>
                               router.push(
                                 "/edit/represent/" +
-                                  info.mother_id?.person_id.ci_number
+                                  data?.mother_id?.person_id.ci_number
                               )
                             }
                           >
@@ -473,7 +474,7 @@ export default function pageDetailsStudent({
                 </table>
               </div>
             )}
-            {info.father_id !== null && (
+            {data?.father_id && (
               <div className="flex flex-col gap-2 p-3 mb-2 border border-gray-300 rounded-xl shadow-inner">
                 <h1 className="text-xl text-primary">Padre:</h1>
                 <table className="min-w-full divide-y divide-gray-200">
@@ -502,22 +503,22 @@ export default function pageDetailsStudent({
                   <tbody className="bg-white divide-y divide-gray-200">
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.father_id?.person_id.ci_number}
+                        {data?.father_id?.person_id.ci_number}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.father_id?.person_id.name}
+                        {data?.father_id?.person_id.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.father_id?.person_id.lastname}
+                        {data?.father_id?.person_id.lastname}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        {info.father_id?.person_id.email !== null
-                          ? info.represent_id.person_id.email
+                        {data?.father_id?.person_id.email !== null
+                          ? data?.represent_id.person_id.email
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {info.father_id?.person_id.phone_number !== null
-                          ? info.represent_id.person_id.phone_number
+                        {data?.father_id?.person_id.phone_number !== null
+                          ? data?.represent_id.person_id.phone_number
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
@@ -527,7 +528,7 @@ export default function pageDetailsStudent({
                             onClick={() =>
                               router.push(
                                 "/search/represent/" +
-                                  info.father_id?.person_id.ci_number
+                                  data?.father_id?.person_id.ci_number
                               )
                             }
                           >
@@ -540,7 +541,7 @@ export default function pageDetailsStudent({
                             onClick={() =>
                               router.push(
                                 "/edit/represent/" +
-                                  info.father_id?.person_id.ci_number
+                                  data?.father_id?.person_id.ci_number
                               )
                             }
                           >
@@ -564,9 +565,15 @@ export default function pageDetailsStudent({
             <ModalContent>
               {(onClose) => (
                 <>
+                  <ModalHeader>
+                    <h1 className="text-4xl">
+                      Planilla de {data.student_id.person_id.name}&nbsp;
+                      {data.student_id.person_id.lastname}
+                    </h1>
+                  </ModalHeader>
                   <ModalBody className="overflow-y-auto">
                     <div>
-                      <PlanillaMedia data={info} />
+                      <PlanillaMedia data={data} />
                     </div>
                   </ModalBody>
                   <ModalFooter>

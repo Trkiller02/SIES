@@ -30,7 +30,6 @@ export default function planillaPage() {
         windowWidth: wDoc * 5,
       });
       doc.output("dataurlnewwindow", { filename: "planilla" });
-
     } else {
       return;
     }

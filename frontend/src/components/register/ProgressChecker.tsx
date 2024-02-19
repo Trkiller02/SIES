@@ -85,7 +85,7 @@ export function ProgressChecker() {
             label: "REPRESENTANTE",
           },
         ]}
-        defaultValue={20}
+        defaultValue={14}
         className="max-w-md"
       />
       <CheckboxGroup isReadOnly label="PROGRESO" value={values}>

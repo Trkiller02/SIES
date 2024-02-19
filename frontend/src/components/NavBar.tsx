@@ -25,8 +25,9 @@ export function NavBar() {
 
   return (
     <Navbar maxWidth="full" isBordered className="font-semibold">
-      <NavbarBrand>
+      <NavbarBrand onClick={() => router.push("/")}>
         <Image
+          draggable={false}
           src="/img/image1.svg"
           alt="logo"
           width={64}
@@ -34,7 +35,7 @@ export function NavBar() {
           style={{ transform: "scale(0.6)" }}
           priority
         />
-        <p className="font-bold text-inherit px-2">SIES</p>
+        <h2 className="font-extralight text-2xl">SIES</h2>
       </NavbarBrand>
 
       {session?.user.role === ROLE_LIST.USER ? (

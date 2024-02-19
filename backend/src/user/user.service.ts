@@ -39,7 +39,7 @@ export class UserService {
     const user = await this.userRepo.save({
       ...createData,
       password: await bcrypt.hash(createData.password, 10),
-      restoreToken: await bcrypt.hash(restoreToken, 10),
+      restore_token: await bcrypt.hash(restoreToken, 10),
     });
 
     delete user.password;

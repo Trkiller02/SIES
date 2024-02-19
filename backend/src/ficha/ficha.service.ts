@@ -3,7 +3,7 @@ import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
 import { messagesEnum } from 'src/utils/handlerMsg';
 import { not_found_err } from 'src/utils/handlerErrors';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Ficha as FichaModel } from './entities/ficha.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
@@ -36,7 +36,11 @@ export class FichaService {
           etapa: etapa,
           level: level,
           section: section,
-          relationTable: Not(IsNull()),
+        },
+        relations: {
+          relationTable: {
+            student_id: true,
+          },
         },
 
         withDeleted: deleted,
@@ -87,13 +91,13 @@ export class FichaService {
   async update(id: string, updateFichaDto: UpdateFichaDto) {
     const ficha = await this.findOne(id);
 
-    return await this.fichaRepo.update(ficha, updateFichaDto);
+    return await this.fichaRepo.update({ id: ficha.id }, updateFichaDto);
   }
 
   async remove(id: string) {
     const ficha = await this.findOne(id);
 
-    return await this.fichaRepo.softDelete(ficha);
+    return await this.fichaRepo.softDelete({ id: ficha.id });
   }
 
   async egresar(listEntity: string[]) {

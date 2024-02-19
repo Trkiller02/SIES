@@ -1,6 +1,14 @@
 import { Represent } from 'src/represent/entities/represent.entity';
 import { Student } from 'src/student/entities/student.entity';
-import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('person')
 export class Person {
@@ -45,6 +53,15 @@ export class Person {
 
   @Column()
   relation: string;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date | null;
 
   @OneToOne(() => Student, (student) => student.person_id)
   relationStudent?: Student;

@@ -45,7 +45,39 @@ export class RepresentService {
     return represent;
   }
 
-  async findOne(id: string, deleted: boolean = false, pass?: boolean) {
+  async findOne(
+    id: string,
+    deleted: boolean = false,
+    pass?: boolean,
+    toFielter: boolean = false,
+  ) {
+    if (toFielter) {
+      const represent = await this.representRepo.findOne({
+        where: [
+          { id: id },
+          {
+            person_id: {
+              ci_number: id,
+            },
+          },
+        ],
+        select: {
+          id: true,
+          person_id: {
+            ci_number: true,
+            phone_number: true,
+            email: true,
+            name: true,
+            lastname: true,
+          },
+        },
+        withDeleted: deleted,
+      });
+      if (!represent && !pass)
+        not_found_err(messagesEnum.not_found, 'Representante no encontrado.');
+
+      return represent;
+    }
     const represent = await this.representRepo.findOne({
       where: [
         { id: id },

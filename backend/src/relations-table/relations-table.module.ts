@@ -9,5 +9,6 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [TypeOrmModule.forFeature([RelationsTable]), AuthModule],
   controllers: [RelationsTableController],
   providers: [RelationsTableService],
+  exports: [RelationsTableService],
 })
 export class RelationsTableModule {}

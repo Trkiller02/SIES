@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+#documents
+/src/utils/templates
+/src/utils/templates/templates.docx
 
 # Logs
 logs

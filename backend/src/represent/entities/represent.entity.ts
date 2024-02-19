@@ -1,10 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Person } from 'src/person/entities/person.entity';
 import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
@@ -49,6 +52,15 @@ export class Represent {
     nullable: true,
   })
   income_month?: number;
+
+  @DeleteDateColumn()
+  deleted_at?: Date | null;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @CreateDateColumn()
+  created_at?: Date;
 
   @OneToMany(
     () => RelationsTable,

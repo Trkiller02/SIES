@@ -7,6 +7,8 @@ import {
   Input,
   Select,
   SelectItem,
+  Skeleton,
+  Table,
   Tooltip,
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
@@ -24,28 +26,30 @@ import {
 import { searchInitVal, searchSchema } from "@/utils/schemas/SearchSchema";
 import { MdIosShare, MdSearch } from "react-icons/md";
 import { useState } from "react";
-import EntityCards, { PersonIforCards } from "@/components/EntityCards";
-import UserCards, { UserI } from "@/components/UserCards";
+import UserCards from "@/components/UserCards";
+import RepresentTable from "@/components/tables/RepresentTable";
+import UserTable from "@/components/tables/UserTable";
+import StudentTable from "@/components/tables/StudentTable";
 
 export default function indexSearchPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [info, setInfo] = useState<UserI[] | PersonIforCards[]>();
+  const [info, setInfo] = useState<any>();
   const [entity, setEntity] = useState("");
 
   const reqInfo = async (value: {
     entity: string;
     etapa: string;
-    seccion: string;
+    section: string;
     level: number;
     id: string;
   }) => {
-    let url = `/${value.entity}`;
+    let url = `/${value.entity === "student" ? "ficha" : value.entity}`;
 
     if (value.etapa && value.level) {
-      url.concat(`?etapa=${value.etapa}&level=${value.level}`);
-      if (value.seccion) {
-        url.concat(`&seccion=${value.seccion}`);
+      url += `?etapa=${value.etapa}&level=${value.level}`;
+      if (value.section) {
+        url += `&section=${value.section}`;
       }
     }
 
@@ -53,13 +57,17 @@ export default function indexSearchPage() {
       url = `/${value.entity}/${value.id}`;
     }
 
+    if (value.entity === "represent") url += "?tofielter=true";
+
     const req = await fetchDataWithoutBody(url, session?.user.token);
 
-    if (req?.ok) {
-      setInfo(req);
-      return "¡Inicio de Sesion con exito!";
-    } else {
-      throw req;
+    if (req) {
+      if (!(req instanceof Array)) {
+        setInfo([req]);
+      } else {
+        setInfo(req);
+      }
+      return "Busqueda finalizada.";
     }
   };
 
@@ -188,46 +196,41 @@ export default function indexSearchPage() {
                 <Select
                   items={seccionSelect}
                   label="Sección:"
-                  name="seccion"
+                  name="section"
                   description="Seleccione una sección."
                   color={
-                    errors.seccion && touched.seccion ? "danger" : "primary"
+                    errors.section && touched.section ? "danger" : "primary"
                   }
                   errorMessage={
-                    errors.seccion && touched.seccion && errors.seccion
+                    errors.section && touched.section && errors.section
                   }
                   onBlur={handleBlur}
                   onChange={handleChange}
                   isDisabled={values.entity !== "student" || values.level === 0}
                 >
-                  {(seccion: { value: string | number; label: string }) => (
-                    <SelectItem key={seccion.value} value={seccion.value}>
-                      {seccion.label}
+                  {(section: { value: string | number; label: string }) => (
+                    <SelectItem key={section.value} value={section.value}>
+                      {section.label}
                     </SelectItem>
                   )}
                 </Select>
-                <Tooltip
-                  content="Incluir entidades eliminadas."
-                  className="border border-primary-500"
-                >
-                  <Field
-                    as={Checkbox}
-                    type="checkbox"
-                    color="primary"
-                    size="lg"
-                    name="deleted"
-                    onValueChange={handleChange}
-                    onBlur={handleBlur}
-                  >
-                    Eliminados
-                  </Field>
-                </Tooltip>
               </div>
+              <Field
+                title="Incluir registros eliminados."
+                as={Checkbox}
+                type="checkbox"
+                color="primary"
+                size="lg"
+                name="deleted"
+                onValueChange={handleChange}
+                onBlur={handleBlur}
+              >
+                Eliminadas.
+              </Field>
 
-              <div className="flex flex-row gap-3 w-full">
+              <div className="flex flex-row gap-3 w-full items-center">
                 <Field
                   name="id"
-                  size="sm"
                   variant="bordered"
                   label="C.I o Correo Electronico:"
                   color={errors.id && touched.id ? "danger" : "primary"}
@@ -237,14 +240,14 @@ export default function indexSearchPage() {
                 />
                 <Tooltip
                   content="Realizar la busqueda."
-                  className="border border-primary-500"
+                  className="border border-primary-500 h-full p-0 m-0"
                 >
                   <Button
                     isDisabled={values.entity === ""}
                     isIconOnly
                     color="primary"
                     variant="ghost"
-                    className="w-1/4"
+                    className="w-1/5 min-h-full"
                     size="lg"
                     type="submit"
                   >
@@ -256,17 +259,16 @@ export default function indexSearchPage() {
           </Form>
         )}
       </Formik>
-      <div className="w-3/4 flex justify-center items-center flex-col max-lg:w-full mt-5 min-h-[40vh] border border-gray-300 shadow-lg rounded-md">
-        {info && info.length !== 0 && info.map
-          ? info.map((item) =>
-              entity !== "user" ? (
-                <UserCards item={item} key={item.id} />
-              ) : (
-                <EntityCards item={item} key={item.id} title={undefined} />
-              )
-            )
-          : "No hubo coincidencias."}
-      </div>
+
+      {info && entity === "user" && <UserTable info={info} />}
+      {info && entity === "represent" && <RepresentTable info={info} />}
+      {info && entity === "student" && <StudentTable info={info} />}
+      {!info && (
+        <Skeleton className="rounded-xl w-3/4 max-lg:w-full min-h-[40vh] my-5 border border-gray-300">
+          <div className="w-3/4 max-lg:w-full mt-5 min-h-[40vh] rounded-xl shadow-lg bg-default-300"></div>
+        </Skeleton>
+      )}
+
       <div className="w-3/4 flex justify-between items-center flex-row content-end mt-4">
         <Tooltip
           content="Exportar información a excel."

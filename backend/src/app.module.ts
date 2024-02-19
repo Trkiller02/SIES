@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
 import { HealthInfoModule } from './health-info/health-info.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ToolsModule } from './tools/tools.module';
 
 @Module({
   imports: [
@@ -29,10 +30,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           database: config.get<string>('DB_DATABASE', { infer: true }),
           username: config.get<string>('DB_PROFILE', { infer: true }),
           password: config.get<string>('DB_PASSWORD', { infer: true }),
+          synchronize:
+            config.get<string>('NODE_ENV') === 'production' ? false : true,
           autoLoadEntities: true,
           entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-          synchronize: true,
-          //config.get<string>('NODE_ENV') === 'production' ? false : true
         };
       },
     }),
@@ -45,6 +46,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     HealthInfoModule,
     RelationsTableModule,
     RoleModule,
+    ToolsModule,
   ],
 })
 export class AppModule {}

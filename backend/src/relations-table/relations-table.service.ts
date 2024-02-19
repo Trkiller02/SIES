@@ -52,8 +52,10 @@ export class RelationsTableService {
         relations: {
           student_id: true,
           ficha_id: true,
-          healt_info_id: true,
+          health_info_id: true,
           represent_id: true,
+          mother_id: true,
+          father_id: true,
         },
       });
 
@@ -102,6 +104,6 @@ export class RelationsTableService {
   async remove(id: string) {
     const table = await this.findOne(id, true);
 
-    return this.relationRepo.delete({ id: table.id });
+    return this.relationRepo.softDelete({ id: table.id });
   }
 }

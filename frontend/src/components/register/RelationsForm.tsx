@@ -10,7 +10,7 @@ import { ctxDataRelation } from "@/components/register/ProviderCtx";
 
 //COMPONENTS
 import { Button, Skeleton } from "@nextui-org/react";
-import EntityCards from "../EntityCards";
+import EntityCards from "../tables/RepresentTable";
 import { Form, Formik } from "formik";
 import { toast } from "sonner";
 

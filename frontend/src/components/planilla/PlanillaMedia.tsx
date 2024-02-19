@@ -76,7 +76,7 @@ function StudentData({
               verticalAlign: "sub",
             }}
           >
-            {dataStudent.person_id.ci_number.charAt(0) === "V" && "X"}
+            {dataStudent.person_id.ci_number[0] === "V" && "X"}
           </p>{" "}
           E{" "}
           <p
@@ -88,7 +88,7 @@ function StudentData({
               verticalAlign: "sub",
             }}
           >
-            {dataStudent.person_id.ci_number.charAt(0) === "E" && "X"}
+            {dataStudent.person_id.ci_number[0] === "E" && "X"}
           </p>
           Cedula de Identidad:{dataStudent.person_id.ci_number} Fecha de
           Nacimiento: {dataStudent.born_date.split("T")[0]} Edad:{" "}
@@ -426,7 +426,7 @@ export default function PlanillaMedia({
 
       <StudentData
         dataStudent={data?.student_id}
-        dataHealth={data?.health_info_id}
+        dataHealth={data?.healt_info_id}
       />
 
       <h4 className="text-md">
@@ -445,7 +445,7 @@ export default function PlanillaMedia({
 
       <HealthInfo
         dataAcademic={data?.ficha_id}
-        dataHealth={data?.health_info_id}
+        dataHealth={data?.healt_info_id}
       />
 
       <p>

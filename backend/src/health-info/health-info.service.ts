@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { bad_req_err, not_found_err } from 'src/utils/handlerErrors';
+import { not_found_err } from 'src/utils/handlerErrors';
 import { messagesEnum } from 'src/utils/handlerMsg';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -59,12 +59,6 @@ export class HealthInfoService {
   async remove(id: string) {
     const health_info: HealthInfo = await this.findOne(id);
 
-    const result = await this.HealthInfoRepo.delete(health_info);
-
-    if (result.affected === null || result.affected === 0) {
-      bad_req_err(messagesEnum.bad_req_err, 'No se pudo procesar la petición.');
-    }
-
-    return result;
+    return await this.HealthInfoRepo.delete({ id: health_info.id });
   }
 }
