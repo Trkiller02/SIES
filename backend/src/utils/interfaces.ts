@@ -18,6 +18,7 @@ export interface RepresentI {
   work_place?: string;
   work_phone_number?: string;
   income_month?: number;
+  rl: boolean;
 }
 
 export interface FichaI {
@@ -55,8 +56,10 @@ export interface StudentI {
   born_municipio: string;
   born_parroquia: string;
   born_pais: string;
-  born_date: string;
+  born_date: Date;
 }
+
+new Date().toLocaleString('es-ES', { month: 'long' });
 
 export interface RelationTableI {
   id?: string;

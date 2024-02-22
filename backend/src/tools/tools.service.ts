@@ -1,19 +1,38 @@
-import { Header, Injectable, StreamableFile } from '@nestjs/common';
-import { RelationsTableService } from 'src/relations-table/relations-table.service';
-import { CreateToolDto } from './dto/create-tool.dto';
-import { bad_req_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import createReport from 'docx-templates';
+import { Readable } from 'node:stream';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as excelJS from 'exceljs';
-import { UserService } from 'src/user/user.service';
+
+//handlers
+import { bad_req_err } from 'src/utils/handlerErrors';
+import { messagesEnum } from 'src/utils/handlerMsg';
+
+//services
+import { RelationsTableService } from 'src/relations-table/relations-table.service';
 import { RepresentService } from 'src/represent/represent.service';
-import { StudentService } from 'src/student/student.service';
+import { FichaService } from 'src/ficha/ficha.service';
+import { UserService } from 'src/user/user.service';
+
+//dto
+import { createExcelDto } from './dto/excel-tool-dto';
+
+//entities
+import { Represent } from 'src/represent/entities/represent.entity';
+import { Student } from 'src/student/entities/student.entity';
+import { Ficha } from 'src/ficha/entities/ficha.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Role } from 'src/role/entities/role.entity';
-import { createExcelDto } from './dto/excel-tool-dto';
-import { Readable } from 'node:stream';
+
+//utils
+import {
+  headerStyle,
+  healthColumns,
+  representColumns,
+  studentColumns,
+  userColumns,
+} from 'src/utils/listColumnsExcel';
 
 @Injectable()
 export class ToolsService {
@@ -21,65 +40,150 @@ export class ToolsService {
     private readonly tableService: RelationsTableService,
     private readonly userService: UserService,
     private readonly representService: RepresentService,
-    private readonly studentService: StudentService,
+    private readonly fichaInfoService: FichaService,
   ) {}
+
+  async createConstData(id: string) {
+    const data = await this.tableService.findOne(id);
+
+    const dir = path.join(
+      process.cwd(),
+      'src',
+      'utils',
+      'templates',
+      'templateConstancia.docx',
+    );
+
+    try {
+      const template = await fs.readFile(dir);
+
+      const buffer = await createReport({
+        template,
+        data: data,
+        cmdDelimiter: ['{#', '#}'],
+      });
+
+      return new StreamableFile(buffer);
+    } catch (error) {
+      bad_req_err(messagesEnum.bad_req_err, (error as Error).message);
+    }
+  }
+
+  async createEmptyConst() {
+    const dir = path.join(
+      process.cwd(),
+      'src',
+      'utils',
+      'templates',
+      'templateConstancia.docx',
+    );
+
+    try {
+      const template = await fs.readFile(dir);
+
+      const data = {
+        ficha_id: null,
+        health_info_id: null,
+        student_id: null,
+        represent_id: null,
+        mother_id: null,
+        father_id: null,
+      };
+
+      const buffer = await createReport({
+        template,
+        data: data,
+        cmdDelimiter: ['{#', '#}'],
+      });
+
+      return new StreamableFile(buffer);
+    } catch (error) {
+      bad_req_err(messagesEnum.bad_req_err, (error as Error).message);
+    }
+  }
+
   // CREA LA PLANILLA OBTENIENDO LOS DATOS NECESARIOS
-  async createInfoData(createDto: CreateToolDto) {
-    const data = await this.tableService.findOne(createDto.id);
+  async createPlanillaData(id: string) {
+    const data = await this.tableService.findOne(id);
 
     const dir = path.join(
       process.cwd(),
       'src',
       'utils',
       'templates',
-      'templates.docx',
+      'templatePlanilla.docx',
     );
-    const template = await fs.readFile(dir);
 
-    const buffer = await createReport({
-      template,
-      data: data,
-    });
+    try {
+      const template = await fs.readFile(dir);
 
-    return buffer;
+      const buffer = await createReport({
+        template,
+        data: {
+          ...data,
+          represent_id: data.father_id
+            ? (data.father_id as Represent).rl
+              ? data.father_id
+              : data.mother_id
+                ? (data.mother_id as Represent).rl
+                : data.mother_id
+            : data.represent_id,
+        },
+        cmdDelimiter: ['{#', '#}'],
+      });
+
+      return new StreamableFile(buffer);
+    } catch (error) {
+      bad_req_err(messagesEnum.bad_req_err, (error as Error).message);
+    }
   }
 
-  async createPlanilla(etapa: string) {
+  async createEmptyPlanilla(etapa: string) {
     const dir = path.join(
       process.cwd(),
       'src',
       'utils',
       'templates',
-      'template.docx',
+      'templatePlanilla.docx',
     );
 
-    const template = await fs.readFile(dir);
+    try {
+      const template = await fs.readFile(dir);
 
-    const year = new Date().getFullYear();
+      const year = new Date().getFullYear();
 
-    if (!template)
-      bad_req_err(
-        messagesEnum.bad_req_err,
-        'No se encontró el archivo de plantilla.',
-      );
+      if (!template)
+        bad_req_err(
+          messagesEnum.bad_req_err,
+          'No se encontró el archivo de plantilla.',
+        );
 
-    const data = {
-      ficha_id: {
-        etapa: etapa === 'EM' ? 'AÑO' : etapa === 'EP' ? 'GRADO' : 'GRADO',
-        escolar_period: `${year} - ${year + 1}`,
-      },
-    };
+      const data = {
+        ficha_id: {
+          etapa: etapa,
+          escolar_period: `${year} - ${year + 1}`,
+        },
+        health_info_id: null,
+        student_id: null,
+        represent_id: null,
+        mother_id: null,
+        father_id: null,
+      };
 
-    const buffer = await createReport({
-      template,
-      data: data,
-      cmdDelimiter: ['{#', '#}'],
-    });
+      const buffer = await createReport({
+        template,
+        data: data,
+        cmdDelimiter: ['{#', '#}'],
+      });
 
-    return new StreamableFile(buffer);
+      return new StreamableFile(buffer);
+    } catch (e) {
+      bad_req_err(messagesEnum.bad_req_err, (e as Error).message);
+    }
   }
 
-  async createExcel(info: createExcelDto): Promise<Readable> {
+  // CREAR EXCEL DE QUERY
+  async createExcelForSearch(info: createExcelDto): Promise<Readable> {
     const sheetName =
       info.entity === 'user'
         ? 'Usuarios'
@@ -98,51 +202,33 @@ export class ToolsService {
     const sheet = excel.addWorksheet(sheetName);
 
     if (info.entity === 'user') {
-      sheet.columns = [
-        { header: 'Nombre', key: 'name', width: 25 },
-        { header: 'Apellido', key: 'lastname', width: 25 },
-        { header: 'Correo Electronico', key: 'email', width: 25 },
-        { header: 'C.I.', key: 'ci_number', width: 25 },
-        { header: 'Rol', key: 'role_id', width: 25 },
-      ];
+      sheet.columns = userColumns;
+
+      sheet.eachRow((row, rowNumber) => {
+        sheet.columns.forEach((columna) => {
+          const celda = row.getCell(columna.key);
+          if (celda) {
+            celda.style = headerStyle;
+          }
+        });
+      });
 
       const user: User | User[] = info.id
         ? await this.userService.findOne(info.id)
         : await this.userService.findAll();
 
+      if (!user)
+        bad_req_err(messagesEnum.not_found, 'No se encuentro registro(s).');
+
       if (user instanceof Array) {
         user.map((value, idx) => {
-          sheet.addRow({
-            name: value.name,
-            lastname: value.lastname,
-            email: value.email ? value.email : 'NO POSEE',
-            ci_number: value.ci_number,
-            role_id:
-              value.role_id instanceof Role
-                ? value.role_id.name
-                : value.role_id,
-          });
+          sheet.addRow({ ...value, role_id: (value.role_id as Role).name });
         });
-
-        const buffer = await excel.xlsx.writeBuffer({ filename: 'user-data' });
-
-        readStream.push(buffer);
-
-        readStream.push(null);
-
-        return readStream;
+      } else {
+        sheet.addRow({ ...user, role_id: (user.role_id as Role).name });
       }
 
-      sheet.addRow({
-        name: user.name,
-        lastname: user.lastname,
-        email: user.email ? user.email : 'NO POSEE',
-        ci_number: user.ci_number,
-        role_id:
-          user.role_id instanceof Role ? user.role_id.name : user.role_id,
-      });
-
-      const buffer = await excel.xlsx.writeBuffer({ filename: 'user-data' });
+      const buffer = await excel.xlsx.writeBuffer();
 
       readStream.push(buffer);
 
@@ -150,5 +236,180 @@ export class ToolsService {
 
       return readStream;
     }
+
+    if (info.entity === 'represent') {
+      sheet.columns = representColumns;
+
+      sheet.eachRow((row, rowNumber) => {
+        sheet.columns.forEach((columna) => {
+          const celda = row.getCell(columna.key);
+          if (celda) {
+            celda.style = headerStyle;
+          }
+        });
+      });
+
+      const represent: Represent | Represent[] = info.id
+        ? await this.representService.findOne(info.id)
+        : await this.representService.findAll();
+
+      if (represent instanceof Array) {
+        represent.map((value, idx) => {
+          sheet.addRow({ ...value, ...value.person_id });
+        });
+      } else {
+        sheet.addRow({ ...represent, ...represent.person_id });
+      }
+
+      const buffer = await excel.xlsx.writeBuffer();
+
+      readStream.push(buffer);
+
+      readStream.push(null);
+
+      return readStream;
+    }
+
+    if (info.entity === 'student' && info.etapa) {
+      sheet.columns = studentColumns;
+
+      sheet.eachRow((row, rowNumber) => {
+        sheet.columns.forEach((columna) => {
+          const celda = row.getCell(columna.key);
+          if (celda) {
+            celda.style = headerStyle;
+          }
+        });
+      });
+
+      const ficha: Ficha | Ficha[] = info.id
+        ? await this.fichaInfoService.findOne(info.id)
+        : await this.fichaInfoService.findAll(
+            info.etapa,
+            info.deleted,
+            info.section,
+            info.level,
+          );
+
+      if (ficha instanceof Array) {
+        ficha.map((value, idx) => {
+          sheet.addRow({
+            ...value,
+            ...(value.relationTable.student_id as Student),
+            ...(value.relationTable.student_id as Student).person_id,
+          });
+        });
+      } else {
+        sheet.addRow({
+          ...ficha,
+          ...(ficha.relationTable.student_id as Student),
+          ...(ficha.relationTable.student_id as Student).person_id,
+        });
+      }
+
+      const buffer = await excel.xlsx.writeBuffer();
+
+      readStream.push(buffer);
+
+      readStream.push(null);
+
+      return readStream;
+    }
+  }
+
+  //CREAR EXCEL DE UN ESTUDIANTE ESPECIFICO
+  async createExcelInfo(id): Promise<Readable> {
+    const {
+      student_id,
+      represent_id,
+      health_info_id,
+      ficha_id,
+      mother_id,
+      father_id,
+    } = await this.tableService.findOne(id);
+
+    const readStream = new Readable();
+
+    readStream._read = () => {};
+
+    const excel = new excelJS.Workbook();
+
+    const sheetStudent = excel.addWorksheet('Estudiante');
+    const sheetSalud = excel.addWorksheet('Salud-Estudiante');
+    const sheetRepresent = excel.addWorksheet('Representantes');
+
+    if (student_id) {
+      sheetStudent.columns = studentColumns;
+
+      sheetStudent.eachRow((row, rowNumber) => {
+        sheetStudent.columns.forEach((columna) => {
+          const celda = row.getCell(columna.key);
+          if (celda) {
+            celda.style = headerStyle;
+          }
+        });
+      });
+
+      sheetStudent.addRow({
+        ...(student_id as Student),
+        ...(ficha_id as Ficha),
+        ...(student_id as Student).person_id,
+      });
+    }
+
+    if (represent_id) {
+      sheetRepresent.columns = representColumns;
+
+      sheetRepresent.eachRow((row, rowNumber) => {
+        sheetRepresent.columns.forEach((columna) => {
+          const celda = row.getCell(columna.key);
+          if (celda) {
+            celda.style = headerStyle;
+          }
+        });
+      });
+
+      sheetRepresent.addRow({
+        ...(represent_id as Represent),
+        ...(represent_id as Represent).person_id,
+      });
+
+      if (mother_id) {
+        sheetRepresent.addRow({
+          ...(mother_id as Represent),
+          ...(mother_id as Represent).person_id,
+        });
+      }
+
+      if (father_id) {
+        sheetRepresent.addRow({
+          ...(father_id as Represent),
+          ...(father_id as Represent).person_id,
+        });
+      }
+    }
+
+    if (health_info_id) {
+      sheetSalud.columns = healthColumns;
+
+      sheetSalud.eachRow((row, rowNumber) => {
+        sheetSalud.columns.forEach((columna) => {
+          const celda = row.getCell(columna.key);
+          if (celda) {
+            celda.style = headerStyle;
+          }
+        });
+      });
+
+      sheetSalud.addRow(health_info_id);
+    }
+
+    const buffer = await excel.xlsx.writeBuffer();
+
+    readStream.push(buffer);
+
+    readStream.push(null);
+
+    return readStream;
   }
 }

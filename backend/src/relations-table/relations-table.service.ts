@@ -44,6 +44,11 @@ export class RelationsTableService {
             },
           },
           {
+            student_id: {
+              id: id,
+            },
+          },
+          {
             ficha_id: {
               id: id,
             },

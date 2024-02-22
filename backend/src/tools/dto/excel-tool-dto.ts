@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class createExcelDto {
   @ApiProperty()
@@ -25,4 +25,9 @@ export class createExcelDto {
   @IsOptional()
   @IsString()
   id?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  deleted?: boolean = false;
 }

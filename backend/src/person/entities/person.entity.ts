@@ -25,7 +25,7 @@ export class Person {
     type: 'varchar',
     length: '100',
     nullable: true,
-    unique: true,
+    default: 'NO POSEE',
   })
   email?: string;
 
@@ -33,6 +33,7 @@ export class Person {
     type: 'varchar',
     length: '100',
     nullable: true,
+    default: 'NO POSEE',
   })
   phone_number?: string;
 

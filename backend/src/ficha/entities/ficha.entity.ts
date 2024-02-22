@@ -31,7 +31,7 @@ export class Ficha {
   etapa: string;
 
   @Column({
-    length: 1,
+    length: 10,
     type: 'varchar',
   })
   turno: string;
@@ -52,6 +52,7 @@ export class Ficha {
 
   @Column({
     type: 'boolean',
+    default: false,
   })
   egresado?: boolean;
 

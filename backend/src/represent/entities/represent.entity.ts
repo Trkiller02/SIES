@@ -22,8 +22,10 @@ export class Represent {
   person_id: Person;
 
   @Column({
-    type: 'text',
+    type: 'varchar',
+    length: 30,
     nullable: true,
+    default: 'NO POSEE',
   })
   profession?: string;
 
@@ -31,12 +33,15 @@ export class Represent {
     type: 'varchar',
     length: 14,
     nullable: true,
+    default: 'NO POSEE',
   })
   tlfn_home?: string;
 
   @Column({
-    type: 'text',
+    type: 'varchar',
+    length: 250,
     nullable: true,
+    default: 'NO POSEE',
   })
   work_place?: string;
 
@@ -44,14 +49,23 @@ export class Represent {
     type: 'varchar',
     length: 14,
     nullable: true,
+    default: 'NO POSEE',
   })
   work_phone_number?: string;
 
   @Column({
     type: 'int',
     nullable: true,
+    default: 0,
   })
   income_month?: number;
+
+  @Column({
+    type: 'boolean',
+    nullable: true,
+    default: false,
+  })
+  rl: boolean;
 
   @DeleteDateColumn()
   deleted_at?: Date | null;

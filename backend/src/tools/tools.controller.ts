@@ -10,9 +10,9 @@ import {
   Query,
   Header,
   Res,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateToolDto } from './dto/create-tool.dto';
 import { ToolsService } from './tools.service';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { bad_req_err } from 'src/utils/handlerErrors';
@@ -28,12 +28,17 @@ import { Response } from 'express';
 export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
 
-  @Post('data')
-  async create(@Body() createToolDto: CreateToolDto) {
-    return await this.toolsService.createInfoData(createToolDto);
+  @Get('planilla/:id')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  )
+  @Header('Content-Disposition', 'attachment; filename=planilla.docx')
+  async createPlanilla(@Param('id') id: string) {
+    return await this.toolsService.createPlanillaData(id);
   }
 
-  @Post('upload')
+  @Post('planilla/update')
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (req, file, callback) => {
@@ -53,12 +58,12 @@ export class ToolsController {
       storage: multer.diskStorage({
         destination: path.join(process.cwd(), 'src', 'utils', 'templates'),
         filename: (req, file, callback) => {
-          return callback(null, 'template.docx');
+          return callback(null, 'templatePlanilla.docx');
         },
       }),
     }),
   )
-  upload(
+  updatePlanilla(
     @UploadedFile()
     file: Express.Multer.File,
   ) {
@@ -68,16 +73,68 @@ export class ToolsController {
   // OBTENER LA PLANILLA
   @ApiQuery({
     name: 'etapa',
-    enum: ['EM', 'EP'],
+    enum: ['EDUCACION MEDIA', 'EDUCACION PRIMARIA'],
   })
-  @Get()
+  @Get('planilla')
   @Header(
     'Content-Type',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   )
   @Header('Content-Disposition', 'attachment; filename=planilla.docx')
-  async planilla(@Query('etapa') etapa?: string) {
-    return await this.toolsService.createPlanilla(etapa?.toUpperCase());
+  async emptyPlanilla(@Query('etapa') etapa?: string) {
+    return await this.toolsService.createEmptyPlanilla(etapa?.toUpperCase());
+  }
+
+  @Get('constancia')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  )
+  @Header('Content-Disposition', 'attachment; filename=constancia.docx')
+  async emptyConstancia() {
+    return await this.toolsService.createEmptyConst();
+  }
+
+  @Get('constancia/:id')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  )
+  @Header('Content-Disposition', 'attachment; filename=constancia.docx')
+  async createConst(@Param('id') id: string) {
+    return await this.toolsService.createConstData(id);
+  }
+
+  @Post('constancia/update')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: (req, file, callback) => {
+        if (
+          file.mimetype !==
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
+          return callback(
+            new BadRequestException(
+              'Formato no soportado. Se espera un documento con terminación (.docx)',
+            ),
+            false,
+          );
+        }
+        return callback(null, true);
+      },
+      storage: multer.diskStorage({
+        destination: path.join(process.cwd(), 'src', 'utils', 'templates'),
+        filename: (req, file, callback) => {
+          return callback(null, 'templateConstancia.docx');
+        },
+      }),
+    }),
+  )
+  updateConstancia(
+    @UploadedFile()
+    file: Express.Multer.File,
+  ) {
+    return 'Actualización completa.';
   }
 
   @Post('excel')
@@ -86,30 +143,68 @@ export class ToolsController {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   )
   @Header('Content-Disposition', 'attachment; filename=export-data.xlsx')
-  async excel(
+  async excelForSearch(
     @Body()
     info: createExcelDto,
     @Res() res: Response,
   ) {
     return await this.toolsService
-      .createExcel(info)
-      .then((readStream) => readStream.pipe(res));
+      .createExcelForSearch(info)
+      .then((readStream) => readStream.pipe(res))
+      .catch((err) => new BadRequestException(err));
+  }
+
+  @Post('excel/:id')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  @Header('Content-Disposition', 'attachment; filename=export-data.xlsx')
+  async excelFormatEntity(
+    @Param('id')
+    info: string,
+    @Res() res: Response,
+  ) {
+    return await this.toolsService
+      .createExcelInfo(info)
+      .then((readStream) => readStream.pipe(res))
+      .catch((err) => new BadRequestException(err));
   }
 
   // RETORNAR PLANILLA SIN FORMATO DE EJEMPLO
-  @Get('example')
+  @Get('planilla/example')
   @Header(
     'Content-Type',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   )
   @Header('Content-Disposition', 'attachment; filename=example.docx')
-  example() {
+  examplePlanilla() {
     const dir = path.join(
       process.cwd(),
       'src',
       'utils',
       'templates',
-      'template.docx',
+      'templatePlanilla.docx',
+    );
+
+    const file = fs.createReadStream(dir);
+
+    if (!file)
+      bad_req_err(messagesEnum.bad_req_err, 'No se encontró la plantilla.');
+
+    return new StreamableFile(file);
+  }
+
+  @Get('constancia/example')
+  @Header('Content-Type', 'application/vnd.ms-word')
+  @Header('Content-Disposition', 'attachment; filename=example.docx')
+  exampleConstancia() {
+    const dir = path.join(
+      process.cwd(),
+      'src',
+      'utils',
+      'templates',
+      'templateConstancia.doc',
     );
 
     const file = fs.createReadStream(dir);
