@@ -17,9 +17,12 @@ export class Represent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Person, (person) => person.relationRepresent, { eager: true })
+  @OneToOne(() => Person, (person) => person.relationRepresent, {
+    eager: true,
+    cascade: true,
+  })
   @JoinColumn({ name: 'person_id' })
-  person_id: Person;
+  person_id: string | Person;
 
   @Column({
     type: 'varchar',

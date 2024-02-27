@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -57,6 +58,7 @@ export class Ficha {
   egresado?: boolean;
 
   @ManyToOne(() => User, (user) => user.ficha_id, { eager: true })
+  @JoinColumn({ name: 'person_res_id' })
   personal_res: User;
 
   @OneToOne(() => RelationsTable, (relationTable) => relationTable.ficha_id)

@@ -17,12 +17,11 @@ export class Student {
   id: string;
 
   @OneToOne(() => Person, (person) => person.relationStudent, {
-    nullable: false,
     eager: true,
     cascade: true,
   })
   @JoinColumn({ name: 'person_id' })
-  person_id: Person;
+  person_id: string | Person;
 
   @Column()
   age?: number;

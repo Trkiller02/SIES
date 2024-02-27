@@ -91,9 +91,4 @@ export class FichaController {
   remove(@Param('id') id: string) {
     return this.fichaService.remove(id);
   }
-
-  @Patch('egresar')
-  updateStatus(@Body() listEntity: string[]) {
-    return this.fichaService.egresar(listEntity);
-  }
 }

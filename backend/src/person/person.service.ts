@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
-import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import {
+  bad_req_err,
+  conflict_err,
+  not_found_err,
+} from 'src/utils/handlerErrors';
+import { msgEnum } from 'src/utils/handlerMsg';
 import { Person as PersonModel } from './entities/person.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,11 +19,11 @@ export class PersonService {
   ) {}
 
   async create(createPersonDto: CreatePersonDto): Promise<PersonModel> {
-    const person = await this.findOne(createPersonDto.ci_number);
+    const person = await this.findOne(createPersonDto.ci_number, true);
 
     if (person)
       conflict_err(
-        messagesEnum.conflict_err,
+        msgEnum.conflict_err,
         'Ya existe un registro con los datos suministrados.',
       );
 
@@ -30,7 +34,7 @@ export class PersonService {
     const persons = await this.personRepo.find();
 
     if (persons.length === 0) {
-      not_found_err(messagesEnum.not_found, 'No existen personas registradas');
+      not_found_err(msgEnum.not_found, 'No existen personas registradas');
     }
 
     return persons;
@@ -42,7 +46,7 @@ export class PersonService {
     });
 
     if (!person && !pass)
-      not_found_err(messagesEnum.not_found, 'Persona no encontrado.');
+      not_found_err(msgEnum.not_found, 'Persona no encontrado.');
 
     return person;
   }
@@ -52,13 +56,22 @@ export class PersonService {
     updatePersonDto: UpdatePersonDto,
   ): Promise<UpdateResult> {
     const person = await this.findOne(id);
+    const res = await this.personRepo.update({ci_number: person.ci_number}, updatePersonDto);
 
-    return await this.personRepo.update(person, updatePersonDto);
+    if (res.affected === 0) bad_req_err(msgEnum.bad_req_err, res.raw);
+
+    return res;
   }
 
   async remove(id: string): Promise<DeleteResult> {
     const person = await this.findOne(id);
 
-    return await this.personRepo.delete({ ci_number: person.ci_number });
+    const res = await this.personRepo.softDelete({
+      ci_number: person.ci_number,
+    });
+
+    if (res.affected === 0) bad_req_err(msgEnum.bad_req_err, res.raw);
+
+    return res;
   }
 }

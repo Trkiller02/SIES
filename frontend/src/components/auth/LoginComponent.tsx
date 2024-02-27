@@ -1,9 +1,8 @@
 "use client";
 
 import { LoginSchema, LoginValues } from "@/utils/schemas/AuthSchema";
-import { Button, Divider, Input, Link } from "@nextui-org/react";
-import Image from "next/image";
-import { Field, Form, Formik, useFormik } from "formik";
+import { Button, Input, Link } from "@nextui-org/react";
+import { Field, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
 import { MdOutlineRemoveRedEye, MdRemoveRedEye } from "react-icons/md";
@@ -11,7 +10,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { SignInResponse, signIn } from "next-auth/react";
 import { LoginI } from "@/types/auth.interfaces";
-import { regexList } from "@/utils/regexPatterns";
 
 export default function LoginComponent() {
   const [Loading, setLoading] = useState(false);
@@ -46,7 +44,6 @@ export default function LoginComponent() {
             return data;
           },
           error: (error: SignInResponse) => {
-            console.log(error);
             return error.error;
           },
           finally: () => {
@@ -57,7 +54,7 @@ export default function LoginComponent() {
     >
       {({ errors, touched }) => (
         <Form className="w-3/6 flex justify-center items-center flex-col max-lg:w-full max-lg:p-0 px-7">
-          <div className="flex items-center justify-center mb-3">
+          <div className="flex items-center justify-center mb-8">
             <h1 className="text-2xl max-md:text-xl text-primary">
               Iniciar Sesión
             </h1>

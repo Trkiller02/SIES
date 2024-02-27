@@ -36,7 +36,13 @@ import { fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-export default function RepresentTable({ info }: { info: RepresentI[] }) {
+export default function RepresentTable({
+  info,
+  relation,
+}: {
+  info: RepresentI[];
+  relation?: boolean;
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [entityFocus, setEntityFocus] = useState<string>("");
   const { data: session } = useSession();
@@ -68,6 +74,17 @@ export default function RepresentTable({ info }: { info: RepresentI[] }) {
               <p className="text-bold text-sm capitalize">{cellValue}</p>
             </div>
           );
+        case "relation":
+          return (
+            <Chip
+              className="capitalize"
+              color="primary"
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
         case "email":
           return (
             <Chip
@@ -93,35 +110,39 @@ export default function RepresentTable({ info }: { info: RepresentI[] }) {
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              <Tooltip content="Detalles" color="primary">
-                <Button
-                  as={Link}
-                  href={`/search/represent/${user.ci_number}`}
-                  isIconOnly
-                >
-                  <MdOutlineRemoveRedEye className="text-lg text-primary cursor-pointer active:opacity-50" />
-                </Button>
-              </Tooltip>
-              <Tooltip content="Editar" color="success">
-                <Button
-                  as={Link}
-                  href={`/edit/represent/${user.ci_number}`}
-                  isIconOnly
-                >
-                  <MdOutlineCreate className="text-lg text-success cursor-pointer active:opacity-50" />
-                </Button>
-              </Tooltip>
-              <Tooltip color="danger" content="Eliminar">
-                <Button
-                  onPress={() => {
-                    setEntityFocus(user.ci_number);
-                    onOpen();
-                  }}
-                  isIconOnly
-                >
-                  <MdDeleteOutline className="text-lg text-danger cursor-pointer active:opacity-50" />
-                </Button>
-              </Tooltip>
+              {!relation && (
+                <>
+                  <Tooltip content="Detalles" color="primary">
+                    <Button
+                      as={Link}
+                      href={`/search/represent/${user.ci_number}`}
+                      isIconOnly
+                    >
+                      <MdOutlineRemoveRedEye className="text-lg text-primary cursor-pointer active:opacity-50" />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Editar" color="success">
+                    <Button
+                      as={Link}
+                      href={`/edit/represent/${user.ci_number}`}
+                      isIconOnly
+                    >
+                      <MdOutlineCreate className="text-lg text-success cursor-pointer active:opacity-50" />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip color="danger" content="Eliminar">
+                    <Button
+                      onPress={() => {
+                        setEntityFocus(user.ci_number);
+                        onOpen();
+                      }}
+                      isIconOnly
+                    >
+                      <MdDeleteOutline className="text-lg text-danger cursor-pointer active:opacity-50" />
+                    </Button>
+                  </Tooltip>
+                </>
+              )}
             </div>
           );
         default:
@@ -133,10 +154,7 @@ export default function RepresentTable({ info }: { info: RepresentI[] }) {
 
   return (
     <>
-      <Table
-        aria-label="Example table with custom cells"
-        className="w-3/4 max-lg:w-full mt-5 min-h-[40vh]"
-      >
+      <Table aria-label="Represent Table" className="w-full">
         <TableHeader columns={columnsRepresent}>
           {(column) => (
             <TableColumn

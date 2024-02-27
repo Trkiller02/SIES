@@ -27,18 +27,10 @@ export default function RestorePassComponent() {
   const sendInfo = async (values: any) => {
     setLoading(true);
 
-    const res = await fetchData("/auth/forgot-password", "PUT", {});
+    const res = await fetchData("/auth/forgot-password", "PATCH", values);
 
     if (res) {
-      return "Usuario registrado con exito.";
-    }
-  };
-
-  const searchUser = async (value: string) => {
-    const data = await fetchDataWithoutBody(`/user/${value}`);
-
-    if (data) {
-      return "Existe el usuario, adelante...";
+      return "Contraseña actualizada.";
     }
   };
 
@@ -50,6 +42,7 @@ export default function RestorePassComponent() {
         toast.promise(sendInfo(values), {
           loading: "Procesando...",
           success: (data) => {
+            router.push("/auth/login");
             return data;
           },
           error: (error: Error) => {

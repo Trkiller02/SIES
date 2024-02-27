@@ -59,12 +59,18 @@ import {
   MdOutlineCreate,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
-import { columnsRepresent } from "@/utils/tableList";
+import { columnsRepresent, columnsStudent } from "@/utils/tableList";
 import { fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-export default function StudentTable({ info }: { info: infoI[] }) {
+export default function StudentTable({
+  info,
+  relation,
+}: {
+  info: any[];
+  relation?: boolean;
+}) {
   const infoFixed: StudentICards[] = info.map((item) => {
     const {
       id,
@@ -138,35 +144,39 @@ export default function StudentTable({ info }: { info: infoI[] }) {
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              <Tooltip content="Detalles" color="primary">
-                <Button
-                  as={Link}
-                  href={`/search/student/${user.ci_number}`}
-                  isIconOnly
-                >
-                  <MdOutlineRemoveRedEye className="text-lg text-primary cursor-pointer active:opacity-50" />
-                </Button>
-              </Tooltip>
-              <Tooltip content="Editar" color="success">
-                <Button
-                  as={Link}
-                  href={`/edit/student/${user.ci_number}`}
-                  isIconOnly
-                >
-                  <MdOutlineCreate className="text-lg text-success cursor-pointer active:opacity-50" />
-                </Button>
-              </Tooltip>
-              <Tooltip color="danger" content="Eliminar">
-                <Button
-                  onPress={() => {
-                    setEntityFocus(user.ci_number);
-                    onOpen();
-                  }}
-                  isIconOnly
-                >
-                  <MdDeleteOutline className="text-lg text-danger cursor-pointer active:opacity-50" />
-                </Button>
-              </Tooltip>
+              {!relation && (
+                <>
+                  <Tooltip content="Detalles" color="primary">
+                    <Button
+                      as={Link}
+                      href={`/search/student/${user.ci_number}`}
+                      isIconOnly
+                    >
+                      <MdOutlineRemoveRedEye className="text-lg text-primary cursor-pointer active:opacity-50" />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Editar" color="success">
+                    <Button
+                      as={Link}
+                      href={`/edit/student/${user.ci_number}`}
+                      isIconOnly
+                    >
+                      <MdOutlineCreate className="text-lg text-success cursor-pointer active:opacity-50" />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip color="danger" content="Eliminar">
+                    <Button
+                      onPress={() => {
+                        setEntityFocus(user.ci_number);
+                        onOpen();
+                      }}
+                      isIconOnly
+                    >
+                      <MdDeleteOutline className="text-lg text-danger cursor-pointer active:opacity-50" />
+                    </Button>
+                  </Tooltip>
+                </>
+              )}
             </div>
           );
         default:
@@ -178,11 +188,8 @@ export default function StudentTable({ info }: { info: infoI[] }) {
 
   return (
     <>
-      <Table
-        aria-label="Example table with custom cells"
-        className="w-3/4 max-lg:w-full mt-5 min-h-[40vh]"
-      >
-        <TableHeader columns={columnsRepresent}>
+      <Table aria-label="Student Table" className="w-full">
+        <TableHeader columns={columnsStudent}>
           {(column) => (
             <TableColumn
               key={column.uid}

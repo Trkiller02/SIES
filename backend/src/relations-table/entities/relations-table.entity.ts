@@ -19,11 +19,16 @@ export class RelationsTable {
   @ManyToOne(
     () => Represent,
     (represent: Represent) => represent.relation_table_represent,
+    {
+      cascade: true,
+    },
   )
   @JoinColumn({ name: 'represent_id' })
   represent_id: string | Represent;
 
-  @OneToOne(() => Ficha, (fichaTable) => fichaTable.relationTable)
+  @OneToOne(() => Ficha, (fichaTable) => fichaTable.relationTable, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'academic_data_id' })
   ficha_id: string | Ficha;
 
@@ -31,6 +36,7 @@ export class RelationsTable {
     () => Represent,
     (represent: Represent) => represent.relation_table_mother,
     {
+      cascade: true,
       nullable: true,
     },
   )
@@ -40,15 +46,23 @@ export class RelationsTable {
   @ManyToOne(
     () => Represent,
     (represent: Represent) => represent.relation_table_father,
+    {
+      cascade: true,
+      nullable: true,
+    },
   )
   @JoinColumn({ name: 'father_id' })
   father_id?: string | Represent;
 
-  @OneToOne(() => HealthInfo, (healthTable) => healthTable.relationTable)
+  @OneToOne(() => HealthInfo, (healthTable) => healthTable.relationTable, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'health_info_id' })
   health_info_id: string | HealthInfo;
 
-  @OneToOne(() => Student, (student) => student.relation_table_id)
+  @OneToOne(() => Student, (student) => student.relation_table_id, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'student_id' })
   student_id: string | Student;
 

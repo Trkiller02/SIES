@@ -9,9 +9,14 @@ import { Represent } from './entities/represent.entity';
 import { CreateRepresentDto } from './dto/create-represent.dto';
 import { UpdateRepresentDto } from './dto/update-represent.dto';
 //ERROR HANDLER
-import { conflict_err, not_found_err } from 'src/utils/handlerErrors';
+import {
+  bad_req_err,
+  conflict_err,
+  not_found_err,
+} from 'src/utils/handlerErrors';
 //MESSAGES
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
+import { Person } from 'src/person/entities/person.entity';
 
 @Injectable()
 export class RepresentService {
@@ -40,7 +45,7 @@ export class RepresentService {
     });
 
     if (represent.length === 0)
-      not_found_err(messagesEnum.not_found, 'No se encontraron registros.');
+      not_found_err(msgEnum.not_found, 'No se encontraron registros.');
 
     return represent;
   }
@@ -74,7 +79,7 @@ export class RepresentService {
         withDeleted: deleted,
       });
       if (!represent && !pass)
-        not_found_err(messagesEnum.not_found, 'Representante no encontrado.');
+        not_found_err(msgEnum.not_found, 'Representante no encontrado.');
 
       return represent;
     }
@@ -92,12 +97,12 @@ export class RepresentService {
 
     if (represent && pass)
       conflict_err(
-        messagesEnum.conflict_err,
+        msgEnum.conflict_err,
         'Ya existe un registro con los datos suministrados.',
       );
 
     if (!represent && !pass)
-      not_found_err(messagesEnum.not_found, 'Representante no encontrado.');
+      not_found_err(msgEnum.not_found, 'Representante no encontrado.');
 
     return represent;
   }
@@ -105,12 +110,37 @@ export class RepresentService {
   async update(id: string, updateRepresentDto: UpdateRepresentDto) {
     const represent = await this.findOne(id);
 
-    return await this.representRepo.update(represent, updateRepresentDto);
+    console.log(updateRepresentDto)
+
+    if (updateRepresentDto.person_id) {
+      await this.personService.update(
+        (represent.person_id as Person).ci_number,
+        updateRepresentDto.person_id,
+      );
+    }
+
+    const res = await this.representRepo.update(
+      { id: represent.id },
+      {
+        ...updateRepresentDto,
+        person_id: updateRepresentDto.person_id.ci_number,
+      },
+    );
+
+    if (res.affected === 0) bad_req_err(msgEnum.bad_req_err, res.raw);
+
+    return res;
   }
 
   async remove(id: string) {
     const represent = await this.findOne(id);
 
-    return this.representRepo.softDelete(represent);
+    await this.personService.remove((represent.person_id as Person).ci_number);
+
+    const res = await this.representRepo.softDelete({ id: represent.id });
+
+    if (res.affected === 0) bad_req_err(msgEnum.bad_req_err, res.raw);
+
+    return res;
   }
 }

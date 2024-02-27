@@ -19,12 +19,12 @@ export const entitySelect = [
 export const etapaSelect = [
   {
     label: "Educacion Primaria",
-    value: "EP",
+    value: "EDUCACION PRIMARIA",
     description: "Comprende de 1er Grado a 6to Grado.",
   },
   {
     label: "Educacion Media General",
-    value: "EM",
+    value: "EDUCACION MEDIA",
     description: "Comprende de 1er Año a 5to Año.",
   },
 ];
@@ -124,5 +124,23 @@ export const latSelect = [
   {
     label: "DIESTRO",
     value: "DIESTRO",
+  },
+];
+
+export const roleSelect = [
+  {
+    label: "EVALUACION",
+    value: 1,
+    description: "Perteneciente al Depto. de Evaluación.",
+  },
+  {
+    label: "DOCENTE",
+    value: 2,
+    description: "Perteneciente a los Docentes habilitados para inscribir.",
+  },
+  {
+    label: "ADMINISTRACION",
+    value: 3,
+    description: "Perteneciente al Depto. de Administración.",
   },
 ];

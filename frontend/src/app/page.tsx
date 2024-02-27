@@ -26,7 +26,6 @@ import {
 import { searchInitVal, searchSchema } from "@/utils/schemas/SearchSchema";
 import { MdIosShare, MdSearch } from "react-icons/md";
 import { useState } from "react";
-import UserCards from "@/components/UserCards";
 import RepresentTable from "@/components/tables/RepresentTable";
 import UserTable from "@/components/tables/UserTable";
 import StudentTable from "@/components/tables/StudentTable";
@@ -61,6 +60,8 @@ export default function indexSearchPage() {
 
     const req = await fetchDataWithoutBody(url, session?.user.token);
 
+    console.log(req);
+
     if (req) {
       if (!(req instanceof Array)) {
         setInfo([req]);
@@ -81,7 +82,6 @@ export default function indexSearchPage() {
           toast.promise(reqInfo(values), {
             loading: "Procesando...",
             success: (data) => {
-              router.push("/");
               return data;
             },
             error: (error: Error) => {
@@ -166,9 +166,9 @@ export default function indexSearchPage() {
 
                 <Select
                   items={
-                    values.etapa === "EP"
+                    values.etapa === "EDUCACION PRIMARIA"
                       ? levelSelect
-                      : values.etapa === "EM"
+                      : values.etapa === "EDUCACION MEDIA"
                       ? levelSelect.slice(0, 5)
                       : levelSelect
                   }
@@ -259,10 +259,13 @@ export default function indexSearchPage() {
           </Form>
         )}
       </Formik>
-
-      {info && entity === "user" && <UserTable info={info} />}
-      {info && entity === "represent" && <RepresentTable info={info} />}
-      {info && entity === "student" && <StudentTable info={info} />}
+      {info && (
+        <div className="rounded-xl w-3/4 max-lg:w-full min-h-[40vh] my-5">
+          {info && entity === "user" && <UserTable info={info} />}
+          {info && entity === "represent" && <RepresentTable info={info} />}
+          {info && entity === "student" && <StudentTable info={info} />}
+        </div>
+      )}
       {!info && (
         <Skeleton className="rounded-xl w-3/4 max-lg:w-full min-h-[40vh] my-5 border border-gray-300">
           <div className="w-3/4 max-lg:w-full mt-5 min-h-[40vh] rounded-xl shadow-lg bg-default-300"></div>

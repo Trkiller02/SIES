@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -41,8 +42,9 @@ export class CreateFichaDto {
   @ApiProperty({
     type: 'text',
   })
-  @IsNotEmpty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
+  @IsNotEmpty()
   proce_plant: string;
 
   @ApiPropertyOptional({

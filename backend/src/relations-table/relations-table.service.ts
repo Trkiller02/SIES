@@ -9,7 +9,7 @@ import { UpdateRelationsTableDto } from './dto/update-relations-table.dto';
 //ERROR HANDLERS
 import { not_found_err } from 'src/utils/handlerErrors';
 //MESSAGES ENUM
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class RelationsTableService {
@@ -26,7 +26,7 @@ export class RelationsTableService {
     const tables = await this.relationRepo.find();
 
     if (tables.length === 0) {
-      not_found_err(messagesEnum.not_found, 'No se encontraron registros');
+      not_found_err(msgEnum.not_found, 'No se encontraron registros');
     }
     return tables;
   }
@@ -66,7 +66,7 @@ export class RelationsTableService {
 
       if (!table)
         not_found_err(
-          messagesEnum.not_found,
+          msgEnum.not_found,
           'No existe el registro o se equivoco en la busqueda.',
         );
 
@@ -92,7 +92,7 @@ export class RelationsTableService {
 
       if (!table)
         not_found_err(
-          messagesEnum.not_found,
+          msgEnum.not_found,
           'No existe el registro o se equivoco en la busqueda.',
         );
 

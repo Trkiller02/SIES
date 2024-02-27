@@ -10,6 +10,7 @@ const columnsUsers = [
 const columnsRepresent = [
   { name: "Nombre", uid: "name" },
   { name: "Apellido", uid: "lastname" },
+  { name: "Relación", uid: "relation" },
   { name: "No. Telefonico", uid: "phone_number" },
   { name: "Correo", uid: "email" },
   { name: "Acciones", uid: "actions" },

@@ -1,6 +1,6 @@
 "use client";
-
-import { Avatar, AvatarIcon } from "@nextui-org/react";
+import UploadForm from "@/components/UploadForm";
+import { Button } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -12,30 +12,96 @@ export default function SettingsPage() {
     router.push("/auth/login");
   }
 
+  const downloadPlanilla = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/tools/planilla/examples`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + session?.user.token,
+        },
+      }
+    );
+
+    const blob = await res.blob();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `planillaExample.docx`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    return;
+  };
+
+  const downloadConstancia = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/tools/constancia/example`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + session?.user.token,
+        },
+      }
+    );
+
+    const blob = await res.blob();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `planillaExample.docx`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    return;
+  };
+
   return (
-    <section className="p-20 bg-white rounded-xl shadow-md grid grid-cols-2">
-      <div className="grid grid-rows-2 place-items-center gap-6">
-        <Avatar
-          isBordered
-          as="button"
-          className="transition-transform scale-150"
-          color="primary"
-          size="lg"
-          icon={<AvatarIcon />}
-        />
-        <h1 className="text-3xl font-semibold text-black">
-          {session?.user.name}&nbsp;{session?.user.lastname}
-        </h1>
+    <section className="w-1/2 border border-gray-300 shadow-xl p-8 rounded-xl flex flex-col justify-center items-center gap-6">
+      <div>
+        <h3 className="font-medium text-xl">Actualizar Planilla: </h3>
+        <p className="text-gray-600">
+          El formato admitido por el formulario es del tipo (.docx), recuerde
+          que tenga el formato como el archivo de ejemplo.
+        </p>
+        <UploadForm session={session!} />
       </div>
-      <div className="grid grid-cols-2 gap-4 place-items-baseline">
-        <p className="text-2xl text-gray-500">Correo electronico:</p>
-        <p className="text-xl text-gray-700">{session?.user.email}</p>
-
-        <p className="text-2xl text-gray-500">Cedula de Identidad:</p>
-        <p className="text-xl text-gray-700">{session?.user.ci_number}</p>
-
-        <p className="text-2xl text-gray-500 text-end">Rol:</p>
-        <p className="text-xl text-gray-700">{session?.user.role}</p>
+      <div>
+        <h3 className="font-medium text-xl">Actualizar Constancia: </h3>
+        <p className="text-gray-600">
+          El formato admitido por el formulario es del tipo (.docx), recuerde
+          que tenga el formato como el archivo de ejemplo.
+        </p>
+        <UploadForm session={session!} constancia />
+      </div>
+      <div className="w-full">
+        <h3 className="font-medium text-2xl">Ejemplos: </h3>
+        <p className="text-gray-600">
+          Ejemplos en formato (.docx) de guías para modificar las plantillas en
+          uso.
+        </p>
+        <div className="inline-flex w-full justify-evenly p-3">
+          <Button
+            color="primary"
+            size="lg"
+            variant="solid"
+            onPress={downloadPlanilla}
+          >
+            Descargar Planilla
+          </Button>
+          <Button
+            color="primary"
+            size="lg"
+            variant="solid"
+            onPress={downloadConstancia}
+          >
+            Descargar Constancia
+          </Button>
+        </div>
       </div>
     </section>
   );

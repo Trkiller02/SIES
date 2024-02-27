@@ -8,36 +8,49 @@ import {
   StreamableFile,
   BadRequestException,
   Query,
-  Header,
   Res,
   Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ToolsService } from './tools.service';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { bad_req_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 import * as path from 'node:path';
 import * as multer from 'multer';
 import * as fs from 'node:fs';
 import { createExcelDto } from './dto/excel-tool-dto';
 import { Response } from 'express';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/role/enum/roles.enum';
 
 @ApiTags('TOOLS:')
+@ApiBearerAuth()
+@Auth()
 @Controller('tools')
 export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
 
   @Get('planilla/:id')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
-  @Header('Content-Disposition', 'attachment; filename=planilla.docx')
-  async createPlanilla(@Param('id') id: string) {
-    return await this.toolsService.createPlanillaData(id);
+  async createPlanilla(@Param('id') id: string, @Res() res: Response) {
+    const document = await this.toolsService.createPlanillaData(id);
+
+    if (document) {
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=planilla.docx',
+      );
+      document.getStream().pipe(res);
+    } else {
+      bad_req_err(msgEnum.bad_req_err, 'Error al procesar la solicitud.');
+    }
   }
 
+  @Auth([Role.EVALUACION])
   @Post('planilla/update')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -76,35 +89,64 @@ export class ToolsController {
     enum: ['EDUCACION MEDIA', 'EDUCACION PRIMARIA'],
   })
   @Get('planilla')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
-  @Header('Content-Disposition', 'attachment; filename=planilla.docx')
-  async emptyPlanilla(@Query('etapa') etapa?: string) {
-    return await this.toolsService.createEmptyPlanilla(etapa?.toUpperCase());
+  async emptyPlanilla(@Query('etapa') etapa?: string, @Res() res?: Response) {
+    const document = await this.toolsService.createEmptyPlanilla(
+      etapa?.toUpperCase(),
+    );
+    if (document) {
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=planilla.docx',
+      );
+      document.getStream().pipe(res);
+    } else {
+      bad_req_err(msgEnum.bad_req_err, 'Error al procesar la solicitud.');
+    }
   }
 
   @Get('constancia')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
-  @Header('Content-Disposition', 'attachment; filename=constancia.docx')
-  async emptyConstancia() {
-    return await this.toolsService.createEmptyConst();
+  async emptyConstancia(@Res() res: Response) {
+    const data = await this.toolsService.createEmptyConst();
+
+    if (data) {
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=constancia.docx',
+      );
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      );
+      data.getStream().pipe(res);
+    } else {
+      bad_req_err(msgEnum.bad_req_err, 'Error al procesar la solicitud.');
+    }
   }
 
   @Get('constancia/:id')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
-  @Header('Content-Disposition', 'attachment; filename=constancia.docx')
-  async createConst(@Param('id') id: string) {
-    return await this.toolsService.createConstData(id);
+  async createConst(@Param('id') id: string, @Res() res: Response) {
+    const data = await this.toolsService.createConstData(id);
+
+    if (data) {
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=constancia.docx',
+      );
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      );
+      data.getStream().pipe(res);
+    } else {
+      bad_req_err(msgEnum.bad_req_err, 'Error al procesar la solicitud.');
+    }
   }
 
+  @Auth([Role.EVALUACION])
   @Post('constancia/update')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -138,11 +180,6 @@ export class ToolsController {
   }
 
   @Post('excel')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  )
-  @Header('Content-Disposition', 'attachment; filename=export-data.xlsx')
   async excelForSearch(
     @Body()
     info: createExcelDto,
@@ -150,16 +187,21 @@ export class ToolsController {
   ) {
     return await this.toolsService
       .createExcelForSearch(info)
-      .then((readStream) => readStream.pipe(res))
+      .then((readStream) => {
+        res.setHeader(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+        res.setHeader(
+          'Content-Disposition',
+          'attachment; filename=export-data.xlsx',
+        );
+        readStream.pipe(res);
+      })
       .catch((err) => new BadRequestException(err));
   }
 
-  @Post('excel/:id')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  )
-  @Header('Content-Disposition', 'attachment; filename=export-data.xlsx')
+  @Get('excel/:id')
   async excelFormatEntity(
     @Param('id')
     info: string,
@@ -167,18 +209,23 @@ export class ToolsController {
   ) {
     return await this.toolsService
       .createExcelInfo(info)
-      .then((readStream) => readStream.pipe(res))
+      .then((readStream) => {
+        res.setHeader(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+        res.setHeader(
+          'Content-Disposition',
+          'attachment; filename=export-data.xlsx',
+        );
+        readStream.pipe(res);
+      })
       .catch((err) => new BadRequestException(err));
   }
 
   // RETORNAR PLANILLA SIN FORMATO DE EJEMPLO
-  @Get('planilla/example')
-  @Header(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  )
-  @Header('Content-Disposition', 'attachment; filename=example.docx')
-  examplePlanilla() {
+  @Post('planilla/examples')
+  async examplePlanilla(@Res() res: Response) {
     const dir = path.join(
       process.cwd(),
       'src',
@@ -187,31 +234,46 @@ export class ToolsController {
       'templatePlanilla.docx',
     );
 
-    const file = fs.createReadStream(dir);
+    try {
+      const file = fs.createReadStream(dir);
 
-    if (!file)
-      bad_req_err(messagesEnum.bad_req_err, 'No se encontró la plantilla.');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      );
+      res.setHeader('Content-Disposition', 'attachment; filename=example.docx');
 
-    return new StreamableFile(file);
+      file.pipe(res);
+    } catch (error) {
+      bad_req_err(msgEnum.bad_req_err, (error as Error).message);
+    }
   }
 
-  @Get('constancia/example')
-  @Header('Content-Type', 'application/vnd.ms-word')
-  @Header('Content-Disposition', 'attachment; filename=example.docx')
-  exampleConstancia() {
+  @Post('constancia/example')
+  async exampleConstancia(@Res() res: Response) {
     const dir = path.join(
       process.cwd(),
       'src',
       'utils',
       'templates',
-      'templateConstancia.doc',
+      'templateConstancia.docx',
     );
 
-    const file = fs.createReadStream(dir);
+    try {
+      const file = await fs.createReadStream(dir);
 
-    if (!file)
-      bad_req_err(messagesEnum.bad_req_err, 'No se encontró la plantilla.');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=exampleConstancia.docx',
+      );
 
-    return new StreamableFile(file);
+      file.pipe(res);
+    } catch (error) {
+      bad_req_err(msgEnum.bad_req_err, (error as Error).message);
+    }
   }
 }

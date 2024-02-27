@@ -1,17 +1,6 @@
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
 
-export interface UserI {
-  id: string;
-  restoreToken: string;
-  name: string;
-  lastName: string;
-  ciNumber: string;
-  email: string;
-  roleId: number;
-  password: string;
-}
-
 export default function UserCards({ item }: { item: any }) {
   return (
     <div className="inline-flex self-center border p-2 rounded-xl w-full justify-around items-center">

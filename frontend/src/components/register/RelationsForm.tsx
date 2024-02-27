@@ -1,7 +1,7 @@
 "use client";
 
 //HOOKS
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +16,12 @@ import { toast } from "sonner";
 
 //UTILS
 import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
-import { RepresentI, StudentI } from "@/types/register.interfaces";
+import { FichaI, RepresentI, StudentI } from "@/types/register.interfaces";
+import StudentTable from "../tables/StudentTable";
+import RepresentTable from "../tables/RepresentTable";
+import { initValRepresent } from "@/utils/schemas/RepresentSchema";
+import { initValStudent } from "@/utils/schemas/StudentSchema";
+import { initValFicha } from "@/utils/schemas/FichaSchema";
 
 export default function RelationsForm() {
   const { data: session } = useSession();
@@ -24,8 +29,9 @@ export default function RelationsForm() {
   const [dad, setDad] = useState<RepresentI>();
   const [represent, setRepresent] = useState<RepresentI>();
   const [student, setStudent] = useState<StudentI>();
+  const [ficha, setFicha] = useState<FichaI>();
   const router = useRouter();
-  const { dataRelations } = useContext(ctxDataRelation);
+  const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
 
   const clearRelationsFunc = (values: any) => {
     const relations = values;
@@ -42,6 +48,8 @@ export default function RelationsForm() {
   const sendInfo = async (values: any) => {
     const data = clearRelationsFunc(values);
 
+    console.log(data);
+
     const res = await fetchData(
       `/relations-table`,
       "POST",
@@ -54,15 +62,22 @@ export default function RelationsForm() {
     }
   };
 
+  const getFicha = async () => {
+    const res = await fetchDataWithoutBody(
+      "/ficha/" + dataRelations.ficha_id,
+      session?.user.token
+    );
+
+    return res;
+  };
+
   const getMom = async () => {
     const res = await fetchDataWithoutBody(
       "/represent/" + dataRelations.mother_id,
       session?.user.token
     );
 
-    if (res) {
-      setMom(res);
-    }
+    return res;
   };
 
   const getDad = async () => {
@@ -70,9 +85,8 @@ export default function RelationsForm() {
       "/represent/" + dataRelations.father_id,
       session?.user.token
     );
-    if (res) {
-      setDad(res);
-    }
+
+    return res;
   };
 
   const getRepresent = async () => {
@@ -81,72 +95,138 @@ export default function RelationsForm() {
       session?.user.token
     );
 
-    if (res) {
-      setRepresent(res);
-    }
+    return res;
   };
 
   const getStudent = async () => {
-    const res = await fetchDataWithoutBody(
+    const student: StudentI = await fetchDataWithoutBody(
       "/student/" + dataRelations.student_id,
       session?.user.token
     );
-
-    if (res) {
-      setRepresent(res);
-    }
+    return student;
   };
 
   useEffect(() => {
-    Promise.allSettled([getStudent, getMom, getDad, getRepresent]);
+    setDataRelations((relations) => clearRelationsFunc(relations));
+
+    toast.promise(getFicha, {
+      loading: "Procesando...",
+      success: (data) => {
+        setFicha(data);
+        return "Carga completa.";
+      },
+      error: (error: Error) => {
+        return error.message;
+      },
+    });
+
+    if (dataRelations.father_id) {
+      toast.promise(getDad, {
+        loading: "Procesando...",
+        success: (data) => {
+          setDad(data);
+          return "Carga completa.";
+        },
+        error: (error: Error) => {
+          return error.message;
+        },
+      });
+    }
+
+    if (dataRelations.mother_id) {
+      toast.promise(getMom, {
+        loading: "Procesando...",
+        success: (data) => {
+          setMom(data);
+          return "Carga completa.";
+        },
+        error: (error: Error) => {
+          return error.message;
+        },
+      });
+    }
+
+    toast.promise(getStudent, {
+      loading: "Procesando...",
+      success: (data) => {
+        setStudent(data);
+        return "Carga completa.";
+      },
+      error: (error: Error) => {
+        return error.message;
+      },
+    });
+
+    toast.promise(getRepresent, {
+      loading: "Procesando...",
+      success: (data) => {
+        setRepresent(data);
+        return "Carga completa.";
+      },
+      error: (error: Error) => {
+        return error.message;
+      },
+    });
   }, [dataRelations]);
 
   return (
-    <section>
-      {student && represent ? (
-        <Formik
-          initialValues={dataRelations}
-          onSubmit={async (values) => {
-            toast.promise(sendInfo(values), {
-              loading: "Procesando...",
-              success: (data) => {
-                if (typeof window !== "undefined") {
-                  localStorage.removeItem("dataRelations");
-                }
-                router.push(`/search/student/`);
-                return data;
-              },
-              error: (error: Error) => {
-                return error.message === "Failed to fetch"
-                  ? "Error en conexion"
-                  : error.message;
-              },
-            });
-          }}
-        >
-          <Form>
-            <div>
-              <EntityCards item={student} title="Estudiante:" />
-              <EntityCards item={represent} title="Representante:" />
-              {mom && <EntityCards item={mom} title="Madre:" />}
-              {dad && <EntityCards item={dad} title="Padre:" />}
-            </div>
-            <Button
-              isDisabled={!dataRelations.student_id}
-              color="primary"
-              variant="ghost"
-              aria-label="Buscar entidad"
-              className="w-3/4 h-3/4"
-              size="md"
-              type="submit"
-            >
-              Completar
-            </Button>
-          </Form>
-        </Formik>
-      ) : (
-        <Skeleton content="Procesando..." />
-      )}
+    <section className="w-full h-[80vh] justify-center items-center flex">
+      <Formik
+        initialValues={dataRelations}
+        enableReinitialize
+        onSubmit={async (values) => {
+          console.log(values);
+
+          toast.promise(sendInfo(values), {
+            loading: "Procesando...",
+            success: (data) => {
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("dataRelations");
+              }
+              router.push(`/search/student/${dataRelations.student_id}`);
+              return data;
+            },
+            error: (error: Error) => {
+              return error.message === "Failed to fetch"
+                ? "Error en conexion"
+                : error.message;
+            },
+          });
+        }}
+      >
+        <Form className="flex flex-col gap-4 items-center justify-center p-6 shadow-xl rounded-lg w-3/4 h-3/4 border border-gray-300">
+          <h1 className="text-2xl">¿Completar Inscripcion?</h1>
+          <div className="w-full h-full flex flex-col justify-center items-center m-2">
+            {student !== undefined && (
+              <>
+                <h1 className="text-2xl self-start p-3">Estudiante: </h1>
+                <StudentTable
+                  relation
+                  info={[{ ...ficha, relationTable: { student_id: student } }]}
+                />
+                <h2 className="text-2xl self-start p-3">Relaciones:</h2>
+                <RepresentTable
+                  relation
+                  info={[
+                    represent as RepresentI,
+                    mom as RepresentI,
+                    dad as RepresentI,
+                  ]}
+                />
+              </>
+            )}
+          </div>
+          <Button
+            color="primary"
+            variant="ghost"
+            className="w-1/4 h-1/4"
+            size="lg"
+            type="submit"
+          >
+            Completar
+          </Button>
+        </Form>
+      </Formik>
       {!dataRelations && <p>No se encuentra información</p>}
     </section>
   );

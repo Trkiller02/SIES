@@ -25,7 +25,7 @@ export class UserController {
 
   @Auth([Role.EVALUACION])
   @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 

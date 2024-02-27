@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { unauth_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extratcTokenFromHeader(request);
 
     if (!token) {
-      unauth_err(messagesEnum.unauth_err, 'No hay token.');
+      unauth_err(msgEnum.unauth_err, 'No hay token.');
     }
 
     try {
@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch {
-      unauth_err(messagesEnum.unauth_err, 'Error verificando token.');
+      unauth_err(msgEnum.unauth_err, 'Error verificando token.');
     }
 
     return true;

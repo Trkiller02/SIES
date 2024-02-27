@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsDateString,
@@ -20,26 +21,31 @@ export class CreateStudentDto {
 
   @ApiProperty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty()
   born_place: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
+  @IsNotEmpty()
   born_state: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
+  @IsNotEmpty()
   born_municipio: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
+  @IsNotEmpty()
   born_parroquia: string;
 
   @ApiProperty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty()
   born_pais: string;
 

@@ -7,7 +7,7 @@ import * as excelJS from 'exceljs';
 
 //handlers
 import { bad_req_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 
 //services
 import { RelationsTableService } from 'src/relations-table/relations-table.service';
@@ -33,6 +33,7 @@ import {
   studentColumns,
   userColumns,
 } from 'src/utils/listColumnsExcel';
+import { Person } from 'src/person/entities/person.entity';
 
 @Injectable()
 export class ToolsService {
@@ -65,7 +66,7 @@ export class ToolsService {
 
       return new StreamableFile(buffer);
     } catch (error) {
-      bad_req_err(messagesEnum.bad_req_err, (error as Error).message);
+      bad_req_err(msgEnum.bad_req_err, (error as Error).message);
     }
   }
 
@@ -98,7 +99,7 @@ export class ToolsService {
 
       return new StreamableFile(buffer);
     } catch (error) {
-      bad_req_err(messagesEnum.bad_req_err, (error as Error).message);
+      bad_req_err(msgEnum.bad_req_err, (error as Error).message);
     }
   }
 
@@ -134,7 +135,7 @@ export class ToolsService {
 
       return new StreamableFile(buffer);
     } catch (error) {
-      bad_req_err(messagesEnum.bad_req_err, (error as Error).message);
+      bad_req_err(msgEnum.bad_req_err, (error as Error).message);
     }
   }
 
@@ -154,7 +155,7 @@ export class ToolsService {
 
       if (!template)
         bad_req_err(
-          messagesEnum.bad_req_err,
+          msgEnum.bad_req_err,
           'No se encontró el archivo de plantilla.',
         );
 
@@ -178,7 +179,7 @@ export class ToolsService {
 
       return new StreamableFile(buffer);
     } catch (e) {
-      bad_req_err(messagesEnum.bad_req_err, (e as Error).message);
+      bad_req_err(msgEnum.bad_req_err, (e as Error).message);
     }
   }
 
@@ -217,8 +218,7 @@ export class ToolsService {
         ? await this.userService.findOne(info.id)
         : await this.userService.findAll();
 
-      if (!user)
-        bad_req_err(messagesEnum.not_found, 'No se encuentro registro(s).');
+      if (!user) bad_req_err(msgEnum.not_found, 'No se encuentro registro(s).');
 
       if (user instanceof Array) {
         user.map((value, idx) => {
@@ -253,12 +253,15 @@ export class ToolsService {
         ? await this.representService.findOne(info.id)
         : await this.representService.findAll();
 
+      if (!represent)
+        bad_req_err(msgEnum.not_found, 'No se encuentro registro(s).');
+
       if (represent instanceof Array) {
         represent.map((value, idx) => {
-          sheet.addRow({ ...value, ...value.person_id });
+          sheet.addRow({ ...value, ...(value.person_id as Person) });
         });
       } else {
-        sheet.addRow({ ...represent, ...represent.person_id });
+        sheet.addRow({ ...represent, ...(represent.person_id as Person) });
       }
 
       const buffer = await excel.xlsx.writeBuffer();
@@ -296,14 +299,15 @@ export class ToolsService {
           sheet.addRow({
             ...value,
             ...(value.relationTable.student_id as Student),
-            ...(value.relationTable.student_id as Student).person_id,
+            ...((value.relationTable.student_id as Student)
+              .person_id as Person),
           });
         });
       } else {
         sheet.addRow({
           ...ficha,
           ...(ficha.relationTable.student_id as Student),
-          ...(ficha.relationTable.student_id as Student).person_id,
+          ...((ficha.relationTable.student_id as Student).person_id as Person),
         });
       }
 
@@ -353,7 +357,7 @@ export class ToolsService {
       sheetStudent.addRow({
         ...(student_id as Student),
         ...(ficha_id as Ficha),
-        ...(student_id as Student).person_id,
+        ...((student_id as Student).person_id as Person),
       });
     }
 
@@ -371,20 +375,20 @@ export class ToolsService {
 
       sheetRepresent.addRow({
         ...(represent_id as Represent),
-        ...(represent_id as Represent).person_id,
+        ...((represent_id as Represent).person_id as Person),
       });
 
       if (mother_id) {
         sheetRepresent.addRow({
           ...(mother_id as Represent),
-          ...(mother_id as Represent).person_id,
+          ...((mother_id as Represent).person_id as Person),
         });
       }
 
       if (father_id) {
         sheetRepresent.addRow({
           ...(father_id as Represent),
-          ...(father_id as Represent).person_id,
+          ...((father_id as Represent).person_id as Person),
         });
       }
     }

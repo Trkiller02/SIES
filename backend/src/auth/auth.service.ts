@@ -5,7 +5,7 @@ import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RestorePasswordDto } from './dto/restore-password.dto';
 import { conflict_err, unauth_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 import { UserService } from 'src/user/user.service';
 import { Role } from 'src/role/entities/role.entity';
 
@@ -24,13 +24,13 @@ export class AuthService {
     const user = await this.userService.findToAuth(query, true);
 
     if (!user) {
-      unauth_err(messagesEnum.credential_err, 'Crendenciales invalidas');
+      unauth_err(msgEnum.credential_err, 'Crendenciales invalidas');
     }
 
     const isPassValid = await bcrypt.compare(password, user.password);
 
     if (!isPassValid) {
-      unauth_err(messagesEnum.credential_err, 'Crendenciales invalidas');
+      unauth_err(msgEnum.credential_err, 'Crendenciales invalidas');
     }
 
     const payload = {
@@ -42,10 +42,10 @@ export class AuthService {
 
     return {
       name: user.name,
-      lastName: user.lastname,
+      lastname: user.lastname,
       ci_number: user.ci_number,
       email: user.email,
-      role: user.role_id instanceof Role ? user.role_id.name : user.role_id,
+      role: (user.role_id as Role).name,
       token: token,
     };
   }
@@ -55,15 +55,12 @@ export class AuthService {
       updatePassword;
 
     if (!restore_token) {
-      return unauth_err(
-        messagesEnum.credential_err,
-        'Credenciales incorrectas.',
-      );
+      return unauth_err(msgEnum.credential_err, 'Credenciales incorrectas.');
     }
 
     if (password !== repeatPassword) {
       return conflict_err(
-        messagesEnum.conflict_err,
+        msgEnum.conflict_err,
         'Las contraseñas no coinciden.',
       );
     }
@@ -76,7 +73,7 @@ export class AuthService {
     );
 
     if (!isValidToken) {
-      return unauth_err(messagesEnum.unauth_err, 'Credenciales incorrectas.');
+      return unauth_err(msgEnum.unauth_err, 'Credenciales incorrectas.');
     }
 
     return await this.userService.update(ci_number, { password });

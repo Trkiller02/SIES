@@ -11,8 +11,11 @@ import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from './enum/roles.enum';
 
 @ApiTags('ROLE:')
+@Auth([Role.EVALUACION])
 @ApiBearerAuth()
 @Controller('role')
 export class RoleController {

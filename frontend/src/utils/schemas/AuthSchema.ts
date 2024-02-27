@@ -15,8 +15,7 @@ const RegisterValues = {
   ci_number: "",
   email: "",
   password: "",
-  repeatPassword: "",
-  restore_token: "ADMIN1",
+  role_id: 3,
 };
 
 const initValUpdatePass = {
@@ -65,11 +64,29 @@ const RegisterSchema = Yup.object({
     .oneOf([Yup.ref("password"), "La contraseña no coincide."]),
 });
 
+const RegisterSchemaUpdate = Yup.object({
+  name: Yup.string()
+    .matches(regexList.onlyString, Messages.match_err)
+    .optional(),
+  lastname: Yup.string()
+    .matches(regexList.onlyString, Messages.match_err)
+    .optional(),
+  ci_number: Yup.string()
+    .matches(regexList.forDNI, Messages.dni_match)
+    .optional(),
+  email: Yup.string().email(Messages.email_err).optional(),
+  password: Yup.string().min(4, Messages.min_pass).optional(),
+  repeatPassword: Yup.string()
+    .oneOf([Yup.ref("password"), "La contraseña no coincide."])
+    .optional(),
+});
+
 export {
   LoginSchema, // <-- exportar esquema de validacion
   LoginValues, // <-- exportar valores iniciales
   RegisterValues,
   RegisterSchema,
+  RegisterSchemaUpdate,
   UpdatePassSchema,
   initValUpdatePass,
 };

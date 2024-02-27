@@ -24,8 +24,8 @@ export interface UserIforCards {
   name: string;
   lastname: string;
   ci_number: string;
+  role_id: string;
   email: string;
-  phone_number: string;
   actions: string;
 }
 
@@ -38,8 +38,22 @@ import { columnsUsers } from "@/utils/tableList";
 import { fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { RoleI, UserI } from "@/types/register.interfaces";
 
-export default function UserTable({ info }: { info: UserIforCards[] }) {
+export default function UserTable({ info }: { info: UserI[] }) {
+  const infoFixed: UserIforCards[] = info.map((item) => {
+    const { id, name, lastname, role_id, ci_number, email } = item;
+
+    return {
+      id: id!,
+      name: name,
+      lastname: lastname,
+      role_id: (role_id as RoleI).name,
+      ci_number: ci_number,
+      email: email,
+      actions: "",
+    };
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [entityFocus, setEntityFocus] = useState<string>("");
   const { data: session } = useSession();
@@ -71,20 +85,16 @@ export default function UserTable({ info }: { info: UserIforCards[] }) {
               <p className="text-bold text-sm capitalize">{cellValue}</p>
             </div>
           );
+
+        case "role_id":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">{cellValue}</p>
+            </div>
+          );
         case "email":
           return (
             <Chip color="secondary" size="sm" variant="flat">
-              {cellValue ? cellValue : "NO POSEE"}
-            </Chip>
-          );
-        case "phone_number":
-          return (
-            <Chip
-              className="capitalize"
-              color="primary"
-              size="sm"
-              variant="flat"
-            >
               {cellValue ? cellValue : "NO POSEE"}
             </Chip>
           );
@@ -132,8 +142,8 @@ export default function UserTable({ info }: { info: UserIforCards[] }) {
   return (
     <>
       <Table
-        aria-label="Example table with custom cells"
-        className="w-3/4 max-lg:w-full mt-5 min-h-[40vh]"
+        aria-label="User Table"
+        className="w-full max-lg:w-full mt-5 min-h-[40vh]"
       >
         <TableHeader columns={columnsUsers}>
           {(column) => (
@@ -146,7 +156,7 @@ export default function UserTable({ info }: { info: UserIforCards[] }) {
           )}
         </TableHeader>
         <TableBody
-          items={info}
+          items={infoFixed}
           emptyContent="Sin datos."
           className="w-3/4 max-lg:w-full mt-5 min-h-[40vh]"
         >
@@ -154,7 +164,10 @@ export default function UserTable({ info }: { info: UserIforCards[] }) {
             <TableRow key={item.id}>
               {(columnKey) => (
                 <TableCell>
-                  {renderCell(item, columnKey as keyof UserIforCards)}
+                  {renderCell(
+                    item as UserIforCards,
+                    columnKey as keyof UserIforCards
+                  )}
                 </TableCell>
               )}
             </TableRow>

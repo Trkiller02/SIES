@@ -1,8 +1,6 @@
-"use client";
-
 import DashboardLayout from "../dashboard/layout";
 
-export default function PlanillaLayout({
+export default function searchLayout({
   children,
 }: {
   children: React.ReactNode;

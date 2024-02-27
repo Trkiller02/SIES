@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { ROLE_LIST } from "@/utils/roleList";
 import {
   Navbar,
@@ -22,6 +23,30 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 export function NavBar() {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const download = async (etapa: string) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/tools/planilla?etapa=${etapa}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + session?.user.token,
+        },
+      }
+    );
+
+    const blob = await res.blob();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `planilla${etapa.split(" ")[1]}.docx`; // replace with the desired filename
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    return;
+  };
 
   return (
     <Navbar maxWidth="full" isBordered className="font-semibold">
@@ -59,9 +84,7 @@ export function NavBar() {
               <DropdownItem
                 key="planilla_media"
                 description="Planilla Inscripción Educación Media General."
-                onPress={() => {
-                  router.push("/planilla/media");
-                }}
+                onPress={() => download("EDUCACION MEDIA")}
                 color="primary"
                 variant="light"
               >
@@ -70,9 +93,7 @@ export function NavBar() {
               <DropdownItem
                 key="planilla_primaria"
                 description="Planilla Educación Primaria"
-                onPress={() => {
-                  router.push("/planilla/primaria");
-                }}
+                onPress={() => download("EDUCACION PRIMARIA")}
                 color="primary"
                 variant="light"
               >
@@ -110,8 +131,27 @@ export function NavBar() {
                 color="primary"
                 variant="light"
               >
-                Registro Total
+                Registro Total.
               </DropdownItem>
+              {session?.user.role === ROLE_LIST.ADMIN ? (
+                <DropdownItem
+                  key="register_user"
+                  description="Registrar un usuario."
+                  onPress={() => {
+                    router.push("/register/user");
+                  }}
+                  color="primary"
+                  variant="light"
+                >
+                  Registrar usuario.
+                </DropdownItem>
+              ) : (
+                <DropdownItem
+                  key="bln"
+                  color="primary"
+                  variant="light"
+                ></DropdownItem>
+              )}
             </DropdownMenu>
           </Dropdown>
 
@@ -134,9 +174,7 @@ export function NavBar() {
               <DropdownItem
                 key="planilla_media"
                 description="Planilla Inscripción Educación Media General."
-                onPress={() => {
-                  router.push("/planilla/media");
-                }}
+                onPress={() => download("EDUCACION MEDIA")}
                 color="primary"
                 variant="light"
               >
@@ -145,9 +183,7 @@ export function NavBar() {
               <DropdownItem
                 key="planilla_primaria"
                 description="Planilla Educación Primaria"
-                onPress={() => {
-                  router.push("/planilla/primaria");
-                }}
+                onPress={() => download("EDUCACION PRIMARIA")}
                 color="primary"
                 variant="light"
               >
@@ -184,18 +220,25 @@ export function NavBar() {
                 {session ? session?.user.role : "Role"}
               </p>
             </DropdownItem>
-            <DropdownItem
-              key="configurations"
-              textValue="Configurations"
-              onPress={() => {
-                if (typeof window !== "undefined") {
-                  localStorage.removeItem("dataRelations");
-                }
-                router.push("/settings");
-              }}
-            >
-              Configuraciones
-            </DropdownItem>
+            {session?.user.role === ROLE_LIST.ADMIN ? (
+              <DropdownItem
+                key="configurations"
+                textValue="Configurations"
+                onPress={() => {
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("dataRelations");
+                  }
+                  router.push("/settings");
+                }}
+              >
+                Configuraciones
+              </DropdownItem>
+            ) : (
+              <DropdownItem
+                key="configurations"
+                textValue="Configurations"
+              ></DropdownItem>
+            )}
             <DropdownItem
               key="logout"
               textValue="Log Out"

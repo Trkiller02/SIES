@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { not_found_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 
 @Injectable()
 export class RoleService {
@@ -21,8 +21,7 @@ export class RoleService {
   async findAll() {
     const roles = await this.roleRepo.find();
 
-    if (!roles)
-      not_found_err(messagesEnum.not_found, 'No se encontraron registros');
+    if (!roles) not_found_err(msgEnum.not_found, 'No se encontraron registros');
 
     return roles;
   }
@@ -31,7 +30,7 @@ export class RoleService {
     const role = await this.roleRepo.findOneBy({ id: id });
 
     if (!role) {
-      not_found_err(messagesEnum.not_found, 'Rol no encontrado.');
+      not_found_err(msgEnum.not_found, 'Rol no encontrado.');
     }
 
     return role;

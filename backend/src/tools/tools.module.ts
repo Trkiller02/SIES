@@ -6,9 +6,16 @@ import { StudentModule } from 'src/student/student.module';
 import { RepresentModule } from 'src/represent/represent.module';
 import { UserModule } from 'src/user/user.module';
 import { FichaModule } from 'src/ficha/ficha.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [RelationsTableModule, FichaModule, RepresentModule, UserModule],
+  imports: [
+    RelationsTableModule,
+    FichaModule,
+    RepresentModule,
+    UserModule,
+    AuthModule,
+  ],
   controllers: [ToolsController],
   providers: [ToolsService],
 })

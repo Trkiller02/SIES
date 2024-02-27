@@ -52,42 +52,7 @@ export function ProgressChecker() {
   }, [dataRelations]);
 
   return (
-    <section className="flex flex-col p-2 absolute left-0 bottom-0 border border-gray-400 shadow-md rounded-lg bg-white scale-75 m-0">
-      <Slider
-        label="Select a value"
-        isDisabled={true}
-        color="foreground"
-        size="sm"
-        step={10}
-        marks={[
-          {
-            value: 14,
-            label: "ESTUDIANTE",
-          },
-          {
-            value: 28,
-            label: "DATOS MEDICOS",
-          },
-          {
-            value: 32,
-            label: "DATOS ACADEMICOS",
-          },
-          {
-            value: 46,
-            label: "PADRE",
-          },
-          {
-            value: 60,
-            label: "MADRE",
-          },
-          {
-            value: 74,
-            label: "REPRESENTANTE",
-          },
-        ]}
-        defaultValue={14}
-        className="max-w-md"
-      />
+    <section className="flex flex-col p-4 absolute left-0 bottom-0 border border-gray-400 shadow-md rounded-lg bg-white scale-85 m-0">
       <CheckboxGroup isReadOnly label="PROGRESO" value={values}>
         <Checkbox value="student_id">ESTUDIANTE</Checkbox>
         <Checkbox value="health_info_id">DATOS MEDICOS</Checkbox>

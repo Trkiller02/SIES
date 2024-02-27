@@ -1,4 +1,4 @@
-export enum messagesEnum {
+export enum msgEnum {
   credential_err = 'Credenciales incorrectas.',
   not_found = 'Registro no encontrado.',
   conflict_err = 'Existe un conflicto con los datos suministrados',
@@ -9,9 +9,6 @@ export enum messagesEnum {
   not_format = 'no cumple con el formato esperado.',
 }
 
-export const validationMsg = (
-  propiedad: string,
-  message: messagesEnum,
-): string => {
+export const validationMsg = (propiedad: string, message: msgEnum): string => {
   return `${propiedad} ${message}`;
 };

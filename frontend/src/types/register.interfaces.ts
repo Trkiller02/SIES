@@ -18,6 +18,7 @@ export interface RepresentI {
   work_place?: string;
   work_phone_number?: string;
   income_month?: number;
+  rl?: boolean;
 }
 
 export interface FichaI {
@@ -27,6 +28,7 @@ export interface FichaI {
   etapa: string;
   turno: string;
   proce_plant: string;
+  egresado?: boolean;
   escolar_period: string;
   ins_date?: Date;
   personal_res?: string;
@@ -49,7 +51,7 @@ export interface HealthInfoI {
 export interface StudentI {
   id?: string;
   person_id: PersonI;
-  age?: number;
+  age: number;
   born_place: string;
   born_state: string;
   born_municipio: string;
@@ -65,7 +67,7 @@ export interface RelationTableI {
   ficha_id: FichaI;
   mother_id?: RepresentI;
   father_id?: RepresentI;
-  healt_info_id: HealthInfoI;
+  health_info_id: HealthInfoI;
   student_id: StudentI;
 }
 
@@ -75,12 +77,13 @@ export interface RoleI {
 }
 
 export interface UserI {
-  id: string;
+  id?: string;
   restore_token?: string;
   name: string;
   lastname: string;
   ci_number: string;
   email: string;
   role_id: number | RoleI;
-  password: string;
+  password?: string;
+  repeatPassword?: string;
 }

@@ -29,7 +29,7 @@ export class CreateRelationsTableDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  healt_info_id: string;
+  health_info_id: string;
 
   @ApiProperty()
   @IsNotEmpty()

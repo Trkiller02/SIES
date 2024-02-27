@@ -7,14 +7,23 @@ import { useState, useContext, useEffect } from "react";
 import { ctxDataRelation } from "./ProviderCtx";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useFormik } from "formik";
+import { Field, Form, Formik, useFormik } from "formik";
 import { toast } from "sonner";
 import {
   initValRepresent,
   representSchema,
+  representSchemaUpdate,
 } from "@/utils/schemas/RepresentSchema";
+import { RepresentI } from "@/types/register.interfaces";
+import { relationSelect } from "@/utils/selectList";
 
-export default function RepresentForm() {
+export default function RepresentForm({
+  edit,
+  id,
+}: {
+  edit?: boolean;
+  id?: string;
+}) {
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const { data: session } = useSession();
 
@@ -22,22 +31,36 @@ export default function RepresentForm() {
 
   const router = useRouter();
 
-  const [Loading, setLoading] = useState(false);
+  const [info, setInfo] = useState<RepresentI>(initValRepresent);
 
-  const routeHandler = () => {
+  const routeHandler = (resetForm?: any) => {
     if (dataRelations.mother_id === "") {
-      return formik.resetForm();
+      return setTimeout(resetForm, 3000);
     } else {
       if (dataRelations.father_id === "") {
-        return formik.resetForm();
+        return setTimeout(resetForm, 3000);
       } else {
         if (dataRelations.represent_id === "") {
-          return formik.resetForm();
+          return setTimeout(resetForm, 3000);
         } else {
           router.push("/register/relations");
         }
       }
     }
+  };
+
+  const sendInfoUpdate = async (values: any) => {
+    const res = await fetchData(
+      `/represent/${id}`,
+      "PATCH",
+      {
+        ...values,
+        rl: values.relation === "REPRESENTANTE LEGAL" ? true : false,
+      },
+      session?.user.token
+    );
+
+    if (res) return "Actualización exitosa.";
   };
 
   const sendInfo = async (values: any) => {
@@ -49,23 +72,23 @@ export default function RepresentForm() {
     );
 
     if (res) {
-      switch (values.relation) {
-        case "M":
+      switch (values.person_id.relation) {
+        case "MADRE":
           setDataRelations({
             ...dataRelations,
-            mother_id: values.ciNumber,
+            mother_id: res.id,
           });
           break;
-        case "P":
+        case "PADRE":
           setDataRelations({
             ...dataRelations,
-            father_id: values.ciNumber,
+            father_id: res.id,
           });
           break;
-        case "RL":
+        case "REPRESENTANTE LEGAL":
           setDataRelations({
             ...dataRelations,
-            represent_id: values.ciNumber,
+            represent_id: res.id,
           });
           break;
         default:
@@ -76,484 +99,525 @@ export default function RepresentForm() {
     }
   };
 
-  const formik = useFormik({
-    initialValues: initValRepresent,
-    validationSchema: representSchema,
-    onSubmit: async (values) => {
-      setLoading(true);
-
-      toast.promise(sendInfo(values), {
-        loading: "Procesando...",
-        success: (data) => {
-          routeHandler();
-          return data;
-        },
-        error: (error: Error) => {
-          return error.message;
-        },
-        finally: () => {
-          setLoading(false);
-        },
-      });
-    },
-  });
-
   const disabledKeys = () => {
-    if (dataRelations.mother_id !== "") {
-      setDisKeys((disKeys) => [...disKeys, "M"]);
+    if (dataRelations.mother_id !== "" && !disKeys.includes("MADRE")) {
+      setDisKeys((disKeys) => [...disKeys, "MADRE"]);
     }
-    if (dataRelations.father_id !== "") {
-      setDisKeys((disKeys) => [...disKeys, "P"]);
+    if (dataRelations.father_id !== "" && !disKeys.includes("PADRE")) {
+      setDisKeys((disKeys) => [...disKeys, "PADRE"]);
     }
-    if (dataRelations.represent_id !== "") {
-      setDisKeys((disKeys) => [...disKeys, "RL"]);
+    if (
+      dataRelations.represent_id !== "" &&
+      !disKeys.includes("REPRESENTANTE LEGAL")
+    ) {
+      setDisKeys((disKeys) => [...disKeys, "REPRESENTANTE LEGAL"]);
     }
   };
 
-  const searchRepresent = async () => {
-    const data = await fetchDataWithoutBody(
-      `/represent/${formik.values.ciNumber}`,
+  const searchRepresent = async (values: string) => {
+    const data: RepresentI = await fetchDataWithoutBody(
+      `/represent/${values}`,
       session?.user.token
     );
-    if (data) {
-      switch (data.relation) {
-        case "M":
-          setDataRelations({
-            ...dataRelations,
-            mother_id: data.ciNumber,
-          });
-          break;
-        case "P":
-          setDataRelations({
-            ...dataRelations,
-            father_id: data.ciNumber,
-          });
-          break;
-        case "RL":
-          setDataRelations({
-            ...dataRelations,
-            represent_id: data.ciNumber,
-          });
-          break;
-        default:
-          break;
-      }
 
-      return "Registro existente. Redirigiendo...";
-    }
+    return data;
   };
-
-  useEffect(() => {
-    routeHandler();
-  }, []);
 
   useEffect(() => {
     disabledKeys();
   }, [dataRelations]);
 
+  useEffect(() => {
+    if (disKeys.length === 6) {
+      router.push("/register/relations");
+    }
+  }, [disKeys]);
+
+  if (edit) {
+    useEffect(() => {
+      toast.promise(searchRepresent(id!), {
+        loading: "Procesando...",
+        success: (data) => {
+          setInfo({
+            person_id: {
+              name: data.person_id.name,
+              lastname: data.person_id.lastname,
+              phone_number: data.person_id.phone_number,
+              ci_number: data.person_id.ci_number,
+              email: data.person_id.email,
+              home_dir: data.person_id.home_dir,
+              home_parroquia: data.person_id.home_parroquia,
+              home_municipio: data.person_id.home_municipio,
+              relation: data.person_id.relation,
+            },
+            tlfn_home: data.tlfn_home,
+            profession: data.profession,
+            work_place: data.work_place,
+            work_phone_number: data.work_phone_number,
+            income_month: data.income_month,
+            rl: data.rl,
+          });
+          return "Carga completa.";
+        },
+        error: (error: Error) => {
+          return error.message === "Failed to fetch"
+            ? "Error en conexión."
+            : error.message ?? "";
+        },
+      });
+    }, []);
+  }
+
   return (
-    <form
-      className="h-2/4 w-3/4 border border-gray-300 rounded-xl shadow-xl p-8"
-      onSubmit={formik.handleSubmit}
+    <Formik
+      initialValues={info}
+      enableReinitialize
+      validationSchema={edit ? representSchemaUpdate : representSchema}
+      onSubmit={async (values) => {
+        if (edit) {
+          toast.promise(sendInfoUpdate(values), {
+            loading: "Procesando...",
+            success: (data) => {
+              return data;
+            },
+            error: (error: Error) => {
+              return error.message === "Failed to fetch"
+                ? "Error en conexión."
+                : error.message ?? "";
+            },
+          });
+        } else {
+          toast.promise(sendInfo(values), {
+            loading: "Procesando...",
+            success: (data) => {
+              return data;
+            },
+            error: (error: Error) => {
+              return error.message === "Failed to fetch"
+                ? "Error en conexión."
+                : error.message ?? "";
+            },
+          });
+        }
+      }}
     >
-      <div className="flex items-center justify-center mb-7 w-full">
-        <h1 className="text-2xl font-medium">
-          Representante <p className="text-primary-500 inline-flex">|</p>{" "}
-          Registro
-        </h1>
-      </div>
-      <div className="grid grid-cols-8 gap-3">
-        <Input
-          isRequired
-          label="Cédula de Identidad:"
-          name="ciNumber"
-          description="Ingrese su Cédula de Identidad"
-          variant="bordered"
-          color={
-            formik.errors.ciNumber && formik.touched.ciNumber
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.ciNumber &&
-            formik.touched.ciNumber &&
-            formik.errors.ciNumber
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-3"
-          value={formik.values.ciNumber.toUpperCase()}
-        />
-        <Tooltip
-          content="Buscar Estudiante"
-          className="border border-primary-500"
-        >
-          <Button
-            isDisabled={formik.values.ciNumber ? false : true}
-            isIconOnly
-            color="primary"
-            variant="ghost"
-            aria-label="Buscar entidad"
-            className="w-full h-3/4"
-            onClick={() =>
-              toast.promise(searchRepresent, {
-                loading: "Procesando...",
-                success: (data) => {
-                  return data;
-                },
-                error: (error: Error) => {
-                  if (error.message === "Failed to fetch") {
-                    return "Error en conexión.";
-                  }
-                  return error.message;
-                },
-              })
-            }
-          >
-            <MdSearch className="text-2xl" />
-          </Button>
-        </Tooltip>
-
-        <Tooltip content="Omitir Relación" className="border border-danger-500">
-          <Button
-            isDisabled={formik.values.relation ? false : true}
-            isIconOnly
-            color="danger"
-            variant="ghost"
-            aria-label="Buscar entidad"
-            className="w-full h-3/4"
-            onClick={() => {
-              switch (formik.values.relation) {
-                case "M":
-                  setDataRelations({
-                    ...dataRelations,
-                    mother_id: "omit",
-                  });
-                  break;
-                case "P":
-                  setDataRelations({
-                    ...dataRelations,
-                    father_id: "omit",
-                  });
-                  break;
-                default:
-                  break;
+      {({ values, handleChange, handleBlur, errors, touched, resetForm }) => (
+        <Form className="h-2/4 w-3/4 border border-gray-300 rounded-xl shadow-xl p-8">
+          <div className="flex items-center justify-center mb-7 w-full">
+            <h1 className="text-2xl font-medium">
+              Representante <p className="text-primary-500 inline-flex">|</p>{" "}
+              Registro
+            </h1>
+          </div>
+          <div className="grid grid-cols-8 gap-3">
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Cédula de Identidad:"
+              name="person_id.ci_number"
+              description="Ingrese su Cédula de Identidad"
+              variant="bordered"
+              color={
+                errors.person_id?.ci_number && touched.person_id?.ci_number
+                  ? "danger"
+                  : "primary"
               }
-              routeHandler();
-            }}
-          >
-            <MdCancel className="text-2xl text-danger" />
-          </Button>
-        </Tooltip>
+              errorMessage={
+                errors.person_id?.ci_number &&
+                touched.person_id?.ci_number &&
+                errors.person_id?.ci_number
+              }
+              className="col-span-3"
+            />
+            {!edit && (
+              <Tooltip
+                content="Buscar Estudiante"
+                className="border border-primary-500"
+              >
+                <Button
+                  isDisabled={values.person_id.ci_number ? false : true}
+                  isIconOnly
+                  color="primary"
+                  variant="ghost"
+                  aria-label="Buscar entidad"
+                  className="w-full h-3/4"
+                  onClick={() =>
+                    toast.promise(searchRepresent(values.person_id.ci_number), {
+                      loading: "Procesando...",
+                      success: (data) => {
+                        switch (data.person_id.relation) {
+                          case "MADRE":
+                            setDataRelations({
+                              ...dataRelations,
+                              mother_id: data.id!,
+                            });
+                            break;
+                          case "PADRE":
+                            setDataRelations({
+                              ...dataRelations,
+                              father_id: data.id!,
+                            });
+                            break;
+                          case "REPRESENTANTE LEGAL":
+                            setDataRelations({
+                              ...dataRelations,
+                              represent_id: data.id!,
+                            });
+                            break;
+                          default:
+                            break;
+                        }
 
-        <Select
-          label="Relacion:"
-          variant="bordered"
-          name="relation"
-          id="relation"
-          disabledKeys={disKeys}
-          className="col-span-3"
-          description={"Ingrese la relacion con el estudiante."}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          errorMessage={
-            formik.errors.relation &&
-            formik.touched.relation &&
-            formik.errors.relation
-          }
-          color={
-            formik.errors.relation && formik.touched.relation
-              ? "danger"
-              : "primary"
-          }
-          value={formik.values.relation}
-        >
-          <SelectItem key={"M"} value={"MADRE"}>
-            MADRE
-          </SelectItem>
-          <SelectItem key={"P"} value={"PADRE"}>
-            PADRE
-          </SelectItem>
-          <SelectItem key={"RL"} value={"REPRESENTANTE"}>
-            REPRESENTANTE LEGAL
-          </SelectItem>
-        </Select>
+                        routeHandler(resetForm);
+                        return "Registro existente.";
+                      },
+                      error: (error: Error) => {
+                        if (error.message === "Failed to fetch") {
+                          return "Error en conexión.";
+                        }
+                        return error.message;
+                      },
+                    })
+                  }
+                >
+                  <MdSearch className="text-2xl" />
+                </Button>
+              </Tooltip>
+            )}
 
-        <Input
-          isRequired
-          label="Nombres:"
-          name="name"
-          description="Ingrese sus Nombres"
-          variant="bordered"
-          color={
-            formik.errors.name && formik.touched.name ? "danger" : "primary"
-          }
-          errorMessage={
-            formik.errors.name && formik.touched.name && formik.errors.name
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-4"
-          value={formik.values.name.toUpperCase()}
-        />
+            <Select
+              items={relationSelect}
+              name="person_id.relation"
+              label="Relación:"
+              disabledKeys={disKeys}
+              className="col-span-3"
+              description={"Ingrese la relación con el estudiante."}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              selectedKeys={[values.person_id.relation.toString()]}
+              errorMessage={
+                errors.person_id?.relation &&
+                touched.person_id?.relation &&
+                errors.person_id?.relation
+              }
+              color={
+                errors.person_id?.relation && touched.person_id?.relation
+                  ? "danger"
+                  : "primary"
+              }
+            >
+              {(item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              )}
+            </Select>
 
-        <Input
-          isRequired
-          label="Apellidos:"
-          name="lastName"
-          description="Ingrese sus Apellidos"
-          variant="bordered"
-          color={
-            formik.errors.lastName && formik.touched.lastName
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.lastName &&
-            formik.touched.lastName &&
-            formik.errors.lastName
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-4"
-          value={formik.values.lastName.toUpperCase()}
-        />
+            {!edit && (
+              <Tooltip
+                content="Omitir Relación"
+                className="border border-danger-500"
+              >
+                <Button
+                  isDisabled={
+                    values.person_id.relation &&
+                    values.person_id.relation !== "REPRESENTANTE LEGAL" &&
+                    !edit
+                      ? false
+                      : true
+                  }
+                  isIconOnly
+                  color="danger"
+                  variant="ghost"
+                  aria-label="Buscar entidad"
+                  className="w-full h-3/4"
+                  onClick={() => {
+                    switch (values.person_id.relation) {
+                      case "MADRE":
+                        setDataRelations({
+                          ...dataRelations,
+                          mother_id: "omit",
+                        });
+                        break;
+                      case "PADRE":
+                        setDataRelations({
+                          ...dataRelations,
+                          father_id: "omit",
+                        });
+                        break;
+                      default:
+                        break;
+                    }
+                    routeHandler(resetForm);
+                  }}
+                >
+                  <MdCancel className="text-2xl text-danger" />
+                </Button>
+              </Tooltip>
+            )}
 
-        <Input
-          isRequired
-          label="Correo electrónico:"
-          type="email"
-          name="email"
-          value={formik.values.email}
-          description="Ingrese su correo electrónico"
-          variant="bordered"
-          color={
-            formik.errors.email && formik.touched.email ? "danger" : "primary"
-          }
-          errorMessage={
-            formik.errors.email && formik.touched.email && formik.errors.email
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-4"
-        />
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Nombres:"
+              name="person_id.name"
+              description="Ingrese sus Nombres"
+              variant="bordered"
+              color={
+                errors.person_id?.name && touched.person_id?.name
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.name &&
+                touched.person_id?.name &&
+                errors.person_id?.name
+              }
+              className="col-span-4"
+            />
 
-        <Input
-          isRequired
-          label="Número telefónico:"
-          name="phoneNumber"
-          description="Ingrese su número de teléfono"
-          variant="bordered"
-          value={formik.values.phoneNumber}
-          color={
-            formik.errors.phoneNumber && formik.touched.phoneNumber
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.phoneNumber &&
-            formik.touched.phoneNumber &&
-            formik.errors.phoneNumber
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-4"
-        />
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Apellidos:"
+              name="person_id.lastname"
+              description="Ingrese sus Apellidos"
+              variant="bordered"
+              color={
+                errors.person_id?.lastname && touched.person_id?.lastname
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.lastname &&
+                touched.person_id?.lastname &&
+                errors.person_id?.lastname
+              }
+              className="col-span-4"
+              value={values.person_id.lastname}
+            />
 
-        <Input
-          label="Profesión:"
-          name="profession"
-          description="Ingrese su profesión."
-          variant="bordered"
-          color={
-            formik.errors.profession && formik.touched.profession
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.profession &&
-            formik.touched.profession &&
-            formik.errors.profession
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-4"
-          value={formik.values.profession}
-        />
-        <h1 className="col-span-8 font-semibold text-lg">Datos economicos:</h1>
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Correo electrónico:"
+              type="email"
+              name="person_id.email"
+              value={values.person_id?.email}
+              description="Ingrese su correo electrónico"
+              variant="bordered"
+              color={
+                errors.person_id?.email && touched.person_id?.email
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.email &&
+                touched.person_id?.email &&
+                errors.person_id?.email
+              }
+              className="col-span-4"
+            />
 
-        <Input
-          isRequired
-          label="Ingresos Mensuales:"
-          type="number"
-          name="incomeMonth"
-          description="Ingrese cantidad de ingresos mensuales."
-          variant="bordered"
-          color={
-            formik.errors.incomeMonth && formik.touched.incomeMonth
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.incomeMonth &&
-            formik.touched.incomeMonth &&
-            formik.errors.incomeMonth
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-2"
-          value={`${formik.values.incomeMonth}`}
-          endContent={<p className="text-gray-400 font-medium text-base">$</p>}
-        />
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Número telefónico:"
+              name="person_id.phone_number"
+              description="Ingrese su número de teléfono"
+              variant="bordered"
+              value={values.person_id.phone_number}
+              color={
+                errors.person_id?.phone_number &&
+                touched.person_id?.phone_number
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.phone_number &&
+                touched.person_id?.phone_number &&
+                errors.person_id?.phone_number
+              }
+              className="col-span-4"
+            />
 
-        <Input
-          label="Número telefónico de su trabajo:"
-          name="workPhoneNumber"
-          description="Ingrese número de teléfono de su trabajo"
-          variant="bordered"
-          color={
-            formik.errors.workPhoneNumber && formik.touched.workPhoneNumber
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.workPhoneNumber &&
-            formik.touched.workPhoneNumber &&
-            formik.errors.workPhoneNumber
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-3"
-        />
+            <Field
+              as={Input}
+              label="Profesión:"
+              name="profession"
+              description="Ingrese su profesión."
+              variant="bordered"
+              color={
+                errors.profession && touched.profession ? "danger" : "primary"
+              }
+              errorMessage={
+                errors.profession && touched.profession && errors.profession
+              }
+              className="col-span-4"
+              value={values.profession}
+            />
+            <h1 className="col-span-8 font-semibold text-lg">
+              Datos económicos:
+            </h1>
 
-        <Input
-          label="Lugar de trabajo:"
-          name="workPlace"
-          description="Ingrese donde trabaja."
-          variant="bordered"
-          color={
-            formik.errors.workPlace && formik.touched.workPlace
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.workPlace &&
-            formik.touched.workPlace &&
-            formik.errors.workPlace
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-8"
-          value={formik.values.workPlace.toUpperCase()}
-        />
+            <Field
+              as={Input}
+              label="Ingresos Mensuales:"
+              type="number"
+              name="income_month"
+              description="Ingrese cantidad de ingresos mensuales."
+              variant="bordered"
+              color={
+                errors.income_month && touched.income_month
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.income_month &&
+                touched.income_month &&
+                errors.income_month
+              }
+              className="col-span-2"
+              endContent={
+                <p className="text-gray-400 font-medium text-base">$</p>
+              }
+            />
 
-        <h1 className="col-span-8 font-semibold text-lg">
-          Datos donde reside:
-        </h1>
-        <Input
-          isRequired
-          label="Parroquia:"
-          name="homeParroquia"
-          description="Ingrese su Parroquia"
-          variant="bordered"
-          color={
-            formik.errors.homeParroquia && formik.touched.homeParroquia
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.homeParroquia &&
-            formik.touched.homeParroquia &&
-            formik.errors.homeParroquia
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-3"
-          value={formik.values.homeParroquia.toUpperCase()}
-        />
-        <Input
-          isRequired
-          label="Municipio:"
-          name="homeMunicipio"
-          description="Ingrese su Municipio"
-          variant="bordered"
-          color={
-            formik.errors.homeMunicipio && formik.touched.homeMunicipio
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.homeMunicipio &&
-            formik.touched.homeMunicipio &&
-            formik.errors.homeParroquia
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-3"
-          value={formik.values.homeMunicipio.toUpperCase()}
-        />
-        <Input
-          isRequired
-          label="Número de Habitación:"
-          name="tlfnHome"
-          variant="bordered"
-          color={
-            formik.errors.tlfnHome && formik.touched.tlfnHome
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.tlfnHome &&
-            formik.touched.tlfnHome &&
-            formik.errors.tlfnHome
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-2"
-        />
-        <Input
-          isRequired
-          label="Dirección de habitación:"
-          name="homeDir"
-          description="Ingrese su Dirección"
-          variant="bordered"
-          color={
-            formik.errors.homeDir && formik.touched.homeDir
-              ? "danger"
-              : "primary"
-          }
-          errorMessage={
-            formik.errors.homeDir &&
-            formik.touched.homeDir &&
-            formik.errors.homeDir
-          }
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="col-span-8"
-          value={formik.values.homeDir.toUpperCase()}
-        />
-      </div>
+            <Field
+              as={Input}
+              label="Número telefónico de su trabajo:"
+              name="work_phone_number"
+              description="Ingrese número de teléfono de su trabajo"
+              variant="bordered"
+              color={
+                errors.work_phone_number && touched.work_phone_number
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.work_phone_number &&
+                touched.work_phone_number &&
+                errors.work_phone_number
+              }
+              className="col-span-3"
+            />
 
-      <div className="flex flex-row justify-around mt-7">
-        <Button
-          variant="ghost"
-          className="w-3/12"
-          color="danger"
-          type="reset"
-          onPress={formik.handleReset}
-        >
-          Limpiar
-        </Button>
-        <Button
-          variant="solid"
-          className="w-3/12"
-          color="primary"
-          type="submit"
-          isLoading={Loading}
-        >
-          Registrar
-        </Button>
-      </div>
-    </form>
+            <Field
+              as={Input}
+              label="Lugar de trabajo:"
+              name="work_place"
+              description="Ingrese donde trabaja."
+              variant="bordered"
+              color={
+                errors.work_place && touched.work_place ? "danger" : "primary"
+              }
+              errorMessage={
+                errors.work_place && touched.work_place && errors.work_place
+              }
+              className="col-span-8"
+              value={values.work_place}
+            />
+
+            <h1 className="col-span-8 font-semibold text-lg">
+              Datos donde reside:
+            </h1>
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Parroquia:"
+              name="person_id.home_parroquia"
+              description="Ingrese su Parroquia"
+              variant="bordered"
+              color={
+                errors.person_id?.home_parroquia &&
+                touched.person_id?.home_parroquia
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.home_parroquia &&
+                touched.person_id?.home_parroquia &&
+                errors.person_id?.home_parroquia
+              }
+              className="col-span-3"
+              value={values.person_id?.home_parroquia}
+            />
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Municipio:"
+              name="person_id.home_municipio"
+              description="Ingrese su Municipio"
+              variant="bordered"
+              color={
+                errors.person_id?.home_municipio &&
+                touched.person_id?.home_municipio
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.home_municipio &&
+                touched.person_id?.home_municipio &&
+                errors.person_id?.home_parroquia
+              }
+              className="col-span-3"
+              value={values.person_id?.home_municipio}
+            />
+            <Field
+              as={Input}
+              label="Número de Habitación:"
+              name="tlfn_home"
+              variant="bordered"
+              color={
+                errors.tlfn_home && touched.tlfn_home ? "danger" : "primary"
+              }
+              errorMessage={
+                errors.tlfn_home && touched.tlfn_home && errors.tlfn_home
+              }
+              className="col-span-2"
+            />
+            <Field
+              as={Input}
+              isRequired={edit ? false : true}
+              label="Dirección de habitación:"
+              name="person_id.home_dir"
+              description="Ingrese su Dirección"
+              variant="bordered"
+              color={
+                errors.person_id?.home_dir && touched.person_id?.home_dir
+                  ? "danger"
+                  : "primary"
+              }
+              errorMessage={
+                errors.person_id?.home_dir &&
+                touched.person_id?.home_dir &&
+                errors.person_id?.home_dir
+              }
+              className="col-span-8"
+              value={values.person_id.home_dir}
+            />
+          </div>
+
+          <div className="flex flex-row justify-around mt-7">
+            <Button
+              variant="ghost"
+              className="w-3/12"
+              color="danger"
+              type="reset"
+            >
+              Limpiar
+            </Button>
+            <Button
+              variant="solid"
+              className="w-3/12"
+              color="primary"
+              type="submit"
+            >
+              {edit ? "Actualizar" : "Registrar"}
+            </Button>
+          </div>
+        </Form>
+      )}
+    </Formik>
   );
 }

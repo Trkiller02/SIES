@@ -8,7 +8,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { messagesEnum, validationMsg } from 'src/utils/handlerMsg';
+import { msgEnum, validationMsg } from 'src/utils/handlerMsg';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -17,7 +17,7 @@ export class CreateUserDto {
   @IsString()
   @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty({
-    message: validationMsg('El nombre', messagesEnum.not_empty),
+    message: validationMsg('El nombre', msgEnum.not_empty),
   })
   ci_number: string;
 
@@ -25,10 +25,10 @@ export class CreateUserDto {
   @IsString()
   @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty({
-    message: validationMsg('El nombre', messagesEnum.not_empty),
+    message: validationMsg('El nombre', msgEnum.not_empty),
   })
   @MinLength(2, {
-    message: validationMsg('El nombre', messagesEnum.not_min),
+    message: validationMsg('El nombre', msgEnum.not_min),
   })
   name: string;
 
@@ -36,10 +36,10 @@ export class CreateUserDto {
   @IsString()
   @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty({
-    message: validationMsg('El apellido', messagesEnum.not_empty),
+    message: validationMsg('El apellido', msgEnum.not_empty),
   })
   @MinLength(2, {
-    message: validationMsg('El apellido', messagesEnum.not_min),
+    message: validationMsg('El apellido', msgEnum.not_min),
   })
   lastname: string;
 
@@ -48,7 +48,7 @@ export class CreateUserDto {
   @IsEmail()
   @Transform(({ value }: { value: string }) => value.toLowerCase().trim())
   @IsNotEmpty({
-    message: validationMsg('La email', messagesEnum.not_empty),
+    message: validationMsg('La email', msgEnum.not_empty),
   })
   email: string;
 
@@ -56,7 +56,7 @@ export class CreateUserDto {
   @IsString()
   @Transform(({ value }) => value.trim())
   @IsNotEmpty({
-    message: validationMsg('La contraseña', messagesEnum.not_empty),
+    message: validationMsg('La contraseña', msgEnum.not_empty),
   })
   @MinLength(4)
   password: string;

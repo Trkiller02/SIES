@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { not_found_err } from 'src/utils/handlerErrors';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HealthInfo } from './entities/health-info.entity';
@@ -19,13 +19,21 @@ export class HealthInfoService {
   }
 
   async findAll(): Promise<HealthInfo[]> {
-    const health_info = await this.HealthInfoRepo.find();
+    const health_info = await this.HealthInfoRepo.find({
+      relations: {
+        relationTable: true,
+      },
+    });
 
-    if (health_info.length === 0) {
-      not_found_err(messagesEnum.not_found, 'No se encuentran registros.');
+    const result = health_info.filter(
+      (object) => object.relationTable !== null,
+    );
+
+    if (result.length === 0) {
+      not_found_err(msgEnum.not_found, 'No se encuentran registros.');
     }
 
-    return health_info;
+    return result;
   }
 
   async findOne(id: string): Promise<HealthInfo | null> {
@@ -45,7 +53,7 @@ export class HealthInfoService {
     });
 
     if (!health_info)
-      not_found_err(messagesEnum.not_found, 'No se encontro el registro.');
+      not_found_err(msgEnum.not_found, 'No se encontro el registro.');
 
     return health_info;
   }

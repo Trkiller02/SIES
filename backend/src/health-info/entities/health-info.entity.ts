@@ -64,6 +64,9 @@ export class HealthInfo {
   })
   lateralidad?: string;
 
-  @OneToOne(() => RelationsTable, (relationTable) => relationTable.id)
+  @OneToOne(
+    () => RelationsTable,
+    (relationTable) => relationTable.health_info_id,
+  )
   relationTable: RelationsTable;
 }

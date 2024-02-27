@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFichaDto } from './dto/create-ficha.dto';
 import { UpdateFichaDto } from './dto/update-ficha.dto';
-import { messagesEnum } from 'src/utils/handlerMsg';
+import { msgEnum } from 'src/utils/handlerMsg';
 import { not_found_err } from 'src/utils/handlerErrors';
 import { Repository } from 'typeorm';
 import { Ficha as FichaModel } from './entities/ficha.entity';
@@ -29,7 +29,12 @@ export class FichaService {
   }
 
   //TODO: BUSCA TODAS LAS FICHAS
-  async findAll(etapa, deleted = false, section, level): Promise<FichaModel[]> {
+  async findAll(
+    etapa?,
+    deleted = false,
+    section?,
+    level?,
+  ): Promise<FichaModel[]> {
     if (level || etapa || section) {
       const fichas = await this.fichaRepo.find({
         where: {
@@ -45,19 +50,30 @@ export class FichaService {
 
         withDeleted: deleted,
       });
-      if (fichas.length === 0) {
-        not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
+
+      const result = fichas.filter((object) => object.relationTable !== null);
+
+      if (result.length === 0) {
+        not_found_err(msgEnum.not_found, 'No se encuentran registros.');
       }
 
-      return fichas;
+      return result;
     } else {
-      const fichas = await this.fichaRepo.find();
+      const fichas = await this.fichaRepo.find({
+        relations: {
+          relationTable: {
+            student_id: true,
+          },
+        },
+      });
 
-      if (fichas.length === 0) {
-        not_found_err(messagesEnum.not_found, 'No se encuentran regitros');
+      const result = fichas.filter((object) => object.relationTable !== null);
+
+      if (result.length === 0) {
+        not_found_err(msgEnum.not_found, 'No se encuentran registros.');
       }
 
-      return fichas;
+      return result;
     }
   }
 
@@ -80,7 +96,7 @@ export class FichaService {
 
     if (!ficha) {
       not_found_err(
-        messagesEnum.not_found,
+        msgEnum.not_found,
         'Puede que no exista el registro o se haya equivocado en la busqueda',
       );
     }
@@ -97,10 +113,6 @@ export class FichaService {
   async remove(id: string) {
     const ficha = await this.findOne(id);
 
-    return await this.fichaRepo.softDelete({ id: ficha.id });
-  }
-
-  async egresar(listEntity: string[]) {
-    return listEntity;
+    return await this.fichaRepo.delete({ id: ficha.id });
   }
 }
