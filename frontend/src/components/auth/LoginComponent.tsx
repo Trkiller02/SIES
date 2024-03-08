@@ -44,7 +44,9 @@ export default function LoginComponent() {
             return data;
           },
           error: (error: SignInResponse) => {
-            return error.error;
+            return error.error === "fetch failed"
+              ? "Error de conexión."
+              : error.error;
           },
           finally: () => {
             setLoading(false);

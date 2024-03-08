@@ -27,7 +27,6 @@ interface StudentDto {
     home_dir: string;
     home_parroquia: string;
     home_municipio: string;
-    relation?: string;
   };
   born_state: string;
   born_municipio: string;
@@ -107,7 +106,6 @@ export default function StudentForm({
               home_dir: data!.person_id.home_dir,
               home_parroquia: data!.person_id.home_parroquia,
               home_municipio: data!.person_id.home_municipio,
-              relation: data!.person_id.relation,
             },
             born_state: data!.born_state,
             born_pais: data!.born_pais,
@@ -184,6 +182,7 @@ export default function StudentForm({
             </h1>
           </div>
           <div className="grid grid-cols-8 gap-3">
+            {/* CI FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -204,6 +203,8 @@ export default function StudentForm({
               className="col-span-2"
               value={values.person_id?.ci_number.toUpperCase()}
             />
+
+            {/* SEARCH BUTTON */}
             {!edit && (
               <Tooltip
                 content="Buscar Estudiante"
@@ -241,6 +242,7 @@ export default function StudentForm({
 
             <div className="col-span-2"></div>
 
+            {/* NAME FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -259,8 +261,10 @@ export default function StudentForm({
                 errors.person_id?.name
               }
               className="col-span-4"
+              value={values.person_id.name.toUpperCase()}
             />
 
+            {/* LASTNAME FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -279,8 +283,10 @@ export default function StudentForm({
                 errors.person_id?.lastname
               }
               className="col-span-4"
+              value={values.person_id.lastname.toUpperCase()}
             />
 
+            {/* EMAIL FIELD */}
             <Field
               as={Input}
               label="Correo electrónico:"
@@ -299,8 +305,10 @@ export default function StudentForm({
                 errors.person_id?.email
               }
               className="col-span-3"
+              value={values.person_id.email?.toLowerCase()}
             />
 
+            {/* PHONE_NUMBER FIELD */}
             <Field
               as={Input}
               label="Número telefónico:"
@@ -325,6 +333,8 @@ export default function StudentForm({
             <h1 className="col-span-8 font-semibold text-lg">
               Datos de Nacimiento:
             </h1>
+
+            {/* BORN_DATE FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -345,6 +355,8 @@ export default function StudentForm({
               }
               value={`${values.born_date}`}
             />
+
+            {/* AGE FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -361,7 +373,10 @@ export default function StudentForm({
                 <p className="text-gray-400 font-medium text-base">años</p>
               }
             />
+
             <div className="col-span-3"></div>
+
+            {/* BORN_PAIS FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -376,8 +391,10 @@ export default function StudentForm({
                 errors.born_pais && touched.born_pais && errors.born_pais
               }
               className="col-span-4"
-              value={values.born_pais}
+              value={values.born_pais.toUpperCase()}
             />
+
+            {/* BORN_STATE FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -392,8 +409,10 @@ export default function StudentForm({
                 errors.born_state && touched.born_state && errors.born_state
               }
               className="col-span-4"
-              value={values.born_state}
+              value={values.born_state.toUpperCase()}
             />
+
+            {/* BORN_MUNICIPIO FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -412,8 +431,10 @@ export default function StudentForm({
                 errors.born_municipio
               }
               className="col-span-4"
-              value={values.born_municipio}
+              value={values.born_municipio.toUpperCase()}
             />
+
+            {/* BORN_PARROQUIA FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -432,8 +453,10 @@ export default function StudentForm({
                 errors.born_parroquia
               }
               className="col-span-4"
-              value={values.born_parroquia}
+              value={values.born_parroquia.toUpperCase()}
             />
+
+            {/* BORN_PLACE FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -447,11 +470,14 @@ export default function StudentForm({
                 errors.born_place && touched.born_place && errors.born_place
               }
               className="col-span-8"
-              value={values.born_place}
+              value={values.born_place.toUpperCase()}
             />
+
             <h1 className="col-span-8 font-semibold text-lg">
               Datos donde reside:
             </h1>
+
+            {/* HOME_PARROQUIA FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -471,8 +497,10 @@ export default function StudentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-4"
+              value={values.person_id.home_parroquia.toUpperCase()}
             />
 
+            {/* HOME_MUNICIPIO FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -492,8 +520,10 @@ export default function StudentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-4"
-              value={values.person_id?.home_municipio}
+              value={values.person_id?.home_municipio.toUpperCase()}
             />
+
+            {/* HOME_DIR FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -512,7 +542,7 @@ export default function StudentForm({
                 errors.person_id?.home_dir
               }
               className="col-span-8"
-              value={values.person_id?.home_dir}
+              value={values.person_id?.home_dir.toUpperCase()}
             />
           </div>
 

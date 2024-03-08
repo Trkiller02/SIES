@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   ParseBoolPipe,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,13 +24,13 @@ import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Auth([Role.EVALUACION])
+  @Auth([Role.ADMIN])
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @Auth([Role.EVALUACION])
+  @Auth([Role.ADMIN])
   @ApiQuery({
     name: 'deleted',
     required: false,
@@ -58,10 +59,15 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  @Auth([Role.EVALUACION])
+  @Auth([Role.ADMIN])
   @ApiParam({ name: 'id', type: String })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+
+  @Put('/seed')
+  seed() {
+    return this.userService.seed();
   }
 }

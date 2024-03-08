@@ -124,6 +124,10 @@ export default function representDetailsPage({
                       : data?.person_id.phone_number}
                   </span>
                 </p>
+                <p className="font-semibold">
+                  Representante Legal:&nbsp;&nbsp;
+                  <span className="font-normal">{`${data?.represent}`}</span>
+                </p>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="font-semibold">
@@ -150,9 +154,7 @@ export default function representDetailsPage({
                 </p>
                 <p className="font-semibold">
                   Relación:&nbsp;&nbsp;
-                  <span className="font-normal">
-                    {data?.person_id.relation}
-                  </span>
+                  <span className="font-normal">{data?.relation}</span>
                 </p>
               </div>
               <p className="font-semibold col-span-3 py-2">

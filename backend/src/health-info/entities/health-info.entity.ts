@@ -1,4 +1,4 @@
-import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
+import { RelationsTable } from '../../relations-table/entities/relations-table.entity';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('health_info')
@@ -46,13 +46,13 @@ export class HealthInfo {
   sex: string;
 
   @Column({
-    type: Number,
+    type: 'float',
     nullable: true,
   })
   weight?: number;
 
   @Column({
-    type: Number,
+    type: 'float',
     nullable: true,
   })
   size?: number;

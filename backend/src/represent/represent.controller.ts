@@ -18,11 +18,12 @@ import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('REPRESENT:')
 @ApiBearerAuth()
-@Auth([Role.DOCENTES])
+@Auth()
 @Controller('represent')
 export class RepresentController {
   constructor(private readonly representService: RepresentService) {}
 
+  @Auth([Role.AUDITOR, Role.EDITOR])
   @Post()
   create(@Body() createRepresentDto: CreateRepresentDto) {
     return this.representService.create(createRepresentDto);
@@ -63,6 +64,7 @@ export class RepresentController {
     return this.representService.findOne(id, deleted, false, toFielter);
   }
 
+  @Auth([Role.AUDITOR, Role.EDITOR])
   @ApiParam({ name: 'id', type: String })
   @Patch(':id')
   update(
@@ -72,6 +74,7 @@ export class RepresentController {
     return this.representService.update(id, updateRepresentDto);
   }
 
+  @Auth([Role.AUDITOR, Role.EDITOR])
   @ApiParam({ name: 'id', type: String })
   @Delete(':id')
   remove(@Param('id') id: string) {

@@ -12,7 +12,6 @@ export const initValStudent = {
     home_dir: "",
     home_parroquia: "",
     home_municipio: "",
-    relation: "ESTUDIANTE",
   },
   born_state: "",
   born_pais: "",

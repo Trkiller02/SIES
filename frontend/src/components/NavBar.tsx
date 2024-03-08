@@ -1,6 +1,5 @@
 "use client";
 
-import { fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { ROLE_LIST } from "@/utils/roleList";
 import {
   Navbar,
@@ -244,14 +243,12 @@ export function NavBar() {
               textValue="Log Out"
               color="danger"
               onPress={() => {
-                signOut({
-                  redirect: false,
-                });
-
                 if (typeof window !== "undefined") {
                   localStorage.removeItem("dataRelations");
                 }
-                router.push("/auth/login");
+                signOut({
+                  redirect: true,
+                });
               }}
             >
               Cerrar Sesión

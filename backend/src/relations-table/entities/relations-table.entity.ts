@@ -1,7 +1,7 @@
-import { Ficha } from 'src/ficha/entities/ficha.entity';
-import { HealthInfo } from 'src/health-info/entities/health-info.entity';
-import { Represent } from 'src/represent/entities/represent.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { Ficha } from '../../ficha/entities/ficha.entity';
+import { HealthInfo } from '../../health-info/entities/health-info.entity';
+import { Represent } from '../../represent/entities/represent.entity';
+import { Student } from '../../student/entities/student.entity';
 import {
   DeleteDateColumn,
   Entity,
@@ -21,10 +21,11 @@ export class RelationsTable {
     (represent: Represent) => represent.relation_table_represent,
     {
       cascade: true,
+      nullable: true,
     },
   )
   @JoinColumn({ name: 'represent_id' })
-  represent_id: string | Represent;
+  represent_id?: string | Represent;
 
   @OneToOne(() => Ficha, (fichaTable) => fichaTable.relationTable, {
     cascade: true,

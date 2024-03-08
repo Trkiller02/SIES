@@ -5,6 +5,8 @@ import {
   IsOptional,
   IsPositive,
   IsNotEmptyObject,
+  IsBoolean,
+  IsNotEmpty,
 } from 'class-validator';
 import { CreatePersonDto } from 'src/person/dto/create-person.dto';
 
@@ -46,4 +48,16 @@ export class CreateRepresentDto {
   @IsNumber()
   @IsPositive()
   income_month?: number;
+
+  @ApiProperty({
+    type: 'boolean',
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  represent: boolean;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  relation: string;
 }

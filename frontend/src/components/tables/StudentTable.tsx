@@ -144,39 +144,37 @@ export default function StudentTable({
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              {!relation && (
-                <>
-                  <Tooltip content="Detalles" color="primary">
-                    <Button
-                      as={Link}
-                      href={`/search/student/${user.ci_number}`}
-                      isIconOnly
-                    >
-                      <MdOutlineRemoveRedEye className="text-lg text-primary cursor-pointer active:opacity-50" />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip content="Editar" color="success">
-                    <Button
-                      as={Link}
-                      href={`/edit/student/${user.ci_number}`}
-                      isIconOnly
-                    >
-                      <MdOutlineCreate className="text-lg text-success cursor-pointer active:opacity-50" />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip color="danger" content="Eliminar">
-                    <Button
-                      onPress={() => {
-                        setEntityFocus(user.ci_number);
-                        onOpen();
-                      }}
-                      isIconOnly
-                    >
-                      <MdDeleteOutline className="text-lg text-danger cursor-pointer active:opacity-50" />
-                    </Button>
-                  </Tooltip>
-                </>
-              )}
+              <>
+                <Tooltip content="Detalles" color="primary">
+                  <Button
+                    as={Link}
+                    href={`/search/student/${user.ci_number}`}
+                    isIconOnly
+                  >
+                    <MdOutlineRemoveRedEye className="text-lg text-primary cursor-pointer active:opacity-50" />
+                  </Button>
+                </Tooltip>
+                <Tooltip content="Editar" color="success">
+                  <Button
+                    as={Link}
+                    href={`/edit/student/${user.ci_number}`}
+                    isIconOnly
+                  >
+                    <MdOutlineCreate className="text-lg text-success cursor-pointer active:opacity-50" />
+                  </Button>
+                </Tooltip>
+                <Tooltip color="danger" content="Eliminar">
+                  <Button
+                    onPress={() => {
+                      setEntityFocus(user.ci_number);
+                      onOpen();
+                    }}
+                    isIconOnly
+                  >
+                    <MdDeleteOutline className="text-lg text-danger cursor-pointer active:opacity-50" />
+                  </Button>
+                </Tooltip>
+              </>
             </div>
           );
         default:
@@ -189,7 +187,9 @@ export default function StudentTable({
   return (
     <>
       <Table aria-label="Student Table" className="w-full">
-        <TableHeader columns={columnsStudent}>
+        <TableHeader
+          columns={relation ? columnsStudent.slice(0, -1) : columnsStudent}
+        >
           {(column) => (
             <TableColumn
               key={column.uid}

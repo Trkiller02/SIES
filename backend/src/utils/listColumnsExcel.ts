@@ -16,6 +16,13 @@ export const headerStyle: Partial<Style> = {
     bottom: { style: 'thin', color: { argb: '000' } },
     left: { style: 'thin', color: { argb: '000' } },
   },
+  fill: {
+    type: 'pattern',
+    pattern: 'solid',
+    bgColor: {
+      argb: '6bf556',
+    },
+  },
 };
 
 const rowStyle: Partial<Style> = {
@@ -31,7 +38,12 @@ const rowStyle: Partial<Style> = {
 
 export const representColumns = [
   { header: 'RELACIÓN', key: 'relation', width: 25, style: rowStyle },
-  { header: 'REPRESENTANTE LEGAL', key: 'rl', width: 25, style: rowStyle },
+  {
+    header: 'REPRESENTANTE LEGAL',
+    key: 'represent',
+    width: 25,
+    style: rowStyle,
+  },
   { header: 'NOMBRE', key: 'name', width: 25, style: rowStyle },
   { header: 'APELLIDO', key: 'lastname', width: 25, style: rowStyle },
   { header: 'CORREO ELECTRÓNICO', key: 'email', width: 25, style: rowStyle },

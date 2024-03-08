@@ -195,8 +195,8 @@ export default function RelationsForm() {
         }}
       >
         <Form className="flex flex-col gap-4 items-center justify-center p-6 shadow-xl rounded-lg w-3/4 h-3/4 border border-gray-300">
-          <h1 className="text-2xl">¿Completar Inscripcion?</h1>
-          <div className="w-full h-full flex flex-col justify-center items-center m-2">
+          <h1 className="text-3cd xl">¿Completar Inscripcion?</h1>
+          <div className="w-full h-full flex flex-col justify-center items-center">
             {student !== undefined && (
               <>
                 <h1 className="text-2xl self-start p-3">Estudiante: </h1>
@@ -218,9 +218,9 @@ export default function RelationsForm() {
           </div>
           <Button
             color="primary"
-            variant="ghost"
-            className="w-1/4 h-1/4"
-            size="lg"
+            variant="solid"
+            className="w-1/4 h-1/6"
+            size="md"
             type="submit"
           >
             Completar

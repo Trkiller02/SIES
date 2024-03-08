@@ -8,11 +8,9 @@ import {
   Select,
   SelectItem,
   Skeleton,
-  Table,
   Tooltip,
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import DashboardLayout from "./dashboard/layout";
 import { Field, Form, Formik } from "formik";
 import { toast } from "sonner";
@@ -31,7 +29,6 @@ import UserTable from "@/components/tables/UserTable";
 import StudentTable from "@/components/tables/StudentTable";
 
 export default function indexSearchPage() {
-  const router = useRouter();
   const { data: session } = useSession();
   const [info, setInfo] = useState<any>();
   const [entity, setEntity] = useState("");
@@ -53,14 +50,14 @@ export default function indexSearchPage() {
     }
 
     if (value.id !== "") {
-      url = `/${value.entity}/${value.id}`;
+      url = `/${value.entity === "student" ? "ficha" : value.entity}/${
+        value.id
+      }`;
     }
 
     if (value.entity === "represent") url += "?tofielter=true";
 
     const req = await fetchDataWithoutBody(url, session?.user.token);
-
-    console.log(req);
 
     if (req) {
       if (!(req instanceof Array)) {
@@ -71,7 +68,6 @@ export default function indexSearchPage() {
       return "Busqueda finalizada.";
     }
   };
-
   return (
     <DashboardLayout>
       <Formik

@@ -20,12 +20,13 @@ import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 // ACCESO RESTRINGIDO PARA USUARIO COMÚN
 @ApiTags('STUDENT:')
 @ApiBearerAuth()
-@Auth([Role.DOCENTES])
+@Auth()
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
   // RUTA PARA CREAR
+  @Auth([Role.AUDITOR, Role.EDITOR])
   @Post()
   create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentService.create(createStudentDto);
@@ -55,6 +56,7 @@ export class StudentController {
   }
 
   // RUTA PARA ACTUALIZAR UN REGISTRO ESPECIFICO
+  @Auth([Role.AUDITOR, Role.EDITOR])
   @ApiParam({ name: 'id', type: String })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
@@ -62,6 +64,7 @@ export class StudentController {
   }
 
   // RUTA PARA ELIMINAR UN REGISTRO ESPECIFICO
+  @Auth([Role.AUDITOR, Role.EDITOR])
   @ApiParam({ name: 'id', type: String })
   @Delete(':id')
   remove(@Param('id') id: string) {

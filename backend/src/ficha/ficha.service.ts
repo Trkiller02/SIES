@@ -92,6 +92,11 @@ export class FichaService {
           },
         },
       ],
+      relations: {
+        relationTable: {
+          student_id: true
+        }
+      }
     });
 
     if (!ficha) {

@@ -23,6 +23,8 @@ import {
 import { PersonI, RepresentI } from "@/types/register.interfaces";
 
 export interface PersonIforCards extends PersonI {
+  relation: string;
+  represent: boolean;
   actions: string;
 }
 
@@ -76,13 +78,14 @@ export default function RepresentTable({
           );
         case "relation":
           return (
-            <Chip
-              className="capitalize"
-              color="primary"
-              size="sm"
-              variant="flat"
-            >
-              {cellValue}
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">{cellValue}</p>
+            </div>
+          );
+        case "represent":
+          return (
+            <Chip className="capitalize" size="sm" variant="flat">
+              {cellValue?.toString()}
             </Chip>
           );
         case "email":
@@ -155,7 +158,9 @@ export default function RepresentTable({
   return (
     <>
       <Table aria-label="Represent Table" className="w-full">
-        <TableHeader columns={columnsRepresent}>
+        <TableHeader
+          columns={relation ? columnsRepresent.slice(0, -1) : columnsRepresent}
+        >
           {(column) => (
             <TableColumn
               key={column.uid}
@@ -170,12 +175,16 @@ export default function RepresentTable({
           emptyContent="Sin datos."
           className="w-3/4 max-lg:w-full mt-5 min-h-[40vh]"
         >
-          {({ person_id, id }) => (
+          {({ person_id, id, relation, represent }) => (
             <TableRow key={id}>
               {(columnKey) => (
                 <TableCell>
                   {renderCell(
-                    person_id as PersonIforCards,
+                    {
+                      ...(person_id as PersonIforCards),
+                      relation: relation,
+                      represent: represent,
+                    },
                     columnKey as keyof PersonIforCards
                   )}
                 </TableCell>

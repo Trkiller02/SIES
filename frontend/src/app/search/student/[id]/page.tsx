@@ -348,84 +348,86 @@ export default function pageDetailsStudent({
           </div>
           <div className="flex flex-col gap-2 shadow-lg rounded-xl border border-gray-300 p-6">
             <p className="text-2xl">Relaciones: </p>
-            <div className="flex flex-col gap-2 p-3 mb-2 border border-gray-300 rounded-xl shadow-inner">
-              <h1 className="text-xl text-primary">Representante:</h1>
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      C.I. / C.E.{" "}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nombre
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Apellido
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Correo electronico
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Numero telefonico
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {data?.represent_id.person_id.ci_number}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {data?.represent_id.person_id.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {data?.represent_id.person_id.lastname}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      {data?.represent_id.person_id.email !== null
-                        ? data?.represent_id.person_id.email
-                        : "NO POSEE"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {data?.represent_id.person_id.phone_number !== null
-                        ? data?.represent_id.person_id.phone_number
-                        : "NO POSEE"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
-                      <Tooltip content="Detalles.">
-                        <span
-                          className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                          onClick={() =>
-                            router.push(
-                              "/search/represent/" +
-                                data?.represent_id.person_id.ci_number
-                            )
-                          }
-                        >
-                          <MdOutlineRemoveRedEye className="text-primary text-2xl" />
-                        </span>
-                      </Tooltip>
-                      <Tooltip content="Editar.">
-                        <span
-                          className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                          onClick={() =>
-                            router.push(
-                              "/edit/represent/" +
-                                data?.represent_id.person_id.ci_number
-                            )
-                          }
-                        >
-                          <MdOutlineEdit className="text-warning text-2xl" />
-                        </span>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            {data?.represent_id && (
+              <div className="flex flex-col gap-2 p-3 mb-2 border border-gray-300 rounded-xl shadow-inner">
+                <h1 className="text-xl text-primary">Representante:</h1>
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        C.I. / C.E.{" "}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Nombre
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Apellido
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Correo electronico
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Numero telefonico
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    <tr>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {data?.represent_id.person_id.ci_number}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {data?.represent_id.person_id.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {data?.represent_id.person_id.lastname}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {data?.represent_id.person_id.email !== null
+                          ? data?.represent_id.person_id.email
+                          : "NO POSEE"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {data?.represent_id.person_id.phone_number !== null
+                          ? data?.represent_id.person_id.phone_number
+                          : "NO POSEE"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
+                        <Tooltip content="Detalles.">
+                          <span
+                            className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                            onClick={() =>
+                              router.push(
+                                "/search/represent/" +
+                                  data?.represent_id.person_id.ci_number
+                              )
+                            }
+                          >
+                            <MdOutlineRemoveRedEye className="text-primary text-2xl" />
+                          </span>
+                        </Tooltip>
+                        <Tooltip content="Editar.">
+                          <span
+                            className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                            onClick={() =>
+                              router.push(
+                                "/edit/represent/" +
+                                  data?.represent_id.person_id.ci_number
+                              )
+                            }
+                          >
+                            <MdOutlineEdit className="text-warning text-2xl" />
+                          </span>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
             {data?.mother_id && (
               <div className="flex flex-col gap-2 p-3 mb-2 border border-gray-300 rounded-xl shadow-inner">
                 <h1 className="text-xl text-primary">Madre:</h1>
@@ -465,12 +467,12 @@ export default function pageDetailsStudent({
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         {data?.mother_id?.person_id.email !== null
-                          ? data?.represent_id.person_id.email
+                          ? data?.mother_id.person_id.email
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {data?.mother_id?.person_id.phone_number !== null
-                          ? data?.represent_id.person_id.phone_number
+                          ? data?.mother_id.person_id.phone_number
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">
@@ -516,6 +518,9 @@ export default function pageDetailsStudent({
                         C.I. / C.E.{" "}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Representante Legal{" "}
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Nombre
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -538,6 +543,13 @@ export default function pageDetailsStudent({
                         {data?.father_id?.person_id.ci_number}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
+                        {data?.father_id?.represent === true
+                          ? "VERDADERO"
+                          : data?.father_id?.represent === false
+                          ? "FALSO"
+                          : "FALSO"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {data?.father_id?.person_id.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -545,12 +557,12 @@ export default function pageDetailsStudent({
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         {data?.father_id?.person_id.email !== null
-                          ? data?.represent_id.person_id.email
+                          ? data?.father_id.person_id.email
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {data?.father_id?.person_id.phone_number !== null
-                          ? data?.represent_id.person_id.phone_number
+                          ? data?.father_id.person_id.phone_number
                           : "NO POSEE"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap flex gap-4 items-center">

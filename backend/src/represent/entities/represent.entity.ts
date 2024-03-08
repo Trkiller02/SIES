@@ -9,8 +9,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Person } from 'src/person/entities/person.entity';
-import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
+import { Person } from '../../person/entities/person.entity';
+import { RelationsTable } from '../../relations-table/entities/relations-table.entity';
 
 @Entity('represent')
 export class Represent {
@@ -68,7 +68,13 @@ export class Represent {
     nullable: true,
     default: false,
   })
-  rl: boolean;
+  represent: boolean;
+
+  @Column({
+    type: 'varchar',
+    length: 14,
+  })
+  relation: string;
 
   @DeleteDateColumn()
   deleted_at?: Date | null;

@@ -17,25 +17,23 @@ import { ToolsModule } from './tools/tools.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      async useFactory(config: ConfigService) {
-        return {
-          type: 'mysql',
-          host: config.get<string>('DB_HOST', { infer: true }),
-          port: config.get<number>('DB_PORT', { infer: true }),
-          database: config.get<string>('DB_DATABASE', { infer: true }),
-          username: config.get<string>('DB_PROFILE', { infer: true }),
-          password: config.get<string>('DB_PASSWORD', { infer: true }),
-          synchronize:
-            config.get<string>('NODE_ENV') === 'production' ? false : true,
-          autoLoadEntities: true,
-          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        };
-      },
+      useFactory: (config: ConfigService) => ({
+        type: 'mysql',
+        host: config.get<string>('DB_HOST', { infer: true }),
+        port: config.get<number>('DB_PORT', { infer: true }),
+        database: config.get<string>('DB_DATABASE', { infer: true }),
+        username: config.get<string>('DB_PROFILE', { infer: true }),
+        password: config.get<string>('DB_PASSWORD', { infer: true }),
+        autoLoadEntities: true,
+        entities: [__dirname + '/src/**/*.entity{.ts,.js}'],
+        migrations: [__dirname + '/src/database/migrations/**/*{.ts,.js}'],
+      }),
     }),
     StudentModule,
     UserModule,

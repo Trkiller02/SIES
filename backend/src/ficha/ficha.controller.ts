@@ -26,7 +26,7 @@ import { ActiveUser } from 'src/auth/decorators/active_user.decorator';
 
 @ApiTags('ACADEMIC-INFO:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador
-@Auth([Role.DOCENTES])
+@Auth([Role.EDITOR, Role.AUDITOR])
 @Controller('ficha') // definiendo el nombre del controlador como 'ficha'
 export class FichaController {
   constructor(private readonly fichaService: FichaService) {}

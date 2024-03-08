@@ -7,7 +7,6 @@ export interface PersonI {
   home_dir: string;
   home_parroquia: string;
   home_municipio: string;
-  relation: string;
 }
 
 export interface RepresentI {
@@ -18,7 +17,8 @@ export interface RepresentI {
   work_place?: string;
   work_phone_number?: string;
   income_month?: number;
-  rl?: boolean;
+  represent: boolean;
+  relation: string;
 }
 
 export interface FichaI {

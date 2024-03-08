@@ -50,10 +50,4 @@ export class CreatePersonDto {
   @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
   @IsNotEmpty()
   home_municipio: string;
-
-  @ApiProperty()
-  @IsString()
-  @Transform(({ value }: { value: string }) => value.toUpperCase().trim())
-  @IsNotEmpty()
-  relation: string;
 }

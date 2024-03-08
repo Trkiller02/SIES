@@ -1,6 +1,13 @@
 "use client";
 
-import { Input, Button, Tooltip, Select, SelectItem } from "@nextui-org/react";
+import {
+  Input,
+  Button,
+  Tooltip,
+  Select,
+  SelectItem,
+  Checkbox,
+} from "@nextui-org/react";
 import { MdSearch, MdCancel } from "react-icons/md";
 import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { useState, useContext, useEffect } from "react";
@@ -27,21 +34,22 @@ export default function RepresentForm({
   const { dataRelations, setDataRelations } = useContext(ctxDataRelation);
   const { data: session } = useSession();
 
-  const [disKeys, setDisKeys] = useState<string[]>([]);
+  const [disKeys, setDisKeys] = useState(new Set<string>([]));
 
   const router = useRouter();
 
   const [info, setInfo] = useState<RepresentI>(initValRepresent);
+  const [hasRepresent, setRepresent] = useState<boolean>(false);
 
   const routeHandler = (resetForm?: any) => {
     if (dataRelations.mother_id === "") {
-      return setTimeout(resetForm, 3000);
+      return setTimeout(resetForm, 2500);
     } else {
       if (dataRelations.father_id === "") {
-        return setTimeout(resetForm, 3000);
+        return setTimeout(resetForm, 2500);
       } else {
         if (dataRelations.represent_id === "") {
-          return setTimeout(resetForm, 3000);
+          return setTimeout(resetForm, 2500);
         } else {
           router.push("/register/relations");
         }
@@ -53,26 +61,33 @@ export default function RepresentForm({
     const res = await fetchData(
       `/represent/${id}`,
       "PATCH",
-      {
-        ...values,
-        rl: values.relation === "REPRESENTANTE LEGAL" ? true : false,
-      },
+
+      values,
+
       session?.user.token
     );
 
     if (res) return "Actualización exitosa.";
   };
 
-  const sendInfo = async (values: any) => {
+  const sendInfo = async (values: RepresentI) => {
     const res = await fetchData(
       `/represent`,
       "POST",
-      values,
+      {
+        ...values,
+        represent:
+          values.relation === "REPRESENTANTE LEGAL"
+            ? true
+            : disKeys.size === 2
+            ? true
+            : values.represent,
+      },
       session?.user.token
     );
 
     if (res) {
-      switch (values.person_id.relation) {
+      switch (values.relation) {
         case "MADRE":
           setDataRelations({
             ...dataRelations,
@@ -95,22 +110,31 @@ export default function RepresentForm({
           break;
       }
 
+      if (values.represent === true) {
+        setDataRelations({
+          ...dataRelations,
+          represent_id: "omit",
+        });
+
+        setRepresent(true);
+      }
+
       return "Registro exitoso.";
     }
   };
 
   const disabledKeys = () => {
-    if (dataRelations.mother_id !== "" && !disKeys.includes("MADRE")) {
-      setDisKeys((disKeys) => [...disKeys, "MADRE"]);
+    if (dataRelations.mother_id !== "" && !disKeys.has("MADRE")) {
+      setDisKeys((disKeys) => disKeys.add("MADRE"));
     }
-    if (dataRelations.father_id !== "" && !disKeys.includes("PADRE")) {
-      setDisKeys((disKeys) => [...disKeys, "PADRE"]);
+    if (dataRelations.father_id !== "" && !disKeys.has("PADRE")) {
+      setDisKeys((disKeys) => disKeys.add("PADRE"));
     }
     if (
       dataRelations.represent_id !== "" &&
-      !disKeys.includes("REPRESENTANTE LEGAL")
+      !disKeys.has("REPRESENTANTE LEGAL")
     ) {
-      setDisKeys((disKeys) => [...disKeys, "REPRESENTANTE LEGAL"]);
+      setDisKeys((disKeys) => disKeys.add("REPRESENTANTE LEGAL"));
     }
   };
 
@@ -125,13 +149,11 @@ export default function RepresentForm({
 
   useEffect(() => {
     disabledKeys();
-  }, [dataRelations]);
 
-  useEffect(() => {
-    if (disKeys.length === 6) {
+    if (disKeys.size === 3) {
       router.push("/register/relations");
     }
-  }, [disKeys]);
+  }, [dataRelations]);
 
   if (edit) {
     useEffect(() => {
@@ -148,14 +170,14 @@ export default function RepresentForm({
               home_dir: data.person_id.home_dir,
               home_parroquia: data.person_id.home_parroquia,
               home_municipio: data.person_id.home_municipio,
-              relation: data.person_id.relation,
             },
+            relation: data.relation,
             tlfn_home: data.tlfn_home,
             profession: data.profession,
             work_place: data.work_place,
             work_phone_number: data.work_phone_number,
             income_month: data.income_month,
-            rl: data.rl,
+            represent: data.represent,
           });
           return "Carga completa.";
         },
@@ -210,6 +232,7 @@ export default function RepresentForm({
             </h1>
           </div>
           <div className="grid grid-cols-8 gap-3">
+            {/* CI FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -228,7 +251,10 @@ export default function RepresentForm({
                 errors.person_id?.ci_number
               }
               className="col-span-3"
+              value={values.person_id.ci_number.toUpperCase()}
             />
+
+            {/* SEARCH BUTTON */}
             {!edit && (
               <Tooltip
                 content="Buscar Estudiante"
@@ -245,7 +271,7 @@ export default function RepresentForm({
                     toast.promise(searchRepresent(values.person_id.ci_number), {
                       loading: "Procesando...",
                       success: (data) => {
-                        switch (data.person_id.relation) {
+                        switch (data.relation) {
                           case "MADRE":
                             setDataRelations({
                               ...dataRelations,
@@ -285,26 +311,21 @@ export default function RepresentForm({
               </Tooltip>
             )}
 
+            {/* RELATION SELECT */}
             <Select
               items={relationSelect}
-              name="person_id.relation"
+              name="relation"
               label="Relación:"
-              disabledKeys={disKeys}
+              disabledKeys={Array.from(disKeys)}
               className="col-span-3"
               description={"Ingrese la relación con el estudiante."}
               onChange={handleChange}
               onBlur={handleBlur}
-              selectedKeys={[values.person_id.relation.toString()]}
+              selectedKeys={[values.relation.toString()]}
               errorMessage={
-                errors.person_id?.relation &&
-                touched.person_id?.relation &&
-                errors.person_id?.relation
+                errors.relation && touched.relation && errors.relation
               }
-              color={
-                errors.person_id?.relation && touched.person_id?.relation
-                  ? "danger"
-                  : "primary"
-              }
+              color={errors.relation && touched.relation ? "danger" : "primary"}
             >
               {(item) => (
                 <SelectItem key={item.value} value={item.value}>
@@ -313,6 +334,7 @@ export default function RepresentForm({
               )}
             </Select>
 
+            {/* OMIT RELATION BUTTON */}
             {!edit && (
               <Tooltip
                 content="Omitir Relación"
@@ -320,9 +342,7 @@ export default function RepresentForm({
               >
                 <Button
                   isDisabled={
-                    values.person_id.relation &&
-                    values.person_id.relation !== "REPRESENTANTE LEGAL" &&
-                    !edit
+                    values.relation && disKeys.size !== 2 && !edit
                       ? false
                       : true
                   }
@@ -332,7 +352,7 @@ export default function RepresentForm({
                   aria-label="Buscar entidad"
                   className="w-full h-3/4"
                   onClick={() => {
-                    switch (values.person_id.relation) {
+                    switch (values.relation) {
                       case "MADRE":
                         setDataRelations({
                           ...dataRelations,
@@ -343,6 +363,12 @@ export default function RepresentForm({
                         setDataRelations({
                           ...dataRelations,
                           father_id: "omit",
+                        });
+                        break;
+                      case "REPRESENTANTE LEGAL":
+                        setDataRelations({
+                          ...dataRelations,
+                          represent_id: "omit",
                         });
                         break;
                       default:
@@ -356,6 +382,7 @@ export default function RepresentForm({
               </Tooltip>
             )}
 
+            {/* NAME FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -374,8 +401,10 @@ export default function RepresentForm({
                 errors.person_id?.name
               }
               className="col-span-4"
+              value={values.person_id.name.toUpperCase()}
             />
 
+            {/* LASTNAME FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -394,16 +423,16 @@ export default function RepresentForm({
                 errors.person_id?.lastname
               }
               className="col-span-4"
-              value={values.person_id.lastname}
+              value={values.person_id.lastname.toUpperCase()}
             />
 
+            {/* EMAIL FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
               label="Correo electrónico:"
               type="email"
               name="person_id.email"
-              value={values.person_id?.email}
               description="Ingrese su correo electrónico"
               variant="bordered"
               color={
@@ -417,8 +446,10 @@ export default function RepresentForm({
                 errors.person_id?.email
               }
               className="col-span-4"
+              value={values.person_id?.email?.toLowerCase()}
             />
 
+            {/* TLFN_NUMBER FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -441,6 +472,7 @@ export default function RepresentForm({
               className="col-span-4"
             />
 
+            {/* PROFESSION FIELD */}
             <Field
               as={Input}
               label="Profesión:"
@@ -454,12 +486,36 @@ export default function RepresentForm({
                 errors.profession && touched.profession && errors.profession
               }
               className="col-span-4"
-              value={values.profession}
+              value={values.profession?.toUpperCase()}
             />
+
+            {/* REPRESENT BOX */}
+            <Checkbox
+              className="col-span-4"
+              size="lg"
+              name="represent"
+              isDisabled={
+                values.relation === "REPRESENTANTE LEGAL" || disKeys.size === 2
+              }
+              onChange={handleChange}
+              onBlur={handleBlur}
+              isIndeterminate={hasRepresent}
+              isSelected={
+                values.relation === "REPRESENTANTE LEGAL"
+                  ? true
+                  : disKeys.size === 2
+                  ? true
+                  : values.represent
+              }
+            >
+              REPRESENTANTE LEGAL
+            </Checkbox>
+
             <h1 className="col-span-8 font-semibold text-lg">
               Datos económicos:
             </h1>
 
+            {/* INCOME_MONTH FIELD */}
             <Field
               as={Input}
               label="Ingresos Mensuales:"
@@ -483,6 +539,7 @@ export default function RepresentForm({
               }
             />
 
+            {/* WORK_PHONE_NUMBER FIELD */}
             <Field
               as={Input}
               label="Número telefónico de su trabajo:"
@@ -502,6 +559,7 @@ export default function RepresentForm({
               className="col-span-3"
             />
 
+            {/* WORK_PLACE FIELD */}
             <Field
               as={Input}
               label="Lugar de trabajo:"
@@ -515,12 +573,13 @@ export default function RepresentForm({
                 errors.work_place && touched.work_place && errors.work_place
               }
               className="col-span-8"
-              value={values.work_place}
+              value={values.work_place?.toUpperCase()}
             />
 
             <h1 className="col-span-8 font-semibold text-lg">
               Datos donde reside:
             </h1>
+            {/* HOME_PARROQUIA FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -540,8 +599,10 @@ export default function RepresentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-3"
-              value={values.person_id?.home_parroquia}
+              value={values.person_id?.home_parroquia.toUpperCase()}
             />
+
+            {/* HOME_MUNICIPIO FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -561,8 +622,10 @@ export default function RepresentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-3"
-              value={values.person_id?.home_municipio}
+              value={values.person_id?.home_municipio.toUpperCase()}
             />
+
+            {/* TLFN_HOME FIELD */}
             <Field
               as={Input}
               label="Número de Habitación:"
@@ -576,6 +639,8 @@ export default function RepresentForm({
               }
               className="col-span-2"
             />
+
+            {/* HOME_DIR FIELD */}
             <Field
               as={Input}
               isRequired={edit ? false : true}
@@ -594,7 +659,7 @@ export default function RepresentForm({
                 errors.person_id?.home_dir
               }
               className="col-span-8"
-              value={values.person_id.home_dir}
+              value={values.person_id.home_dir.toUpperCase()}
             />
           </div>
 

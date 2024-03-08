@@ -23,10 +23,11 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('/', app, document);
+  SwaggerModule.setup('/api/open-docs', app, document);
 
   await app.listen(8000, () =>
     console.log('🚀 Server ready at: http://localhost:8000/api'),
   );
 }
+
 bootstrap();

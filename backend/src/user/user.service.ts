@@ -141,4 +141,20 @@ export class UserService {
       { deleted_at: null },
     );
   }
+
+  async seed() {
+    try {
+      await this.userRepo.insert({
+        ci_number: 'V0000000',
+        email: 'admin@admin.admin',
+        name: 'ADMIN',
+        lastname: 'USER',
+        password: bcrypt.hashSync('admin.sies**', 12),
+        restore_token: bcrypt.hashSync('admin.sies**', 12),
+        role_id: 1,
+      });
+    } catch (error) {
+      bad_req_err(msgEnum.seeder, (error as Error).message);
+    }
+  }
 }

@@ -287,6 +287,7 @@ export default function AcademicForm({
               </SelectItem>
             </Select>
 
+            {/* EGRESADO FIELD */}
             {edit && (
               <Select
                 selectedKeys={[Number(values.egresado)]}
@@ -319,7 +320,7 @@ export default function AcademicForm({
               }
               className="col-span-8"
               isRequired={edit ? false : true}
-              value={values.proce_plant}
+              value={values.proce_plant.toUpperCase()}
               as={Input}
             />
           </div>

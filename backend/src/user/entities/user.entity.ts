@@ -1,5 +1,5 @@
-import { Ficha } from 'src/ficha/entities/ficha.entity';
-import { Role } from 'src/role/entities/role.entity';
+import { Ficha } from '../../ficha/entities/ficha.entity';
+import { Role } from '../../role/entities/role.entity';
 import {
   Column,
   Entity,

@@ -120,16 +120,8 @@ export class ToolsService {
 
       const buffer = await createReport({
         template,
-        data: {
-          ...data,
-          represent_id: data.father_id
-            ? (data.father_id as Represent).rl
-              ? data.father_id
-              : data.mother_id
-                ? (data.mother_id as Represent).rl
-                : data.mother_id
-            : data.represent_id,
-        },
+        data: data,
+
         cmdDelimiter: ['{#', '#}'],
       });
 
@@ -361,7 +353,7 @@ export class ToolsService {
       });
     }
 
-    if (represent_id) {
+    if (represent_id || mother_id || father_id) {
       sheetRepresent.columns = representColumns;
 
       sheetRepresent.eachRow((row, rowNumber) => {
@@ -373,10 +365,12 @@ export class ToolsService {
         });
       });
 
-      sheetRepresent.addRow({
-        ...(represent_id as Represent),
-        ...((represent_id as Represent).person_id as Person),
-      });
+      if (represent_id) {
+        sheetRepresent.addRow({
+          ...(represent_id as Represent),
+          ...((represent_id as Represent).person_id as Person),
+        });
+      }
 
       if (mother_id) {
         sheetRepresent.addRow({

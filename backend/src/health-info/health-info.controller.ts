@@ -16,7 +16,7 @@ import { HealthInfoService } from './health-info.service';
 
 @ApiTags('HEALTH-INFO:')
 @ApiBearerAuth() // método de autorización de Swagger para este controlador
-@Auth([Role.DOCENTES])
+@Auth([Role.AUDITOR, Role.EDITOR])
 @Controller('health-info')
 export class HealthInfoController {
   constructor(private readonly healthInfoService: HealthInfoService) {}

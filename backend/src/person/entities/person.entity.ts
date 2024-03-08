@@ -1,5 +1,5 @@
-import { Represent } from 'src/represent/entities/represent.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { Represent } from '../../represent/entities/represent.entity';
+import { Student } from '../../student/entities/student.entity';
 import {
   Column,
   CreateDateColumn,
@@ -51,9 +51,6 @@ export class Person {
     type: 'text',
   })
   home_municipio: string;
-
-  @Column()
-  relation: string;
 
   @CreateDateColumn()
   created_at: Date;

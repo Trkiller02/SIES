@@ -58,16 +58,22 @@ export default function HealthForm({
   }
 
   const sendInfo = async (values: any) => {
+    console.log(values.weight, typeof values.weight);
+    console.log(values.size, typeof values.size);
+
     const res = await fetchData(
       "/health-info",
       "POST",
-      values,
+      {
+        ...values,
+        weight: parseFloat(values.weight),
+        size: parseFloat(values.size),
+      },
       session?.user.token
     );
 
-    setDataRelations({ ...dataRelations, health_info_id: res.id });
-
     if (res) {
+      setDataRelations({ ...dataRelations, health_info_id: res.id });
       return "Registro exitoso.";
     }
   };
@@ -76,7 +82,11 @@ export default function HealthForm({
     const res = await fetchData(
       "/health-info",
       "PATCH",
-      values,
+      {
+        ...values,
+        weight: parseFloat(values.weight),
+        size: parseFloat(values.size),
+      },
       session?.user.token
     );
 
@@ -161,6 +171,7 @@ export default function HealthForm({
               )}
             </Select>
 
+            {/* PESO FIELD */}
             <Field
               as={Input}
               label="Peso:"
@@ -175,6 +186,8 @@ export default function HealthForm({
                 <p className="text-gray-400 font-medium text-base">kg</p>
               }
             />
+
+            {/* ESTATURA FIELD */}
             <Field
               as={Input}
               label="Estatura:"
@@ -190,6 +203,7 @@ export default function HealthForm({
               }
             />
 
+            {/* LIVE FIELD */}
             <Field
               as={Input}
               label="Vive con:"
@@ -204,8 +218,10 @@ export default function HealthForm({
               }
               isRequired={edit ? false : true}
               className="col-span-3"
+              value={values.live_with.toUpperCase()}
             />
 
+            {/* PREFER ACT FIELD */}
             <Field
               as={Input}
               label="Practica una actividad extracurricular:"
@@ -219,8 +235,10 @@ export default function HealthForm({
                 errors.prefer_act && touched.prefer_act && errors.prefer_act
               }
               className="col-span-3"
+              value={values.prefer_act.toUpperCase()}
             />
 
+            {/* SITE PREFER ACT FIELD */}
             <Field
               as={Input}
               description="Llene el campo de ser necesario."
@@ -232,8 +250,10 @@ export default function HealthForm({
                 errors.site_act && touched.site_act && errors.site_act
               }
               className="col-span-3"
+              value={values.site_act.toUpperCase()}
             />
 
+            {/* RECRE TIME FIELD */}
             <Field
               as={Input}
               label="Horario en que la practica:"
@@ -247,8 +267,10 @@ export default function HealthForm({
                 errors.recre_time && touched.recre_time && errors.recre_time
               }
               className="col-span-2"
+              value={values.recre_time.toUpperCase()}
             />
 
+            {/* TYPE ALER FIELD */}
             <Field
               as={Input}
               label="Alergico a:"
@@ -262,8 +284,10 @@ export default function HealthForm({
                 errors.type_aler && touched.type_aler && errors.type_aler
               }
               className="col-span-3"
+              value={values.type_aler.toUpperCase()}
             />
 
+            {/* TRATA ESP FIELD */}
             <Field
               as={Input}
               label="Requiere de un tratamiento especial:"
@@ -277,6 +301,7 @@ export default function HealthForm({
                 errors.trata_esp && touched.trata_esp && errors.trata_esp
               }
               className="col-span-3"
+              value={values.trata_esp.toUpperCase()}
             />
           </div>
 

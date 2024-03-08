@@ -50,7 +50,7 @@ export class ToolsController {
     }
   }
 
-  @Auth([Role.EVALUACION])
+  @Auth([Role.AUDITOR])
   @Post('planilla/update')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -146,7 +146,7 @@ export class ToolsController {
     }
   }
 
-  @Auth([Role.EVALUACION])
+  @Auth([Role.AUDITOR])
   @Post('constancia/update')
   @UseInterceptors(
     FileInterceptor('file', {

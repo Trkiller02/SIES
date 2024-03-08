@@ -12,14 +12,14 @@ export const initValRepresent = {
     home_dir: "",
     home_parroquia: "",
     home_municipio: "",
-    relation: "",
   },
   tlfn_home: "",
+  relation: "",
   profession: "",
   work_place: "",
   work_phone_number: "",
   income_month: 0,
-  rl: false,
+  represent: false,
 };
 
 export const representSchema = Yup.object({
@@ -44,18 +44,18 @@ export const representSchema = Yup.object({
     home_municipio: Yup.string()
       .matches(regexList.onlyString, Messages.match_err)
       .required(Messages.required),
-    relation: Yup.string()
-      .matches(regexList.onlyString)
-      .required(Messages.required),
   }),
+  relation: Yup.string()
+    .matches(regexList.onlyString)
+    .required(Messages.required),
   tlfn_home: Yup.string().optional(),
   profession: Yup.string().matches(regexList.onlyString).optional(),
   work_place: Yup.string()
-    .matches(regexList.onlyString, Messages.match_err)
+    .matches(regexList.forDir, Messages.match_err)
     .optional(),
   work_phone_number: Yup.string().optional().nullable(),
   income_month: Yup.number().positive().optional(),
-  rl: Yup.string().optional(),
+  represent: Yup.string().optional(),
 });
 
 export const representSchemaUpdate = Yup.object({
@@ -81,16 +81,16 @@ export const representSchemaUpdate = Yup.object({
       home_municipio: Yup.string()
         .matches(regexList.onlyString, Messages.match_err)
         .optional(),
-      relation: Yup.string().matches(regexList.onlyString).optional(),
     })
     .optional(),
+  relation: Yup.string().matches(regexList.onlyString).optional(),
   tlfn_home: Yup.string().optional().nullable(),
   profession: Yup.string().matches(regexList.onlyString).optional().nullable(),
   work_place: Yup.string()
-    .matches(regexList.onlyString, Messages.match_err)
+    .matches(regexList.forDir, Messages.match_err)
     .optional()
     .nullable(),
   work_phone_number: Yup.string().optional().nullable(),
   income_month: Yup.number().optional().nullable(),
-  rl: Yup.string().optional().nullable(),
+  represent: Yup.string().optional().nullable(),
 });

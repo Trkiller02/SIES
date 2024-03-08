@@ -1,5 +1,5 @@
-import { Person } from 'src/person/entities/person.entity';
-import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
+import { Person } from '../../person/entities/person.entity';
+import { RelationsTable } from '../../relations-table/entities/relations-table.entity';
 import {
   PrimaryGeneratedColumn,
   CreateDateColumn,

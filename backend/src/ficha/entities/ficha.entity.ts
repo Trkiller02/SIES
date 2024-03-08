@@ -1,5 +1,5 @@
-import { RelationsTable } from 'src/relations-table/entities/relations-table.entity';
-import { User } from 'src/user/entities/user.entity';
+import { RelationsTable } from '../../relations-table/entities/relations-table.entity';
+import { User } from '../../user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
