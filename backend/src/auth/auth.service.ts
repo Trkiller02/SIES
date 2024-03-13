@@ -4,10 +4,11 @@ import * as bcrypt from 'bcryptjs';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RestorePasswordDto } from './dto/restore-password.dto';
-import { conflict_err, unauth_err } from 'src/utils/handlerErrors';
+import { bad_req_err, conflict_err, unauth_err } from 'src/utils/handlerErrors';
 import { msgEnum } from 'src/utils/handlerMsg';
 import { UserService } from 'src/user/user.service';
 import { Role } from 'src/role/entities/role.entity';
+import { StatusEnum } from 'src/user/enum/status.enum';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,10 @@ export class AuthService {
       unauth_err(msgEnum.credential_err, 'Crendenciales invalidas');
     }
 
+    if (user.status === StatusEnum.ACTIVE) {
+      unauth_err(msgEnum.session_error, 'Ya existe un usuario activo.');
+    }
+
     const isPassValid = await bcrypt.compare(password, user.password);
 
     if (!isPassValid) {
@@ -39,6 +44,8 @@ export class AuthService {
     };
 
     const token = await this.jwtService.signAsync(payload);
+
+    await this.userService.update(user.id, { status: StatusEnum.ACTIVE });
 
     return {
       name: user.name,
@@ -77,5 +84,14 @@ export class AuthService {
     }
 
     return await this.userService.update(ci_number, { password });
+  }
+
+  async signOut(user: { sub: string }) {
+    try {
+      await this.userService.update(user.sub, { status: StatusEnum.OFFLINE });
+      return { message: 'Cierre de sesión con exito.' };
+    } catch (error) {
+      return bad_req_err(msgEnum.bad_req_err, (error as Error).message);
+    }
   }
 }

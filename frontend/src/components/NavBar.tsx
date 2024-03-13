@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { ROLE_LIST } from "@/utils/roleList";
 import {
   Navbar,
@@ -14,10 +15,12 @@ import {
   Button,
   AvatarIcon,
 } from "@nextui-org/react";
+import { error } from "console";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MdKeyboardArrowDown } from "react-icons/md";
+import { toast } from "sonner";
 
 export function NavBar() {
   const { data: session } = useSession();
@@ -242,13 +245,26 @@ export function NavBar() {
               key="logout"
               textValue="Log Out"
               color="danger"
-              onPress={() => {
+              onPress={async () => {
                 if (typeof window !== "undefined") {
                   localStorage.removeItem("dataRelations");
                 }
-                signOut({
-                  redirect: true,
-                });
+                toast.promise(
+                  fetchDataWithoutBody("/auth/logout", session?.user.token),
+                  {
+                    loading: "Procesando",
+                    success: async (data: any) => {
+                      await signOut({
+                        redirect: false,
+                      });
+                      router.push("/auth/login");
+                      return data.message;
+                    },
+                    error: (error: Error) => {
+                      return error.message;
+                    },
+                  }
+                );
               }}
             >
               Cerrar Sesión

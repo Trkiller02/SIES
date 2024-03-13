@@ -11,15 +11,10 @@ input[type="number"]::-webkit-outer-spin-button {
 html,
 body {
   min-height: 100%;
-  font-family: Poppins, 'GeistMono Nerd Font';
 }
 
 input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-input[type="text"] {
-  text-transform: uppercase;
+  appearance: textfield;
 }
 
 input[type="password"]::-ms-reveal,

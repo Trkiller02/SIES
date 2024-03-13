@@ -8,6 +8,7 @@ export enum msgEnum {
   not_min = 'No cumple con el minimo de caracteres. ($constraint1)',
   not_format = 'no cumple con el formato esperado.',
   seeder = 'Error al sembrar la base de datos.',
+  session_error = 'Ya existe una sesión activa para este usuario.',
 }
 
 export const validationMsg = (propiedad: string, message: msgEnum): string => {

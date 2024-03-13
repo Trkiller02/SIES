@@ -31,16 +31,18 @@ export class UserService {
       createData.email.slice(0, 2) +
       createData.ci_number.slice(0, 2);
 
-    const user = await this.userRepo.save({
-      ...createData,
-      password: await bcrypt.hash(createData.password, 10),
-      restore_token: await bcrypt.hash(restoreToken, 10),
-    });
-
-    delete user.password;
-    delete user.restore_token;
-
-    return { restore_token: restoreToken };
+    try {
+      await this.userRepo.insert({
+        ...createData,
+        password: await bcrypt.hash(createData.password, 10),
+        restore_token: await bcrypt.hash(restoreToken, 10),
+      });
+      return {
+        restore_token: `Token de Recuperación de ${createData.name} ${createData.lastname}: ${restoreToken}`,
+      };
+    } catch (error) {
+      bad_req_err(msgEnum.bad_req_err, (error as Error).message);
+    }
   }
 
   async findAll(deleted = false) {
@@ -66,6 +68,7 @@ export class UserService {
         password: true,
         email: true,
         restore_token: true,
+        status: true,
       },
     });
 

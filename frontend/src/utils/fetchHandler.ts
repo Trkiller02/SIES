@@ -1,6 +1,6 @@
 export const fetchData = async (
   url: string,
-  method: string,
+  method: "POST" | "PATCH" | "PUT",
   content: unknown,
   token?: unknown
 ) => {
@@ -17,8 +17,6 @@ export const fetchData = async (
 
   const data = await response.json();
 
-  console.log(data);
-
   if (!response.ok) {
     throw data;
   }
@@ -29,7 +27,7 @@ export const fetchData = async (
 export const fetchDataWithoutBody = async (
   url: string,
   token?: unknown,
-  method?: string
+  method?: "GET" | "DELETE"
 ) => {
   const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_URL + url, {
     method: method ?? "GET",

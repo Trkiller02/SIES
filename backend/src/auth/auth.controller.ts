@@ -2,10 +2,10 @@ import { Controller, Post, Body, Get, Request, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
-import { Role } from '../role/enum/roles.enum';
-import { Auth } from './decorators/auth.decorator';
 import { RestorePasswordDto } from './dto/restore-password.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ActiveUser } from './decorators/active_user.decorator';
+import { Auth } from './decorators/auth.decorator';
 
 @ApiTags('AUTH:')
 @Controller('auth')
@@ -25,5 +25,12 @@ export class AuthController {
   @Patch('forgot-password')
   forgotPassword(@Body() updatePassword: RestorePasswordDto) {
     return this.authService.restorePassword(updatePassword);
+  }
+
+  @ApiBearerAuth()
+  @Auth()
+  @Get('logout')
+  logout(@ActiveUser() user: { sub: string }) {
+    return this.authService.signOut(user);
   }
 }
