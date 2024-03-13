@@ -1,22 +1,18 @@
 # espirituV2
-NextJS & NestJS Educative Application
+Nextjs and Nestjs App
 
-#[NextJS](https://nextjs.org/)
+##[NextJS](https://nextjs.org/)
 
 
 ~~~
 cd frontent
-npm i
-npm run build
-npm run start
+npm install && npm run dev
 ~~~
 
-#[NestJS](https://nestjs.com/)
+##[NestJS](https://nestjs.com/)
 
 
 ~~~
 cd backend
-npm i
-npm run build
-npm run start:prod
+npm install && npm run start:dev
 ~~~
