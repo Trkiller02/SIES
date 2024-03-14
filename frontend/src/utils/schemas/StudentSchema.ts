@@ -68,7 +68,7 @@ export const studentSchema = Yup.object().shape({
     .positive(Messages.min_err)
     .required(Messages.required)
     .min(3, Messages.min_err)
-    .max(19, Messages.max_err),
+    .max(20, Messages.max_err),
 });
 
 export const studentSchemaUpdate = Yup.object().shape({

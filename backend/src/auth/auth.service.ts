@@ -18,7 +18,7 @@ export class AuthService {
   ) {}
 
   async register(registerData: RegisterAuthDto) {
-    return this.userService.create(registerData);
+    return await this.userService.create(registerData);
   }
 
   async signIn({ query, password }: LoginAuthDto) {

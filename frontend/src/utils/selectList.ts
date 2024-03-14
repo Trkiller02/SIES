@@ -130,17 +130,17 @@ export const latSelect = [
 export const roleSelect = [
   {
     label: "EVALUACION",
-    value: 1,
+    value: 2,
     description: "Perteneciente al Depto. de Evaluación.",
   },
   {
     label: "DOCENTE",
-    value: 2,
+    value: 3,
     description: "Perteneciente a los Docentes habilitados para inscribir.",
   },
   {
     label: "ADMINISTRACION",
-    value: 3,
+    value: 4,
     description: "Perteneciente al Depto. de Administración.",
   },
 ];
