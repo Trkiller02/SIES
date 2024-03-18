@@ -326,6 +326,16 @@ export default function AcademicForm({
           </div>
 
           <div className="flex flex-row justify-around mt-7">
+            {edit && (
+              <Button
+                variant="ghost"
+                size="lg"
+                color="primary"
+                onClick={() => router.back()}
+              >
+                Regresar
+              </Button>
+            )}
             <Button
               variant="ghost"
               className="w-3/12"

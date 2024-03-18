@@ -15,6 +15,7 @@ import {
 } from "@/utils/schemas/HealthInfoSchema";
 import { latSelect, sexSelect } from "@/utils/selectList";
 import { HealthInfoI } from "@/types/register.interfaces";
+import { mayusHandler } from "@/utils/typograhHelper";
 
 export default function HealthForm({
   edit,
@@ -65,7 +66,7 @@ export default function HealthForm({
       "/health-info",
       "POST",
       {
-        ...values,
+        ...(await mayusHandler(values)),
         weight: parseFloat(values.weight),
         size: parseFloat(values.size),
       },
@@ -83,7 +84,7 @@ export default function HealthForm({
       "/health-info",
       "PATCH",
       {
-        ...values,
+        ...(await mayusHandler(values)),
         weight: parseFloat(values.weight),
         size: parseFloat(values.size),
       },
@@ -218,7 +219,7 @@ export default function HealthForm({
               }
               isRequired={edit ? false : true}
               className="col-span-3"
-              value={values.live_with.toUpperCase()}
+              value={values.live_with}
             />
 
             {/* PREFER ACT FIELD */}
@@ -235,7 +236,7 @@ export default function HealthForm({
                 errors.prefer_act && touched.prefer_act && errors.prefer_act
               }
               className="col-span-3"
-              value={values.prefer_act.toUpperCase()}
+              value={values.prefer_act}
             />
 
             {/* SITE PREFER ACT FIELD */}
@@ -250,7 +251,7 @@ export default function HealthForm({
                 errors.site_act && touched.site_act && errors.site_act
               }
               className="col-span-3"
-              value={values.site_act.toUpperCase()}
+              value={values.site_act}
             />
 
             {/* RECRE TIME FIELD */}
@@ -267,7 +268,7 @@ export default function HealthForm({
                 errors.recre_time && touched.recre_time && errors.recre_time
               }
               className="col-span-2"
-              value={values.recre_time.toUpperCase()}
+              value={values.recre_time}
             />
 
             {/* TYPE ALER FIELD */}
@@ -284,7 +285,7 @@ export default function HealthForm({
                 errors.type_aler && touched.type_aler && errors.type_aler
               }
               className="col-span-3"
-              value={values.type_aler.toUpperCase()}
+              value={values.type_aler}
             />
 
             {/* TRATA ESP FIELD */}
@@ -301,11 +302,21 @@ export default function HealthForm({
                 errors.trata_esp && touched.trata_esp && errors.trata_esp
               }
               className="col-span-3"
-              value={values.trata_esp.toUpperCase()}
+              value={values.trata_esp}
             />
           </div>
 
           <div className="flex flex-row justify-around mt-7">
+            {edit && (
+              <Button
+                variant="ghost"
+                size="lg"
+                color="primary"
+                onClick={() => router.back()}
+              >
+                Regresar
+              </Button>
+            )}
             <Button
               variant="ghost"
               className="w-3/12"

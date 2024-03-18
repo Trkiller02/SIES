@@ -7,7 +7,6 @@ import {
   Input,
   Select,
   SelectItem,
-  Skeleton,
   Tooltip,
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
@@ -23,7 +22,7 @@ import {
 } from "@/utils/selectList";
 import { searchInitVal, searchSchema } from "@/utils/schemas/SearchSchema";
 import { MdIosShare, MdSearch } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RepresentTable from "@/components/tables/RepresentTable";
 import UserTable from "@/components/tables/UserTable";
 import StudentTable from "@/components/tables/StudentTable";
@@ -32,6 +31,54 @@ export default function indexSearchPage() {
   const { data: session } = useSession();
   const [info, setInfo] = useState<any>();
   const [entity, setEntity] = useState("");
+
+  const download = async (values: {
+    entity: string;
+    etapa: string;
+    section: string;
+    level: number;
+    id: string;
+  }) => {
+    let params = `?entity=${values.entity}`;
+
+    if (values.etapa) {
+      params = params.concat(`&etapa=${values.etapa}&level=${values.level}`);
+      if (values.section) {
+        params = params.concat(`&section=${values.section}`);
+      }
+    }
+
+    if (values.id) {
+      params = `?entity=${values.entity}&id=${values.id}`;
+    }
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/tools/excel${params}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + session?.user.token,
+        },
+      }
+    );
+
+    const blob = await res.blob();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+
+    a.download = `${
+      values.entity.charAt(0).toUpperCase() + values.entity.slice(1)
+    }${values.etapa ? values.etapa.replace(" ", "") : ""}${values.level ?? ""}${
+      values.section ?? ""
+    }${values.id ?? ""}.xlsx`;
+
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  };
 
   const reqInfo = async (value: {
     entity: string;
@@ -55,11 +102,9 @@ export default function indexSearchPage() {
       }`;
     }
 
-    if (value.entity === "represent") url += "?tofielter=true";
-
     const req = await fetchDataWithoutBody(url, session?.user.token);
 
-    if (req) {
+    if (req || (req && entity === "user" && req.role_id && req.role_id.name)) {
       if (!(req instanceof Array)) {
         setInfo([req]);
       } else {
@@ -68,6 +113,9 @@ export default function indexSearchPage() {
       return "Busqueda finalizada.";
     }
   };
+
+  useEffect(() => console.log(info), [info]);
+
   return (
     <DashboardLayout>
       <Formik
@@ -250,6 +298,24 @@ export default function indexSearchPage() {
                     <MdSearch className="text-2xl" />
                   </Button>
                 </Tooltip>
+                <Tooltip
+                  content="Exportar información a excel."
+                  shadow="sm"
+                  showArrow
+                  className="border border-primary-500"
+                >
+                  <Button
+                    isDisabled={!info}
+                    isIconOnly
+                    color="success"
+                    variant="ghost"
+                    className="w-1/5"
+                    size="lg"
+                    onClick={async () => await download(values)}
+                  >
+                    <MdIosShare className="text-2xl" />
+                  </Button>
+                </Tooltip>
               </div>
             </div>
           </Form>
@@ -257,37 +323,17 @@ export default function indexSearchPage() {
       </Formik>
       {info && (
         <div className="rounded-xl w-3/4 max-lg:w-full min-h-[40vh] my-5">
-          {info && entity === "user" && <UserTable info={info} />}
-          {info && entity === "represent" && <RepresentTable info={info} />}
-          {info && entity === "student" && <StudentTable info={info} />}
+          {info && entity === "user" && info[0].role_id && (
+            <UserTable info={info} />
+          )}
+          {info && entity === "represent" && info[0].relation && (
+            <RepresentTable info={info} />
+          )}
+          {info && entity === "student" && info[0].age && (
+            <StudentTable info={info} />
+          )}
         </div>
       )}
-      {!info && (
-        <Skeleton className="rounded-xl w-3/4 max-lg:w-full min-h-[40vh] my-5 border border-gray-300">
-          <div className="w-3/4 max-lg:w-full mt-5 min-h-[40vh] rounded-xl shadow-lg bg-default-300"></div>
-        </Skeleton>
-      )}
-
-      <div className="w-3/4 flex justify-between items-center flex-row content-end mt-4">
-        <Tooltip
-          content="Exportar información a excel."
-          shadow="sm"
-          showArrow
-          className="border border-primary-500"
-        >
-          <Button
-            isDisabled={!info}
-            isIconOnly
-            color="primary"
-            variant="ghost"
-            className="w-1/5"
-            size="lg"
-            type="submit"
-          >
-            <MdIosShare className="text-2xl" />
-          </Button>
-        </Tooltip>
-      </div>
     </DashboardLayout>
   );
 }

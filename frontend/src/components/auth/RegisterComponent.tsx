@@ -371,15 +371,23 @@ export default function RegisterComponent({
               />
             </div>
             <div className="w-full mt-6 flex flex-row justify-between">
-              <Button variant="ghost" size="lg" color="danger" type="reset">
-                Cancelar
+              <Button
+                variant="ghost"
+                size="lg"
+                color="primary"
+                onClick={() => router.back()}
+              >
+                Regresar
+              </Button>
+              <Button variant="ghost" size="lg" color="warning" type="reset">
+                Limpiar
               </Button>
               <div className="w-1/3 flex flex-row justify-between gap-4">
                 {edit && (
                   <Button
                     variant="ghost"
                     size="lg"
-                    color="warning"
+                    color="danger"
                     onPress={() => {
                       toast.promise(deleteEntity(), {
                         loading: "Procesando...",
@@ -398,7 +406,7 @@ export default function RegisterComponent({
                     Eliminar
                   </Button>
                 )}
-                <Button variant="solid" size="lg" color="primary" type="submit">
+                <Button variant="solid" size="lg" color="success" type="submit">
                   {edit ? "Actualizar" : "Registrar"}
                 </Button>
               </div>

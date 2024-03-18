@@ -72,7 +72,7 @@ export class Represent {
 
   @Column({
     type: 'varchar',
-    length: 14,
+    length: 20,
   })
   relation: string;
 

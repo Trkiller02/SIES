@@ -179,14 +179,42 @@ export class ToolsController {
     return 'Actualización completa.';
   }
 
-  @Post('excel')
+  @ApiQuery({
+    name: 'entity',
+  })
+  @ApiQuery({
+    name: 'etapa',
+    enum: ['EDUCACION MEDIA', 'EDUCACION PRIMARIA'],
+    required: false,
+  })
+  @ApiQuery({
+    name: 'level',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'section',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'id',
+    required: false,
+  })
+  @Get('excel')
   async excelForSearch(
-    @Body()
-    info: createExcelDto,
-    @Res() res: Response,
+    @Query('entity')
+    entity?: string,
+    @Query('etapa')
+    etapa?: 'EDUCACION MEDIA' | 'EDUCACION PRIMARIA',
+    @Query('level')
+    level?: string,
+    @Query('section')
+    section?: string,
+    @Query('id')
+    id?: string,
+    @Res() res?: Response,
   ) {
     return await this.toolsService
-      .createExcelForSearch(info)
+      .createExcelForSearch({ etapa, level, id, entity, section })
       .then((readStream) => {
         res.setHeader(
           'Content-Type',

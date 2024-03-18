@@ -1,19 +1,11 @@
 import * as Yup from "yup";
 import { Messages } from "../messages";
 import { regexList } from "../regexPatterns";
+import { initValPerson, personSchema } from "./PersonSchema";
 
 export const initValRepresent = {
-  person_id: {
-    name: "",
-    lastname: "",
-    phone_number: "",
-    ci_number: "",
-    email: "",
-    home_dir: "",
-    home_parroquia: "",
-    home_municipio: "",
-  },
-  tlfn_home: "",
+  person_id: initValPerson,
+  tlfn_home: "0274",
   relation: "",
   profession: "",
   work_place: "",
@@ -23,39 +15,21 @@ export const initValRepresent = {
 };
 
 export const representSchema = Yup.object({
-  person_id: Yup.object().shape({
-    name: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-    lastname: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-    phone_number: Yup.string().optional(),
-    ci_number: Yup.string()
-      .matches(regexList.forDNI, Messages.dni_match)
-      .required(Messages.required),
-    email: Yup.string().email(Messages.email_err).optional(),
-    home_dir: Yup.string()
-      .matches(regexList.forDir, Messages.match_err)
-      .required(Messages.required),
-    home_parroquia: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-    home_municipio: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-  }),
+  person_id: personSchema,
   relation: Yup.string()
     .matches(regexList.onlyString)
     .required(Messages.required),
-  tlfn_home: Yup.string().optional(),
+  tlfn_home: Yup.string()
+    .optional()
+    .nullable()
+    .matches(regexList.forHomePhoneNumber),
   profession: Yup.string().matches(regexList.onlyString).optional(),
   work_place: Yup.string()
     .matches(regexList.forDir, Messages.match_err)
     .optional(),
   work_phone_number: Yup.string().optional().nullable(),
-  income_month: Yup.number().positive().optional(),
-  represent: Yup.string().optional(),
+  income_month: Yup.number().positive().optional().nullable(),
+  represent: Yup.string().optional().nullable(),
 });
 
 export const representSchemaUpdate = Yup.object({
@@ -67,10 +41,14 @@ export const representSchemaUpdate = Yup.object({
       lastname: Yup.string()
         .matches(regexList.onlyString, Messages.match_err)
         .optional(),
-      phone_number: Yup.string().optional(),
+      phone_number: Yup.string()
+        .optional()
+        .nullable()
+        .matches(regexList.forPersonalPhoneNumber, Messages.phone_format),
       ci_number: Yup.string()
         .matches(regexList.forDNI, Messages.dni_match)
-        .optional(),
+        .optional()
+        .nullable(),
       email: Yup.string().email(Messages.email_err).optional(),
       home_dir: Yup.string()
         .matches(regexList.forDir, Messages.match_err)
@@ -84,7 +62,10 @@ export const representSchemaUpdate = Yup.object({
     })
     .optional(),
   relation: Yup.string().matches(regexList.onlyString).optional(),
-  tlfn_home: Yup.string().optional().nullable(),
+  tlfn_home: Yup.string()
+    .optional()
+    .nullable()
+    .matches(regexList.forHomePhoneNumber, Messages.phone_home_format),
   profession: Yup.string().matches(regexList.onlyString).optional().nullable(),
   work_place: Yup.string()
     .matches(regexList.forDir, Messages.match_err)

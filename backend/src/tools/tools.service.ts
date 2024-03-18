@@ -177,6 +177,9 @@ export class ToolsService {
 
   // CREAR EXCEL DE QUERY
   async createExcelForSearch(info: createExcelDto): Promise<Readable> {
+    if (!info)
+      bad_req_err(msgEnum.bad_req_err, 'No hay parametros de busqueda.');
+
     const sheetName =
       info.entity === 'user'
         ? 'Usuarios'

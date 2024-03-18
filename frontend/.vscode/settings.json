@@ -1,3 +1,5 @@
 {
-  "typescript.inlayHints.parameterNames.enabled": "all"
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "cSpell.language": "en,es-ES",
+  "cSpell.words": ["lastname"]
 }

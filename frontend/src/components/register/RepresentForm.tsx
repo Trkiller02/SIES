@@ -23,6 +23,7 @@ import {
 } from "@/utils/schemas/RepresentSchema";
 import { RepresentI } from "@/types/register.interfaces";
 import { relationSelect } from "@/utils/selectList";
+import { mayusHandler } from "@/utils/typograhHelper";
 
 export default function RepresentForm({
   edit,
@@ -62,7 +63,7 @@ export default function RepresentForm({
       `/represent/${id}`,
       "PATCH",
 
-      values,
+      await mayusHandler(values),
 
       session?.user.token
     );
@@ -75,7 +76,7 @@ export default function RepresentForm({
       `/represent`,
       "POST",
       {
-        ...values,
+        ...(await mayusHandler(values)),
         represent:
           values.relation === "REPRESENTANTE LEGAL"
             ? true
@@ -86,7 +87,7 @@ export default function RepresentForm({
       session?.user.token
     );
 
-    if (res) {
+    if (res && res.id) {
       switch (values.relation) {
         case "MADRE":
           setDataRelations({
@@ -111,15 +112,12 @@ export default function RepresentForm({
       }
 
       if (values.represent === true) {
-        setDataRelations({
-          ...dataRelations,
-          represent_id: "omit",
-        });
-
         setRepresent(true);
       }
 
       return "Registro exitoso.";
+    } else {
+      throw new Error("Algo salió mal.");
     }
   };
 
@@ -146,6 +144,17 @@ export default function RepresentForm({
 
     return data;
   };
+
+  if (!edit) {
+    useEffect(() => {
+      if (hasRepresent === true) {
+        setDataRelations({
+          ...dataRelations,
+          represent_id: "omit",
+        });
+      }
+    }, [hasRepresent]);
+  }
 
   useEffect(() => {
     disabledKeys();
@@ -251,7 +260,7 @@ export default function RepresentForm({
                 errors.person_id?.ci_number
               }
               className="col-span-3"
-              value={values.person_id.ci_number.toUpperCase()}
+              value={values.person_id.ci_number}
             />
 
             {/* SEARCH BUTTON */}
@@ -401,7 +410,7 @@ export default function RepresentForm({
                 errors.person_id?.name
               }
               className="col-span-4"
-              value={values.person_id.name.toUpperCase()}
+              value={values.person_id.name}
             />
 
             {/* LASTNAME FIELD */}
@@ -423,7 +432,7 @@ export default function RepresentForm({
                 errors.person_id?.lastname
               }
               className="col-span-4"
-              value={values.person_id.lastname.toUpperCase()}
+              value={values.person_id.lastname}
             />
 
             {/* EMAIL FIELD */}
@@ -486,7 +495,7 @@ export default function RepresentForm({
                 errors.profession && touched.profession && errors.profession
               }
               className="col-span-4"
-              value={values.profession?.toUpperCase()}
+              value={values.profession}
             />
 
             {/* REPRESENT BOX */}
@@ -573,7 +582,7 @@ export default function RepresentForm({
                 errors.work_place && touched.work_place && errors.work_place
               }
               className="col-span-8"
-              value={values.work_place?.toUpperCase()}
+              value={values.work_place}
             />
 
             <h1 className="col-span-8 font-semibold text-lg">
@@ -599,7 +608,7 @@ export default function RepresentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-3"
-              value={values.person_id?.home_parroquia.toUpperCase()}
+              value={values.person_id?.home_parroquia}
             />
 
             {/* HOME_MUNICIPIO FIELD */}
@@ -622,7 +631,7 @@ export default function RepresentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-3"
-              value={values.person_id?.home_municipio.toUpperCase()}
+              value={values.person_id?.home_municipio}
             />
 
             {/* TLFN_HOME FIELD */}
@@ -659,11 +668,21 @@ export default function RepresentForm({
                 errors.person_id?.home_dir
               }
               className="col-span-8"
-              value={values.person_id.home_dir.toUpperCase()}
+              value={values.person_id.home_dir}
             />
           </div>
 
           <div className="flex flex-row justify-around mt-7">
+            {edit && (
+              <Button
+                variant="ghost"
+                size="lg"
+                color="primary"
+                onClick={() => router.back()}
+              >
+                Regresar
+              </Button>
+            )}
             <Button
               variant="ghost"
               className="w-3/12"

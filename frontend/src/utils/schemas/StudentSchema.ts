@@ -1,18 +1,10 @@
 import * as Yup from "yup";
 import { Messages } from "../messages";
 import { regexList } from "../regexPatterns";
+import { initValPerson, personSchema } from "./PersonSchema";
 
 export const initValStudent = {
-  person_id: {
-    name: "",
-    lastname: "",
-    ci_number: "",
-    email: "",
-    phone_number: "",
-    home_dir: "",
-    home_parroquia: "",
-    home_municipio: "",
-  },
+  person_id: initValPerson,
   born_state: "",
   born_pais: "",
   born_date: "2006-01-01",
@@ -23,28 +15,7 @@ export const initValStudent = {
 };
 
 export const studentSchema = Yup.object().shape({
-  person_id: Yup.object().shape({
-    name: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-    lastname: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-    phone_number: Yup.string().required(Messages.required),
-    ci_number: Yup.string()
-      .matches(regexList.forDNI, Messages.dni_match)
-      .required(Messages.required),
-    email: Yup.string().email(Messages.email_err).required(Messages.required),
-    home_dir: Yup.string()
-      .matches(regexList.forDir, Messages.match_err)
-      .required(Messages.required),
-    home_parroquia: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-    home_municipio: Yup.string()
-      .matches(regexList.onlyString, Messages.match_err)
-      .required(Messages.required),
-  }),
+  person_id: personSchema,
   born_state: Yup.string()
     .matches(regexList.onlyString, Messages.match_err)
     .required(Messages.required),

@@ -52,7 +52,7 @@ export function ProgressChecker() {
   }, [dataRelations]);
 
   return (
-    <section className="flex flex-col p-4 absolute left-0 bottom-0 border border-gray-400 shadow-md rounded-lg bg-white scale-85 m-0">
+    <section className="p-4 border border-gray-400 shadow-md rounded-lg bg-white scale-85 m-0 h-[25%]">
       <CheckboxGroup isReadOnly label="PROGRESO" value={values}>
         <Checkbox value="student_id">ESTUDIANTE</Checkbox>
         <Checkbox value="health_info_id">DATOS MEDICOS</Checkbox>

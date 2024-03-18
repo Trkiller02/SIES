@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { Field, Form, Formik, useFormik } from "formik";
 import { toast } from "sonner";
 import { StudentI } from "@/types/register.interfaces";
+import { mayusHandler } from "@/utils/typograhHelper";
 
 interface StudentDto {
   person_id: {
@@ -54,11 +55,11 @@ export default function StudentForm({
     const res: StudentI = await fetchData(
       "/student",
       "POST",
-      values,
+      await mayusHandler(values),
       session?.user.token
     );
 
-    if (res) {
+    if (res && res.id) {
       setDataRelations({
         ...dataRelations,
         student_id: res.id!,
@@ -71,7 +72,7 @@ export default function StudentForm({
     const res = await fetchData(
       `/student/${id}`,
       "PATCH",
-      values,
+      await mayusHandler(values),
       session?.user.token
     );
 
@@ -159,9 +160,7 @@ export default function StudentForm({
         } else {
           toast.promise(sendInfo(values), {
             loading: "Procesando...",
-            success: (data) => {
-              router.push("/register/health");
-
+            success: async (data) => {
               return data;
             },
             error: (error: Error) => {
@@ -201,7 +200,7 @@ export default function StudentForm({
                 errors.person_id?.ci_number
               }
               className="col-span-2"
-              value={values.person_id?.ci_number.toUpperCase()}
+              value={values.person_id?.ci_number}
             />
 
             {/* SEARCH BUTTON */}
@@ -261,7 +260,7 @@ export default function StudentForm({
                 errors.person_id?.name
               }
               className="col-span-4"
-              value={values.person_id.name.toUpperCase()}
+              value={values.person_id.name}
             />
 
             {/* LASTNAME FIELD */}
@@ -283,7 +282,7 @@ export default function StudentForm({
                 errors.person_id?.lastname
               }
               className="col-span-4"
-              value={values.person_id.lastname.toUpperCase()}
+              value={values.person_id.lastname}
             />
 
             {/* EMAIL FIELD */}
@@ -305,7 +304,7 @@ export default function StudentForm({
                 errors.person_id?.email
               }
               className="col-span-3"
-              value={values.person_id.email?.toLowerCase()}
+              value={values.person_id.email}
             />
 
             {/* PHONE_NUMBER FIELD */}
@@ -391,7 +390,7 @@ export default function StudentForm({
                 errors.born_pais && touched.born_pais && errors.born_pais
               }
               className="col-span-4"
-              value={values.born_pais.toUpperCase()}
+              value={values.born_pais}
             />
 
             {/* BORN_STATE FIELD */}
@@ -409,7 +408,7 @@ export default function StudentForm({
                 errors.born_state && touched.born_state && errors.born_state
               }
               className="col-span-4"
-              value={values.born_state.toUpperCase()}
+              value={values.born_state}
             />
 
             {/* BORN_MUNICIPIO FIELD */}
@@ -431,7 +430,7 @@ export default function StudentForm({
                 errors.born_municipio
               }
               className="col-span-4"
-              value={values.born_municipio.toUpperCase()}
+              value={values.born_municipio}
             />
 
             {/* BORN_PARROQUIA FIELD */}
@@ -453,7 +452,7 @@ export default function StudentForm({
                 errors.born_parroquia
               }
               className="col-span-4"
-              value={values.born_parroquia.toUpperCase()}
+              value={values.born_parroquia}
             />
 
             {/* BORN_PLACE FIELD */}
@@ -470,7 +469,7 @@ export default function StudentForm({
                 errors.born_place && touched.born_place && errors.born_place
               }
               className="col-span-8"
-              value={values.born_place.toUpperCase()}
+              value={values.born_place}
             />
 
             <h1 className="col-span-8 font-semibold text-lg">
@@ -497,7 +496,7 @@ export default function StudentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-4"
-              value={values.person_id.home_parroquia.toUpperCase()}
+              value={values.person_id.home_parroquia}
             />
 
             {/* HOME_MUNICIPIO FIELD */}
@@ -520,7 +519,7 @@ export default function StudentForm({
                 errors.person_id?.home_parroquia
               }
               className="col-span-4"
-              value={values.person_id?.home_municipio.toUpperCase()}
+              value={values.person_id?.home_municipio}
             />
 
             {/* HOME_DIR FIELD */}
@@ -542,11 +541,21 @@ export default function StudentForm({
                 errors.person_id?.home_dir
               }
               className="col-span-8"
-              value={values.person_id?.home_dir.toUpperCase()}
+              value={values.person_id?.home_dir}
             />
           </div>
 
           <div className="flex flex-row justify-around mt-7">
+            {edit && (
+              <Button
+                variant="ghost"
+                size="lg"
+                color="primary"
+                onClick={() => router.back()}
+              >
+                Regresar
+              </Button>
+            )}
             <Button
               variant="ghost"
               className="w-3/12"

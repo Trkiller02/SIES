@@ -43,6 +43,30 @@ export default function pageDetailsStudent({
     return "Carga completa.";
   };
 
+  const downloadConstancia = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/tools/constancia/${data?.student_id.person_id.ci_number}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + session?.user.token,
+        },
+      }
+    );
+
+    const blob = await res.blob();
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `constancia${data?.student_id.person_id.ci_number}.docx`; // replace with the desired filename
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    return;
+  };
+
   const download = async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/tools/planilla/${data?.student_id.person_id.ci_number}`,
@@ -131,6 +155,13 @@ export default function pageDetailsStudent({
                   onPress={() => downloadExcel()}
                 >
                   Descargar en Excel
+                </Button>
+                <Button
+                  variant="bordered"
+                  color="secondary"
+                  onPress={() => downloadConstancia()}
+                >
+                  Descargar en Constancia
                 </Button>
               </div>
             </div>

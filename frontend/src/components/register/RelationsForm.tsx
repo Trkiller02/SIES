@@ -1,7 +1,7 @@
 "use client";
 
 //HOOKS
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -9,8 +9,7 @@ import { useRouter } from "next/navigation";
 import { ctxDataRelation } from "@/components/register/ProviderCtx";
 
 //COMPONENTS
-import { Button, Skeleton } from "@nextui-org/react";
-import EntityCards from "../tables/RepresentTable";
+import { Button } from "@nextui-org/react";
 import { Form, Formik } from "formik";
 import { toast } from "sonner";
 
@@ -19,9 +18,6 @@ import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { FichaI, RepresentI, StudentI } from "@/types/register.interfaces";
 import StudentTable from "../tables/StudentTable";
 import RepresentTable from "../tables/RepresentTable";
-import { initValRepresent } from "@/utils/schemas/RepresentSchema";
-import { initValStudent } from "@/utils/schemas/StudentSchema";
-import { initValFicha } from "@/utils/schemas/FichaSchema";
 
 export default function RelationsForm() {
   const { data: session } = useSession();
