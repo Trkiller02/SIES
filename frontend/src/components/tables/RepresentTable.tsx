@@ -56,7 +56,7 @@ export default function RepresentTable({
       "DELETE"
     );
 
-    if (res) return "Eliminado con exito.";
+    if (res) return "Eliminado con éxito.";
   };
 
   const renderCell = React.useCallback(

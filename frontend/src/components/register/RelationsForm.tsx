@@ -184,14 +184,14 @@ export default function RelationsForm() {
             },
             error: (error: Error) => {
               return error.message === "Failed to fetch"
-                ? "Error en conexion"
+                ? "Error en conexión"
                 : error.message;
             },
           });
         }}
       >
-        <Form className="flex flex-col gap-4 items-center justify-center p-6 shadow-xl rounded-lg w-3/4 h-3/4 border border-gray-300">
-          <h1 className="text-3cd xl">¿Completar Inscripcion?</h1>
+        <Form className="flex flex-col gap-4 items-center justify-center p-6 shadow-xl rounded-lg w-3/4 h-3/4 border border-gray-300 m-0">
+          <h1 className="text-3cd xl">¿Completar Inscripción?</h1>
           <div className="w-full h-full flex flex-col justify-center items-center">
             {student !== undefined && (
               <>

@@ -12,7 +12,7 @@ const font = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "SISINSES",
+  title: "SIES",
   description: "SISTEMA DE INSCRIPCIÓN ESPÍRITU SANTO",
 };
 

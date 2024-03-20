@@ -197,7 +197,7 @@ export default function AcademicForm({
                 values.etapa === "EDUCACION PRIMARIA"
                   ? levelSelect
                   : values.etapa === "EDUCACION MEDIA"
-                  ? levelSelect.slice(0, 5)
+                  ? levelSelect.slice(2, 5)
                   : levelSelect
               }
               selectedKeys={[values.level.toString()]}
@@ -209,7 +209,7 @@ export default function AcademicForm({
               onBlur={handleBlur}
               onChange={handleChange}
               isRequired={edit ? false : true}
-              className="col-span-1"
+              className="col-span-2"
             >
               {(level: { value: number; label: string }) => (
                 <SelectItem key={level.value} value={level.value}>
@@ -265,7 +265,7 @@ export default function AcademicForm({
               isRequired={edit ? false : true}
               label="Periodo Escolar:"
               name="escolar_period"
-              className="col-span-2"
+              className="col-span-1"
               onChange={handleChange}
               onBlur={handleBlur}
               errorMessage={
@@ -309,7 +309,7 @@ export default function AcademicForm({
             )}
 
             <Field
-              label="Institucion de procedencia:"
+              label="Institución de procedencia:"
               name="proce_plant"
               variant="bordered"
               color={
@@ -318,14 +318,14 @@ export default function AcademicForm({
               errorMessage={
                 errors.proce_plant && touched.proce_plant && errors.proce_plant
               }
-              className="col-span-8"
+              className="col-span-6"
               isRequired={edit ? false : true}
               value={values.proce_plant.toUpperCase()}
               as={Input}
             />
           </div>
 
-          <div className="flex flex-row justify-around mt-7">
+          <div className="flex flex-row justify-evenly mt-7">
             {edit && (
               <Button
                 variant="ghost"

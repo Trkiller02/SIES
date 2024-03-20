@@ -329,7 +329,7 @@ export default function indexSearchPage() {
           {info && entity === "represent" && info[0].relation && (
             <RepresentTable info={info} />
           )}
-          {info && entity === "student" && info[0].age && (
+          {info && entity === "student" && info[0].relationTable && (
             <StudentTable info={info} />
           )}
         </div>

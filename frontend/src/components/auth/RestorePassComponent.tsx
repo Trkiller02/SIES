@@ -1,8 +1,8 @@
 "use client";
 
-import { fetchData, fetchDataWithoutBody } from "@/utils/fetchHandler";
-import { Input, Button, Tooltip, Link } from "@nextui-org/react";
-import { Field, Form, Formik, useFormik } from "formik";
+import { fetchData } from "@/utils/fetchHandler";
+import { Input, Button, Link } from "@nextui-org/react";
+import { Field, Form, Formik } from "formik";
 import { useState } from "react";
 import { MdOutlineRemoveRedEye, MdRemoveRedEye } from "react-icons/md";
 import { toast } from "sonner";
@@ -63,9 +63,9 @@ export default function RestorePassComponent() {
           </div>
           <div className="flex flex-col gap-3 justify-center items-center w-full">
             <Field
-              label="Cedula de Identidad:"
+              label="Cédula de Identidad:"
               name="ci_number"
-              description="Ingrese su Cedula de Identidad"
+              description="Ingrese su Cédula de Identidad"
               variant="bordered"
               color={
                 errors.ci_number && touched.ci_number ? "danger" : "primary"

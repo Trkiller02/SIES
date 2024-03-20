@@ -260,6 +260,7 @@ export default function HealthForm({
               label="Horario en que la practica:"
               name="recre_time"
               variant="bordered"
+              placeholder="16:00 - 20:00"
               description="Tiempo que utiliza en la actividad."
               color={
                 errors.recre_time && touched.recre_time ? "danger" : "primary"

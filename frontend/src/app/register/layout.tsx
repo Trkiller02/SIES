@@ -10,7 +10,7 @@ export default function RegisterLayout({
   return (
     <DashboardLayout>
       <ProviderCtx>
-        <div className="flex flex-row w-full">
+        <div className="flex flex-row w-full justify-evenly">
           <ProgressChecker />
           {children}
         </div>

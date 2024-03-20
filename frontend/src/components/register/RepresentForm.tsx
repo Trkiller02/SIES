@@ -111,8 +111,16 @@ export default function RepresentForm({
           break;
       }
 
-      if (values.represent === true) {
+      if (
+        values.represent === true ||
+        values.relation === "REPRESENTANTE LEGAL"
+      ) {
         setRepresent(true);
+        if (dataRelations.represent_id === "")
+          setDataRelations({
+            ...dataRelations,
+            represent_id: "omit",
+          });
       }
 
       return "Registro exitoso.";
@@ -266,7 +274,7 @@ export default function RepresentForm({
             {/* SEARCH BUTTON */}
             {!edit && (
               <Tooltip
-                content="Buscar Estudiante"
+                content="Buscar Registro"
                 className="border border-primary-500"
               >
                 <Button
@@ -379,10 +387,12 @@ export default function RepresentForm({
                           ...dataRelations,
                           represent_id: "omit",
                         });
+                        setRepresent(true);
                         break;
                       default:
                         break;
                     }
+
                     routeHandler(resetForm);
                   }}
                 >
@@ -672,7 +682,7 @@ export default function RepresentForm({
             />
           </div>
 
-          <div className="flex flex-row justify-around mt-7">
+          <div className="flex flex-row justify-evenly mt-7">
             {edit && (
               <Button
                 variant="ghost"

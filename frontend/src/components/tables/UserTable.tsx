@@ -65,7 +65,7 @@ export default function UserTable({ info }: { info: UserI[] }) {
       "DELETE"
     );
 
-    if (res) return "Eliminado con exito.";
+    if (res) return "Eliminado con éxito.";
   };
 
   const renderCell = React.useCallback(
@@ -187,7 +187,7 @@ export default function UserTable({ info }: { info: UserI[] }) {
                 </p>
                 <p className="text-md">
                   Entienda que esta acción se puede revertir, sin embargo,
-                  podria afectar la estructura de otros registros.
+                  podría afectar la estructura de otros registros.
                 </p>
               </ModalBody>
               <ModalFooter>

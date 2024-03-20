@@ -40,6 +40,7 @@ import { useSession } from "next-auth/react";
 import { roleSelect } from "@/utils/selectList";
 import { useRouter } from "next/navigation";
 import QRCode from "react-qr-code";
+import { mayusHandler } from "@/utils/typograhHelper";
 
 export default function RegisterComponent({
   edit,
@@ -154,9 +155,9 @@ export default function RegisterComponent({
     useEffect(() => {
       toast.promise(searchUser(id!), {
         loading: "Cargando...",
-        success: (data) => {
+        success: async (data) => {
           setInfo({
-            ...data,
+            ...(await mayusHandler(data)),
             role_id: (data.role_id as RoleI).id!,
           });
 
@@ -393,7 +394,7 @@ export default function RegisterComponent({
                         loading: "Procesando...",
                         success: (data) => {
                           router.push("/");
-                          return "Eliminado con exito.";
+                          return "Eliminado con éxito.";
                         },
                         error: (error: Error) => {
                           return error.message === "Failed to fetch"

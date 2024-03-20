@@ -63,10 +63,10 @@ export default function LoginComponent() {
           </div>
           <div className="flex flex-col gap-5 w-full">
             <Field
-              label="Correo electronico o cedula de identidad:"
+              label="Correo electrónico o cédula de identidad:"
               color={errors.query && touched.query ? "danger" : "primary"}
               name="query"
-              description="Ingrese su correo electronico o cedula de identidad"
+              description="Ingrese su correo electrónico o cédula de identidad"
               variant="bordered"
               errorMessage={errors.query && touched.query && errors.query}
               labelPlacement="outside"
