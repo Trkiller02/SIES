@@ -123,6 +123,18 @@ export default function StudentTable({
               <p className="text-bold text-sm capitalize">{cellValue}</p>
             </div>
           );
+        case "level":
+          return (
+            <div className="flex flex-col">
+              <p className="text-bold text-sm capitalize">
+                {cellValue === 8
+                  ? "PREESCOLAR INICIAL"
+                  : cellValue === 9
+                  ? "PREESCOLAR AVANZADO"
+                  : cellValue}
+              </p>
+            </div>
+          );
         case "lastname":
           return (
             <div className="flex flex-col">

@@ -296,6 +296,12 @@ export class ToolsService {
             ...(value.relationTable.student_id as Student),
             ...((value.relationTable.student_id as Student)
               .person_id as Person),
+            level:
+              value.level === 8
+                ? 'PREESCOLAR INICIAL'
+                : value.level === 9
+                  ? 'PREESCOLAR AVANZADO'
+                  : value.level,
           });
         });
       } else {
@@ -353,6 +359,12 @@ export class ToolsService {
         ...(student_id as Student),
         ...(ficha_id as Ficha),
         ...((student_id as Student).person_id as Person),
+        level:
+          (ficha_id as Ficha).level === 8
+            ? 'PREESCOLAR INICIAL'
+            : (ficha_id as Ficha).level === 9
+              ? 'PREESCOLAR AVANZADO'
+              : (ficha_id as Ficha).level,
       });
     }
 

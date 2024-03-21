@@ -5,6 +5,9 @@ export const headerStyle: Partial<Style> = {
     name: 'Arial',
     size: 10,
     bold: true,
+    color: {
+      argb: 'FFFFFF',
+    },
   },
   alignment: {
     vertical: 'middle',
@@ -22,6 +25,9 @@ export const headerStyle: Partial<Style> = {
     bgColor: {
       argb: '6bf556',
     },
+  },
+  protection: {
+    locked: true,
   },
 };
 

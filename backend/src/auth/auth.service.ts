@@ -25,17 +25,17 @@ export class AuthService {
     const user = await this.userService.findToAuth(query, true);
 
     if (!user) {
-      unauth_err(msgEnum.credential_err, 'Crendenciales invalidas');
-    }
-
-    if (user.status === StatusEnum.ACTIVE) {
-      unauth_err(msgEnum.session_error, 'Ya existe un usuario activo.');
+      unauth_err(msgEnum.credential_err, 'Credenciales invalidas');
     }
 
     const isPassValid = await bcrypt.compare(password, user.password);
 
     if (!isPassValid) {
-      unauth_err(msgEnum.credential_err, 'Crendenciales invalidas');
+      unauth_err(msgEnum.credential_err, 'Credenciales invalidas');
+    }
+
+    if (user.status === StatusEnum.ACTIVE) {
+      unauth_err(msgEnum.session_error, 'Ya existe un usuario activo.');
     }
 
     const payload = {
@@ -89,7 +89,7 @@ export class AuthService {
   async signOut(user: { sub: string }) {
     try {
       await this.userService.update(user.sub, { status: StatusEnum.OFFLINE });
-      return { message: 'Cierre de sesión con exito.' };
+      return { message: 'Cierre de sesión con éxito.' };
     } catch (error) {
       return bad_req_err(msgEnum.bad_req_err, (error as Error).message);
     }
