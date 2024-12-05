@@ -29,8 +29,6 @@ import StudentTable from "@/components/tables/StudentTable";
 
 export default function indexSearchPage() {
   const { data: session } = useSession();
-  const [info, setInfo] = useState<any>();
-  const [entity, setEntity] = useState("");
 
   const download = async (values: {
     entity: string;
@@ -213,7 +211,7 @@ export default function indexSearchPage() {
                     values.etapa === "EDUCACION PRIMARIA"
                       ? levelSelect
                       : values.etapa === "EDUCACION MEDIA"
-                      ? levelSelect.slice(0, 5)
+                      ? levelSelect.slice(2, 7)
                       : levelSelect
                   }
                   label="Level:"

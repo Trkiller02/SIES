@@ -13,7 +13,7 @@ export default withAuth(
     }
 
     if (
-      (request.nextUrl.pathname.endsWith("/settings") || request.nextUrl.pathname.endsWith("/register/user") || request.nextUrl.pathname.startsWith("/edit/user") ) &&
+      (request.nextUrl.pathname.endsWith("/settings") || request.nextUrl.pathname.endsWith("/register/user") || request.nextUrl.pathname.startsWith("/edit/user")) &&
       (request.nextauth.token?.user.role as string) !== ROLE_LIST.ADMIN
     ) {
       return NextResponse.rewrite(new URL("/", request.url));
@@ -21,18 +21,18 @@ export default withAuth(
 
     if (
       (request.nextUrl.pathname.startsWith('/edit') || request.nextUrl.pathname.startsWith('/register')) &&
-      (request.nextauth.token?.user.role as string) === ROLE_LIST.USER
+      (request.nextauth.token?.user.role as string) === ROLE_LIST.VIEWER
     ) {
       return NextResponse.rewrite(new URL("/", request.url));
     }
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token }) => true//!!token,
     },
   }
 );
 
 export const config = {
-  matcher: ["/register/:path*", "/edit/:path*", "/settings", '/', "/search/:path*" ],
+  matcher: ["/register/:path*"], // "/edit/:path*", "/settings", '/', "/search/:path*" ],
 };

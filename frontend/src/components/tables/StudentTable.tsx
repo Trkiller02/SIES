@@ -1,4 +1,7 @@
+// COMPONENTS
 import {
+  Chip,
+  Tooltip,
   Button,
   Modal,
   ModalBody,
@@ -8,7 +11,8 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import Link from "next/link";
-import React, { useState } from "react";
+
+// COMPONENTES TABLA
 import {
   Table,
   TableHeader,
@@ -16,12 +20,10 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Chip,
-  Tooltip,
   getKeyValue,
 } from "@nextui-org/react";
 
-interface infoI {
+/* interface infoI {
   id: string;
   level: number;
   section: string;
@@ -38,8 +40,10 @@ interface infoI {
       };
     };
   };
-}
+} */
 
+// ESQUEMAS
+import { columnsStudent } from "@/utils/tableList";
 interface StudentICards {
   id: string;
   ci_number: string;
@@ -54,12 +58,15 @@ interface StudentICards {
   actions: string;
 }
 
+// ICONOS
 import {
   MdDeleteOutline,
   MdOutlineCreate,
   MdOutlineRemoveRedEye,
 } from "react-icons/md";
-import { columnsRepresent, columnsStudent } from "@/utils/tableList";
+
+// HANDLERS
+import { useCallback, useState } from "react";
 import { fetchDataWithoutBody } from "@/utils/fetchHandler";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -71,6 +78,7 @@ export default function StudentTable({
   info: any[];
   relation?: boolean;
 }) {
+  // PREPARANDO LOS DATOS
   const infoFixed: StudentICards[] = info.map((item) => {
     const {
       id,
@@ -98,10 +106,16 @@ export default function StudentTable({
     };
   });
 
+  // MANEJAR DEL MODAL
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  //MANEJAR FOCO
   const [entityFocus, setEntityFocus] = useState<string>("");
+
+  // DATOS DE SESIÓN
   const { data: session } = useSession();
 
+  // FUNCIÓN DE ELIMINACIÓN
   const deleteEntity = async (value: string) => {
     const res = await fetchDataWithoutBody(
       `/represent/${value}`,
@@ -112,7 +126,7 @@ export default function StudentTable({
     if (res) return "Eliminado con éxito.";
   };
 
-  const renderCell = React.useCallback(
+  const renderCell = useCallback(
     (user: StudentICards, columnKey: keyof StudentICards) => {
       const cellValue = user[columnKey];
 
