@@ -1,8 +1,8 @@
-# espirituV2
-NextJS & NestJS Educative Application
+# SIES
+Sistema de Inscripción Estudiantil Espíritu Santo
+NextJS & NestJS Application
 
-## [NextJS](https://nextjs.org/)
-
+## [NextJS](https://nextjs.org/) Frontend
 
 ~~~
 cd frontend
@@ -11,7 +11,7 @@ npm run build
 npm run start
 ~~~
 
-## [NestJS](https://nestjs.com/)
+## [NestJS](https://nestjs.com/) Backend
 
 ~~~
 cd backend
